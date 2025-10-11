@@ -19,8 +19,8 @@ A modern, opinionated starter template for building fast, accessible, and AI-fri
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
+git clone https://github.com/AleksandraNikiciuk/10xdevs-project.git
+cd 10xdevs-project
 ```
 
 2. Install dependencies:
@@ -54,12 +54,12 @@ npm run build
 ```md
 .
 ├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
+│ ├── layouts/ # Astro layouts
+│ ├── pages/ # Astro pages
+│ │ └── api/ # API endpoints
+│ ├── components/ # UI components (Astro & React)
+│ └── assets/ # Static assets
+├── public/ # Public assets
 ```
 
 ## AI Development Support
