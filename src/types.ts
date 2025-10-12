@@ -87,8 +87,6 @@ export type GenerationDetailDTO = Pick<
   | "source_text_length"
   | "source_text_hash"
   | "generated_count"
-  | "accepted_unedited_count"
-  | "accepted_edited_count"
   | "generation_duration"
   | "created_at"
   | "updated_at"
@@ -112,8 +110,6 @@ export type GenerationListDTO = {
     | "model"
     | "source_text_length"
     | "generated_count"
-    | "accepted_unedited_count"
-    | "accepted_edited_count"
     | "generation_duration"
     | "created_at"
   >[]

@@ -82,8 +82,6 @@
   "source_text_length": 5432,
   "source_text_hash": "sha256_hash",
   "generated_count": 15,
-  "accepted_unedited_count": 10,
-  "accepted_edited_count": 3,
   "generation_duration": 8,
   "created_at": "2025-10-11T10:00:00Z",
   "updated_at": "2025-10-11T10:05:00Z"
@@ -116,8 +114,6 @@
       "model": "gpt-4o-mini",
       "source_text_length": 5432,
       "generated_count": 15,
-      "accepted_unedited_count": 10,
-      "accepted_edited_count": 3,
       "generation_duration": 8,
       "created_at": "2025-10-11T10:00:00Z"
     }
@@ -237,7 +233,6 @@
 - `flashcards` array is required and must contain at least 1 flashcard
 - `source` must be one of: "manual", "ai-full", "ai-edited"
 - `generation_id` is required when source is "ai-full" or "ai-edited", must be null/omitted for "manual"
-- When AI-generated flashcards are created, the generation statistics are automatically updated (accepted_unedited_count, accepted_edited_count)
 
 #### Get Flashcard by ID
 
@@ -482,7 +477,6 @@ When authentication is implemented, the API will use **JWT (JSON Web Token)** ba
 - **Flashcards:** Users can only access, modify, and delete their own flashcards
 - **Generations:** Users can only access their own generation sessions
 - **Error Logs:** Users can only view and create their own error logs
-- **Statistics:** Users can only view their own statistics
 
 **Security Implementation:**
 
@@ -543,7 +537,7 @@ Database-level Row-Level Security (RLS) ensures that users access only records w
 9. User submits accepted flashcards via `POST /api/flashcards` with:
    - `generation_id`: ID from step 7
    - `flashcards`: Array of accepted cards with `source` field ("ai-full" or "ai-edited")
-10. Server saves flashcards to database and updates generation statistics (accepted_unedited_count, accepted_edited_count)
+10. Server saves flashcards to database
 
 **Error Handling:**
 

@@ -18,19 +18,17 @@ This table is manage by Supabase Auth.
 
 Stores metadata about each flashcard generation session.
 
-| Column                    | Data Type     | Constraints                                  | Description                                          |
-| ------------------------- | ------------- | -------------------------------------------- | ---------------------------------------------------- |
-| `id`                      | `bigserial`   | `PRIMARY KEY`                                | Unique identifier for the generation.                |
-| `user_id`                 | `uuid`        | `NOT NULL`, `FOREIGN KEY (users.id)`         | References the user who initiated the generation.    |
-| `model`                   | `varchar`     | `NOT NULL`                                   | The model used for the generation.                   |
-| `source_text_length`      | `integer`     | `NOT NULL`, `CHECK (source_text_length > 0)` | Length of the source text used for generation.       |
-| `source_text_hash`        | `varchar`     | `NOT NULL`                                   | Hash of the source text to identify duplicates.      |
-| `generated_count`         | `integer`     | `NOT NULL`, `DEFAULT 0`                      | Number of flashcards generated in the session.       |
-| `accepted_unedited_count` | `integer`     | `NOT NULL`, `DEFAULT 0`                      | Number of accepted flashcards without edits.         |
-| `accepted_edited_count`   | `integer`     | `NOT NULL`, `DEFAULT 0`                      | Number of accepted flashcards with edits.            |
-| `generation_duration`     | `integer`     | `NOT NULL`                                   | Duration of the generation process in seconds.       |
-| `created_at`              | `timestamptz` | `NOT NULL`, `DEFAULT now()`                  | Timestamp of when the generation was created.        |
-| `updated_at`              | `timestamptz` | `NOT NULL`, `DEFAULT now()`                  | Timestamp of the last update (managed by a trigger). |
+| Column                | Data Type     | Constraints                                  | Description                                          |
+| --------------------- | ------------- | -------------------------------------------- | ---------------------------------------------------- |
+| `id`                  | `bigserial`   | `PRIMARY KEY`                                | Unique identifier for the generation.                |
+| `user_id`             | `uuid`        | `NOT NULL`, `FOREIGN KEY (users.id)`         | References the user who initiated the generation.    |
+| `model`               | `varchar`     | `NOT NULL`                                   | The model used for the generation.                   |
+| `source_text_length`  | `integer`     | `NOT NULL`, `CHECK (source_text_length > 0)` | Length of the source text used for generation.       |
+| `source_text_hash`    | `varchar`     | `NOT NULL`                                   | Hash of the source text to identify duplicates.      |
+| `generated_count`     | `integer`     | `NOT NULL`, `DEFAULT 0`                      | Number of flashcards generated in the session.       |
+| `generation_duration` | `integer`     | `NOT NULL`                                   | Duration of the generation process in seconds.       |
+| `created_at`          | `timestamptz` | `NOT NULL`, `DEFAULT now()`                  | Timestamp of when the generation was created.        |
+| `updated_at`          | `timestamptz` | `NOT NULL`, `DEFAULT now()`                  | Timestamp of the last update (managed by a trigger). |
 
 #### `flashcards`
 
