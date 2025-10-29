@@ -1,13 +1,13 @@
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { 
-  CreateFlashcardsCommand, 
-  CreateFlashcardsResultDTO, 
+import type {
+  CreateFlashcardsCommand,
+  CreateFlashcardsResultDTO,
   FlashcardDTO,
   UpdateFlashcardCommand,
   ListFlashcardsQuery,
   FlashcardListDTO,
   BatchDeleteFlashcardsCommand,
-  BatchDeleteFlashcardsResultDTO
+  BatchDeleteFlashcardsResultDTO,
 } from "../../types";
 import type { TablesInsert } from "../../db/database.types";
 
@@ -93,7 +93,7 @@ function createFlashcardServiceError(
 
 /**
  * Validates that a generation exists and belongs to the specified user
- * 
+ *
  * @throws {FlashcardServiceError} NOT_FOUND if generation doesn't exist
  * @throws {FlashcardServiceError} FORBIDDEN if generation belongs to another user
  * @throws {FlashcardServiceError} DATABASE_ERROR if database query fails
@@ -115,21 +115,12 @@ async function validateGenerationOwnership(
         generationId,
         error: error.message,
       });
-      throw createFlashcardServiceError(
-        "DATABASE_ERROR",
-        "Failed to validate generation",
-        500,
-        error
-      );
+      throw createFlashcardServiceError("DATABASE_ERROR", "Failed to validate generation", 500, error);
     }
 
     if (!generation) {
       console.info("[FlashcardService] Generation not found:", { generationId });
-      throw createFlashcardServiceError(
-        "NOT_FOUND",
-        `Generation with ID ${generationId} not found`,
-        404
-      );
+      throw createFlashcardServiceError("NOT_FOUND", `Generation with ID ${generationId} not found`, 404);
     }
 
     if (generation.user_id !== userId) {
@@ -138,11 +129,7 @@ async function validateGenerationOwnership(
         expectedUserId: userId,
         actualUserId: generation.user_id,
       });
-      throw createFlashcardServiceError(
-        "FORBIDDEN",
-        "Generation does not belong to the current user",
-        403
-      );
+      throw createFlashcardServiceError("FORBIDDEN", "Generation does not belong to the current user", 403);
     }
   } catch (error) {
     // Re-throw known errors
@@ -152,33 +139,26 @@ async function validateGenerationOwnership(
 
     // Wrap unknown errors
     console.error("[FlashcardService] Unexpected error during generation validation:", error);
-    throw createFlashcardServiceError(
-      "DATABASE_ERROR",
-      "An unexpected error occurred during validation",
-      500,
-      error
-    );
+    throw createFlashcardServiceError("DATABASE_ERROR", "An unexpected error occurred during validation", 500, error);
   }
 }
 
 /**
  * Creates one or more flashcards
- * 
+ *
  * Supports two scenarios:
  * 1. Manual flashcards (created by user from scratch)
  * 2. AI-generated flashcards (accepted from generation, with or without edits)
- * 
+ *
  * @param params - Parameters including command, userId, and Supabase client
  * @returns Created flashcards with metadata
- * 
+ *
  * @throws {FlashcardServiceError} VALIDATION_ERROR for business logic validation failures
  * @throws {FlashcardServiceError} NOT_FOUND if generation_id doesn't exist
  * @throws {FlashcardServiceError} FORBIDDEN if generation_id belongs to another user
  * @throws {FlashcardServiceError} DATABASE_ERROR for database operation failures
  */
-export async function createFlashcards(
-  params: CreateFlashcardsParams
-): Promise<CreateFlashcardsResultDTO> {
+export async function createFlashcards(params: CreateFlashcardsParams): Promise<CreateFlashcardsResultDTO> {
   const { command, userId, supabase } = params;
   const { flashcards, generation_id } = command;
 
@@ -216,12 +196,7 @@ export async function createFlashcards(
         flashcardCount: flashcardsToInsert.length,
         error: error.message,
       });
-      throw createFlashcardServiceError(
-        "DATABASE_ERROR",
-        "Failed to create flashcards",
-        500,
-        error
-      );
+      throw createFlashcardServiceError("DATABASE_ERROR", "Failed to create flashcards", 500, error);
     }
 
     if (!createdFlashcards || createdFlashcards.length === 0) {
@@ -229,11 +204,7 @@ export async function createFlashcards(
         userId,
         flashcardCount: flashcardsToInsert.length,
       });
-      throw createFlashcardServiceError(
-        "DATABASE_ERROR",
-        "No flashcards were created",
-        500
-      );
+      throw createFlashcardServiceError("DATABASE_ERROR", "No flashcards were created", 500);
     }
 
     // Step 4: Map to DTO
@@ -279,17 +250,15 @@ export async function createFlashcards(
 
 /**
  * Retrieves a single flashcard by ID
- * 
+ *
  * @param params - Parameters including flashcardId, userId, and Supabase client
  * @returns Flashcard DTO
- * 
+ *
  * @throws {FlashcardServiceError} NOT_FOUND if flashcard doesn't exist
  * @throws {FlashcardServiceError} FORBIDDEN if flashcard belongs to another user
  * @throws {FlashcardServiceError} DATABASE_ERROR for database operation failures
  */
-export async function getFlashcardById(
-  params: GetFlashcardParams
-): Promise<FlashcardDTO> {
+export async function getFlashcardById(params: GetFlashcardParams): Promise<FlashcardDTO> {
   const { flashcardId, userId, supabase } = params;
 
   try {
@@ -309,26 +278,17 @@ export async function getFlashcardById(
         flashcardId,
         error: error.message,
       });
-      throw createFlashcardServiceError(
-        "DATABASE_ERROR",
-        "Failed to fetch flashcard",
-        500,
-        error
-      );
+      throw createFlashcardServiceError("DATABASE_ERROR", "Failed to fetch flashcard", 500, error);
     }
 
     if (!flashcard) {
       console.info("[FlashcardService] Flashcard not found:", { flashcardId });
-      throw createFlashcardServiceError(
-        "NOT_FOUND",
-        `Flashcard with ID ${flashcardId} not found`,
-        404
-      );
+      throw createFlashcardServiceError("NOT_FOUND", `Flashcard with ID ${flashcardId} not found`, 404);
     }
 
     // Note: RLS will handle user_id filtering in production
     // For MVP, we skip explicit user_id check since all data belongs to DEFAULT_USER_ID
-    
+
     return {
       id: flashcard.id,
       generation_id: flashcard.generation_id,
@@ -360,17 +320,15 @@ export async function getFlashcardById(
 
 /**
  * Updates an existing flashcard
- * 
+ *
  * @param params - Parameters including flashcardId, command, userId, and Supabase client
  * @returns Updated flashcard DTO
- * 
+ *
  * @throws {FlashcardServiceError} NOT_FOUND if flashcard doesn't exist
  * @throws {FlashcardServiceError} FORBIDDEN if flashcard belongs to another user
  * @throws {FlashcardServiceError} DATABASE_ERROR for database operation failures
  */
-export async function updateFlashcard(
-  params: UpdateFlashcardParams
-): Promise<FlashcardDTO> {
+export async function updateFlashcard(params: UpdateFlashcardParams): Promise<FlashcardDTO> {
   const { flashcardId, command, userId, supabase } = params;
 
   try {
@@ -401,32 +359,19 @@ export async function updateFlashcard(
       // Check if it's a not found error (no rows affected)
       if (error.code === "PGRST116") {
         console.info("[FlashcardService] Flashcard not found for update:", { flashcardId });
-        throw createFlashcardServiceError(
-          "NOT_FOUND",
-          `Flashcard with ID ${flashcardId} not found`,
-          404
-        );
+        throw createFlashcardServiceError("NOT_FOUND", `Flashcard with ID ${flashcardId} not found`, 404);
       }
 
       console.error("[FlashcardService] Database error when updating flashcard:", {
         flashcardId,
         error: error.message,
       });
-      throw createFlashcardServiceError(
-        "DATABASE_ERROR",
-        "Failed to update flashcard",
-        500,
-        error
-      );
+      throw createFlashcardServiceError("DATABASE_ERROR", "Failed to update flashcard", 500, error);
     }
 
     if (!updatedFlashcard) {
       console.info("[FlashcardService] Flashcard not found after update:", { flashcardId });
-      throw createFlashcardServiceError(
-        "NOT_FOUND",
-        `Flashcard with ID ${flashcardId} not found`,
-        404
-      );
+      throw createFlashcardServiceError("NOT_FOUND", `Flashcard with ID ${flashcardId} not found`, 404);
     }
 
     console.info("[FlashcardService] Successfully updated flashcard:", {
@@ -465,16 +410,14 @@ export async function updateFlashcard(
 
 /**
  * Deletes a flashcard permanently
- * 
+ *
  * @param params - Parameters including flashcardId, userId, and Supabase client
- * 
+ *
  * @throws {FlashcardServiceError} NOT_FOUND if flashcard doesn't exist
  * @throws {FlashcardServiceError} FORBIDDEN if flashcard belongs to another user
  * @throws {FlashcardServiceError} DATABASE_ERROR for database operation failures
  */
-export async function deleteFlashcard(
-  params: DeleteFlashcardParams
-): Promise<void> {
+export async function deleteFlashcard(params: DeleteFlashcardParams): Promise<void> {
   const { flashcardId, userId, supabase } = params;
 
   try {
@@ -483,22 +426,14 @@ export async function deleteFlashcard(
       userId,
     });
 
-    const { error } = await supabase
-      .from("flashcards")
-      .delete()
-      .eq("id", flashcardId);
+    const { error } = await supabase.from("flashcards").delete().eq("id", flashcardId);
 
     if (error) {
       console.error("[FlashcardService] Database error when deleting flashcard:", {
         flashcardId,
         error: error.message,
       });
-      throw createFlashcardServiceError(
-        "DATABASE_ERROR",
-        "Failed to delete flashcard",
-        500,
-        error
-      );
+      throw createFlashcardServiceError("DATABASE_ERROR", "Failed to delete flashcard", 500, error);
     }
 
     // Note: Supabase delete doesn't return error if row doesn't exist
@@ -531,15 +466,13 @@ export async function deleteFlashcard(
 
 /**
  * Lists flashcards with pagination, filtering, and sorting
- * 
+ *
  * @param params - Parameters including query, userId, and Supabase client
  * @returns Paginated list of flashcards
- * 
+ *
  * @throws {FlashcardServiceError} DATABASE_ERROR for database operation failures
  */
-export async function listFlashcards(
-  params: ListFlashcardsParams
-): Promise<FlashcardListDTO> {
+export async function listFlashcards(params: ListFlashcardsParams): Promise<FlashcardListDTO> {
   const { query, userId, supabase } = params;
 
   try {
@@ -594,12 +527,7 @@ export async function listFlashcards(
         userId,
         error: error.message,
       });
-      throw createFlashcardServiceError(
-        "DATABASE_ERROR",
-        "Failed to list flashcards",
-        500,
-        error
-      );
+      throw createFlashcardServiceError("DATABASE_ERROR", "Failed to list flashcards", 500, error);
     }
 
     // Map to DTOs
@@ -649,10 +577,10 @@ export async function listFlashcards(
 
 /**
  * Batch deletes multiple flashcards
- * 
+ *
  * @param params - Parameters including command, userId, and Supabase client
  * @returns Count of deleted flashcards
- * 
+ *
  * @throws {FlashcardServiceError} DATABASE_ERROR for database operation failures
  */
 export async function batchDeleteFlashcards(
@@ -680,12 +608,7 @@ export async function batchDeleteFlashcards(
         flashcardCount: flashcard_ids.length,
         error: error.message,
       });
-      throw createFlashcardServiceError(
-        "DATABASE_ERROR",
-        "Failed to delete flashcards",
-        500,
-        error
-      );
+      throw createFlashcardServiceError("DATABASE_ERROR", "Failed to delete flashcards", 500, error);
     }
 
     const deletedCount = count ?? 0;
@@ -719,4 +642,3 @@ export async function batchDeleteFlashcards(
     );
   }
 }
-

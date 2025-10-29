@@ -4,16 +4,8 @@ import { z } from "zod";
  * Schema for a single flashcard item in the create request
  */
 const FlashcardItemSchema = z.object({
-  question: z
-    .string()
-    .trim()
-    .min(1, "Question cannot be empty")
-    .max(200, "Question cannot exceed 200 characters"),
-  answer: z
-    .string()
-    .trim()
-    .min(1, "Answer cannot be empty")
-    .max(500, "Answer cannot exceed 500 characters"),
+  question: z.string().trim().min(1, "Question cannot be empty").max(200, "Question cannot exceed 200 characters"),
+  answer: z.string().trim().min(1, "Answer cannot be empty").max(500, "Answer cannot exceed 500 characters"),
   source: z.enum(["manual", "ai-full", "ai-edited"], {
     errorMap: () => ({ message: "Source must be one of: manual, ai-full, ai-edited" }),
   }),
@@ -21,7 +13,7 @@ const FlashcardItemSchema = z.object({
 
 /**
  * Schema for creating flashcards
- * 
+ *
  * Validation rules:
  * - flashcards: array of 1-100 items
  * - generation_id: optional, but required for AI sources
@@ -37,9 +29,7 @@ export const CreateFlashcardsSchema = z
   })
   .refine(
     (data) => {
-      const hasAISource = data.flashcards.some(
-        (f) => f.source === "ai-full" || f.source === "ai-edited"
-      );
+      const hasAISource = data.flashcards.some((f) => f.source === "ai-full" || f.source === "ai-edited");
       const hasGenerationId = data.generation_id != null;
 
       // AI source requires generation_id
@@ -64,7 +54,7 @@ export type CreateFlashcardsInput = z.infer<typeof CreateFlashcardsSchema>;
 
 /**
  * Schema for updating a flashcard
- * 
+ *
  * Validation rules:
  * - At least one field must be provided
  * - question: optional, 1-200 characters if provided
@@ -93,7 +83,7 @@ export type UpdateFlashcardInput = z.infer<typeof UpdateFlashcardSchema>;
 
 /**
  * Schema for listing flashcards query parameters
- * 
+ *
  * Validation rules:
  * - page: optional, positive integer, defaults to 1
  * - limit: optional, positive integer between 1-200, defaults to 50
@@ -127,7 +117,7 @@ export type ListFlashcardsQueryInput = z.infer<typeof ListFlashcardsQuerySchema>
 
 /**
  * Schema for batch delete flashcards command
- * 
+ *
  * Validation rules:
  * - flashcard_ids: array of positive integers, minimum 1, maximum 100
  */
@@ -139,4 +129,3 @@ export const BatchDeleteFlashcardsSchema = z.object({
 });
 
 export type BatchDeleteFlashcardsInput = z.infer<typeof BatchDeleteFlashcardsSchema>;
-

@@ -65,26 +65,24 @@ function calculateDuration(startTime: number): number {
 
 /**
  * Create a new generation with AI-generated flashcard proposals
- * 
+ *
  * This function:
  * 1. Calculates source text metadata (length, hash)
  * 2. Calls AI service to generate flashcards
  * 3. Saves generation metadata and flashcards to database
  * 4. Returns the complete generation result
- * 
+ *
  * @param params - Generation parameters
  * @returns Generation result with flashcard proposals
  * @throws {GenerationServiceError} When generation fails
- * 
+ *
  * @example
  * const result = await createGeneration({
  *   sourceText: "Long educational text...",
  *   supabase: supabaseClient
  * });
  */
-export async function createGeneration(
-  params: CreateGenerationParams
-): Promise<CreateGenerationResultDTO> {
+export async function createGeneration(params: CreateGenerationParams): Promise<CreateGenerationResultDTO> {
   const { sourceText, supabase } = params;
   const userId = DEFAULT_USER_ID;
 
@@ -102,7 +100,7 @@ export async function createGeneration(
       aiResponse = await generateFlashcards(sourceText);
     } catch (error) {
       const aiError = error as AIServiceError;
-      
+
       // Log AI errors to generation_error_logs
       await supabase.from("generation_error_logs").insert({
         user_id: userId,
@@ -113,12 +111,7 @@ export async function createGeneration(
         source_text_hash: sourceTextHash,
       });
 
-      throw createGenerationServiceError(
-        "AI_ERROR",
-        aiError.message,
-        aiError.statusCode,
-        { code: aiError.code }
-      );
+      throw createGenerationServiceError("AI_ERROR", aiError.message, aiError.statusCode, { code: aiError.code });
     }
 
     const generationDuration = calculateDuration(startTime);
@@ -140,12 +133,7 @@ export async function createGeneration(
 
     if (generationError || !generationData) {
       console.error("Database error (generations):", generationError);
-      throw createGenerationServiceError(
-        "DATABASE_ERROR",
-        "Failed to save generation metadata",
-        500,
-        generationError
-      );
+      throw createGenerationServiceError("DATABASE_ERROR", "Failed to save generation metadata", 500, generationError);
     }
 
     // Insert flashcard proposals
@@ -164,12 +152,7 @@ export async function createGeneration(
 
     if (flashcardsError || !flashcardsData) {
       console.error("Database error (flashcards):", flashcardsError);
-      throw createGenerationServiceError(
-        "DATABASE_ERROR",
-        "Failed to save flashcard proposals",
-        500,
-        flashcardsError
-      );
+      throw createGenerationServiceError("DATABASE_ERROR", "Failed to save flashcard proposals", 500, flashcardsError);
     }
 
     // Step 4: Build and return response DTO
@@ -196,12 +179,6 @@ export async function createGeneration(
 
     // Wrap unknown errors
     console.error("Unexpected error in createGeneration:", error);
-    throw createGenerationServiceError(
-      "DATABASE_ERROR",
-      "An unexpected error occurred",
-      500,
-      error
-    );
+    throw createGenerationServiceError("DATABASE_ERROR", "An unexpected error occurred", 500, error);
   }
 }
-

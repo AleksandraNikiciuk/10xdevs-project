@@ -17,4 +17,3 @@ export const createGenerationSchema = z.object({
 });
 
 export type CreateGenerationInput = z.infer<typeof createGenerationSchema>;
-

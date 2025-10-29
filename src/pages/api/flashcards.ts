@@ -1,23 +1,16 @@
 import type { APIContext } from "astro";
 import { ZodError } from "zod";
-import { 
-  CreateFlashcardsSchema,
-  ListFlashcardsQuerySchema 
-} from "../../lib/schemas/flashcard.schema";
-import { 
-  createFlashcards,
-  listFlashcards,
-  type FlashcardServiceError 
-} from "../../lib/services/flashcard.service";
+import { CreateFlashcardsSchema, ListFlashcardsQuerySchema } from "../../lib/schemas/flashcard.schema";
+import { createFlashcards, listFlashcards, type FlashcardServiceError } from "../../lib/services/flashcard.service";
 import { DEFAULT_USER_ID } from "../../db/supabase.client";
 
 export const prerender = false;
 
 /**
  * GET /api/flashcards
- * 
+ *
  * Retrieves paginated list of user's flashcards with optional filtering and sorting
- * 
+ *
  * Query parameters:
  * - page (optional, default: 1): Page number
  * - limit (optional, default: 50, max: 200): Items per page
@@ -25,7 +18,7 @@ export const prerender = false;
  * - generation_id (optional): Filter by generation ID
  * - sort (optional, default: created_at): Sort field
  * - order (optional, default: desc): Sort order (asc, desc)
- * 
+ *
  * Response (200):
  * {
  *   data: FlashcardDTO[],
@@ -35,7 +28,7 @@ export const prerender = false;
  *     total: number
  *   }
  * }
- * 
+ *
  * Errors:
  * - 400: Invalid query parameters
  * - 500: Internal server error
@@ -142,21 +135,21 @@ export async function GET(context: APIContext) {
 
 /**
  * POST /api/flashcards
- * 
+ *
  * Creates one or more flashcards (manual or from AI generation)
- * 
+ *
  * Request body:
  * {
  *   flashcards: Array<{ question: string, answer: string, source: FlashcardSource }>,
  *   generation_id?: number | null
  * }
- * 
+ *
  * Response (201):
  * {
  *   created_count: number,
  *   flashcards: FlashcardDTO[]
  * }
- * 
+ *
  * Errors:
  * - 400: Validation failed
  * - 403: Generation does not belong to user
@@ -283,4 +276,3 @@ export async function POST(context: APIContext) {
     );
   }
 }
-

@@ -1,8 +1,8 @@
 /**
  * POST /api/generations
- * 
+ *
  * Endpoint for generating flashcard proposals from source text using AI
- * 
+ *
  * @see .ai/generation-endpoint-implementation-plan.md
  */
 
@@ -24,12 +24,7 @@ interface ErrorResponse {
   details?: unknown;
 }
 
-function createErrorResponse(
-  status: number,
-  error: string,
-  message: string,
-  details?: unknown
-): Response {
+function createErrorResponse(status: number, error: string, message: string, details?: unknown): Response {
   const body: ErrorResponse = { error, message };
   if (details) {
     body.details = details;
@@ -51,13 +46,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Step 1: Get Supabase client from locals (set by middleware)
     const supabase = locals.supabase;
-    
+
     if (!supabase) {
-      return createErrorResponse(
-        500,
-        "Internal server error",
-        "Database client not available"
-      );
+      return createErrorResponse(500, "Internal server error", "Database client not available");
     }
 
     // Step 2: Parse and validate request body
@@ -65,11 +56,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     try {
       body = await request.json();
     } catch {
-      return createErrorResponse(
-        400,
-        "Invalid JSON",
-        "Request body must be valid JSON"
-      );
+      return createErrorResponse(400, "Invalid JSON", "Request body must be valid JSON");
     }
 
     // Step 3: Validate with Zod schema
@@ -78,12 +65,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       validatedData = createGenerationSchema.parse(body);
     } catch (error) {
       if (error instanceof ZodError) {
-        return createErrorResponse(
-          400,
-          "Validation failed",
-          "Invalid request data",
-          error.errors
-        );
+        return createErrorResponse(400, "Validation failed", "Invalid request data", error.errors);
       }
       throw error;
     }
@@ -118,35 +100,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
           );
 
         case "DATABASE_ERROR":
-          return createErrorResponse(
-            500,
-            "Internal server error",
-            "An error occurred while processing your request"
-          );
+          return createErrorResponse(500, "Internal server error", "An error occurred while processing your request");
 
         case "VALIDATION_ERROR":
-          return createErrorResponse(
-            400,
-            "Validation failed",
-            serviceError.message,
-            serviceError.details
-          );
+          return createErrorResponse(400, "Validation failed", serviceError.message, serviceError.details);
 
         default:
-          return createErrorResponse(
-            500,
-            "Internal server error",
-            "An unexpected error occurred"
-          );
+          return createErrorResponse(500, "Internal server error", "An unexpected error occurred");
       }
     }
 
     // Handle unknown errors
-    return createErrorResponse(
-      500,
-      "Internal server error",
-      "An unexpected error occurred"
-    );
+    return createErrorResponse(500, "Internal server error", "An unexpected error occurred");
   }
 };
-

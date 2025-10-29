@@ -1,22 +1,29 @@
-import { createClient } from '@supabase/supabase-js';
-import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
+import type { SupabaseClient as SupabaseClientType } from "@supabase/supabase-js";
 
-import type { Database } from '../db/database.types.ts';
+import type { Database } from "../db/database.types.ts";
 
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
-const supabaseServiceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.SUPABASE_URL || "";
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_KEY || import.meta.env.SUPABASE_KEY || "";
+const supabaseServiceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 // Client for public/authenticated operations (respects RLS)
-export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
+export const supabaseClient = createClient<Database>(
+  supabaseUrl || "https://placeholder.supabase.co",
+  supabaseAnonKey || "placeholder-key"
+);
 
 // Client for server-side operations (bypasses RLS)
-export const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
+export const supabaseAdmin = createClient<Database>(
+  supabaseUrl || "https://placeholder.supabase.co",
+  supabaseServiceRoleKey || "placeholder-key",
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
   }
-});
+);
 
 export type SupabaseClient = SupabaseClientType<Database>;
 
