@@ -13,7 +13,11 @@ import { ArrowLeft } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { useCharacterValidation } from "@/hooks/useCharacterValidation";
 
-export function GenerateView() {
+interface GenerateViewProps {
+  isUserLoggedIn: boolean;
+}
+
+export function GenerateView({ isUserLoggedIn }: GenerateViewProps) {
   const {
     viewState,
     sourceText,
@@ -139,6 +143,7 @@ export function GenerateView() {
             onSave={handleSaveSelected}
             onCancel={handleCancel}
             isSaving={isSaving}
+            isUserLoggedIn={isUserLoggedIn}
           />
         </section>
       )}

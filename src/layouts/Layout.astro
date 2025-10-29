@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { Toaster } from "../components/ui/sonner";
 import { ThemeProvider } from "../components/ThemeProvider";
+import Header from "../components/Header.astro";
 
 interface Props {
   title?: string;
@@ -36,7 +37,10 @@ const { title = "Generate Flashcards" } = Astro.props;
   </head>
   <body>
     <ThemeProvider client:load>
-      <slot />
+      <Header />
+      <main>
+        <slot />
+      </main>
       <Toaster client:load />
     </ThemeProvider>
   </body>

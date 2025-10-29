@@ -1,15 +1,18 @@
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ProposalsHeader } from "./ProposalsHeader";
 import { ProposalsList } from "./ProposalsList";
-import type { ProposalViewModel } from "./types";
+import type { FlashcardProposal } from "./types";
 
 interface ProposalsSectionProps {
-  proposals: ProposalViewModel[];
+  proposals: FlashcardProposal[];
   selectedCount: number;
-  onToggle: (id: number) => void;
-  onEdit: (id: number, field: "question" | "answer", value: string) => void;
+  onToggle: (id: string) => void;
+  onEdit: (id: string, front: string, back: string) => void;
   onSave: () => void;
   onCancel: () => void;
   isSaving: boolean;
+  isUserLoggedIn: boolean;
 }
 
 export function ProposalsSection({
@@ -20,26 +23,48 @@ export function ProposalsSection({
   onSave,
   onCancel,
   isSaving,
+  isUserLoggedIn,
 }: ProposalsSectionProps) {
   const canSave = selectedCount > 0;
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <>
       <ProposalsHeader
         totalCount={proposals.length}
         selectedCount={selectedCount}
         onSave={onSave}
         onCancel={onCancel}
         isSaving={isSaving}
-        canSave={canSave}
+        isSaveDisabled={selectedCount === 0}
       />
-      <ProposalsList proposals={proposals} onToggle={onToggle} onEdit={onEdit} />
-      {canSave && (
-        <div className="text-xs text-muted-foreground text-center sm:text-sm">
-          <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs">Ctrl+S</kbd> to save,{" "}
-          <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs">Esc</kbd> to cancel
-        </div>
-      )}
-    </div>
+      <div className="mb-8">
+        <ProposalsList proposals={proposals} onToggle={onToggle} onEdit={onEdit} />
+      </div>
+      <div className="flex justify-end gap-4">
+        <Button variant="outline" onClick={onCancel} disabled={isSaving}>
+          Cancel
+        </Button>
+        {isUserLoggedIn ? (
+          <Button onClick={onSave} disabled={selectedCount === 0 || isSaving}>
+            {isSaving ? `Saving ${selectedCount} flashcards...` : `Save ${selectedCount} selected`}
+          </Button>
+        ) : (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button disabled className="pointer-events-none">
+                    Save selected
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>You must be logged in to save flashcards.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
+    </>
   );
 }
