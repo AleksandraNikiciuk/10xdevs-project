@@ -5,7 +5,16 @@
  * Production mode: Integrates with OpenRouter.ai API
  */
 
+import { z } from "zod";
 import type { AIGenerationResponse, AIFlashcardProposal, AIErrorCode } from "../../types";
+import { 
+  OpenRouterService, 
+  ConfigurationError, 
+  OpenRouterApiError, 
+  NetworkError, 
+  InvalidResponseJsonError, 
+  SchemaValidationError 
+} from "./openrouter.service";
 
 // ============================================================================
 // TYPES
@@ -22,6 +31,25 @@ export interface AIServiceError extends Error {
 
 const AI_SERVICE_TIMEOUT = 60000; // 60 seconds
 const AI_MODEL = "gpt-4o-mini";
+
+// ============================================================================
+// ZOD SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for a single flashcard proposal
+ */
+const FlashcardProposalSchema = z.object({
+  question: z.string().min(1, "Question cannot be empty"),
+  answer: z.string().min(1, "Answer cannot be empty"),
+});
+
+/**
+ * Schema for AI response containing flashcards
+ */
+const AIResponseSchema = z.object({
+  flashcards: z.array(FlashcardProposalSchema).min(1, "At least one flashcard is required"),
+});
 
 // ============================================================================
 // ERROR FACTORY
@@ -70,7 +98,7 @@ async function generateFlashcardsMock(
 }
 
 // ============================================================================
-// REAL IMPLEMENTATION (Production) - TODO
+// REAL IMPLEMENTATION (Production)
 // ============================================================================
 
 /**
@@ -80,14 +108,116 @@ async function generateFlashcardsMock(
 async function generateFlashcardsReal(
   sourceText: string
 ): Promise<AIGenerationResponse> {
-  // TODO: Implement OpenRouter.ai integration
-  // This will be implemented in production phase
-  
-  throw createAIServiceError(
-    "AI_SERVICE_ERROR",
-    "Real AI service not yet implemented",
-    503
-  );
+  try {
+    // Initialize OpenRouter service
+    const openRouter = new OpenRouterService();
+
+    // Create system prompt for flashcard generation
+    const systemPrompt = `You are an expert educational content creator specializing in flashcard generation.
+
+Your task is to analyze the provided text and create high-quality flashcards that:
+1. Extract key concepts, facts, and important information
+2. Formulate clear, concise questions
+3. Provide accurate, comprehensive answers
+4. Cover different aspects of the material
+5. Are suitable for effective learning and memorization
+
+Generate between 3 and 10 flashcards depending on the content length and complexity.
+Each flashcard should be self-contained and understandable without additional context.`;
+
+    const userPrompt = `Create flashcards from the following text:
+
+${sourceText}
+
+Remember to:
+- Focus on the most important information
+- Make questions specific and answerable
+- Keep answers clear and complete
+- Ensure variety in question types`;
+
+    // Call OpenRouter API with structured output
+    const result = await openRouter.structuredChatCompletion({
+      schema: AIResponseSchema,
+      model: AI_MODEL,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      params: {
+        temperature: 0.7,
+        max_tokens: 2000,
+      },
+    });
+
+    return {
+      flashcards: result.flashcards,
+      model: AI_MODEL,
+    };
+  } catch (error) {
+    // Handle OpenRouter-specific errors
+    if (error instanceof ConfigurationError) {
+      throw createAIServiceError(
+        "AI_SERVICE_ERROR",
+        "AI service configuration error: Missing API key",
+        500
+      );
+    }
+
+    if (error instanceof OpenRouterApiError) {
+      // Map API errors to AI service errors
+      const statusCode = error.statusCode;
+      if (statusCode === 401 || statusCode === 403) {
+        throw createAIServiceError(
+          "AI_SERVICE_ERROR",
+          "AI service authentication failed",
+          statusCode
+        );
+      }
+      if (statusCode === 429) {
+        throw createAIServiceError(
+          "AI_SERVICE_ERROR",
+          "AI service rate limit exceeded",
+          statusCode
+        );
+      }
+      throw createAIServiceError(
+        "AI_SERVICE_ERROR",
+        `AI service error: ${error.message}`,
+        statusCode
+      );
+    }
+
+    if (error instanceof NetworkError) {
+      throw createAIServiceError(
+        "AI_TIMEOUT",
+        "AI service connection timeout",
+        504
+      );
+    }
+
+    if (error instanceof InvalidResponseJsonError) {
+      throw createAIServiceError(
+        "AI_INVALID_RESPONSE",
+        "AI service returned invalid response format",
+        422
+      );
+    }
+
+    if (error instanceof SchemaValidationError) {
+      throw createAIServiceError(
+        "AI_INVALID_RESPONSE",
+        `AI service returned data that doesn't match expected format: ${error.validationIssues}`,
+        422
+      );
+    }
+
+    // Unknown error
+    throw createAIServiceError(
+      "AI_SERVICE_ERROR",
+      error instanceof Error ? error.message : "Unknown AI service error",
+      500
+    );
+  }
 }
 
 // ============================================================================

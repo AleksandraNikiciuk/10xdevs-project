@@ -30,13 +30,33 @@ cd 10xdevs-project
 npm install
 ```
 
-3. Run the development server:
+3. Configure environment variables:
+
+Create a `.env` file in the root directory:
+
+```bash
+# Supabase Configuration
+PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+PUBLIC_SUPABASE_KEY=your-anon-key
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# OpenRouter API Configuration
+# Get your API key from: https://openrouter.ai/keys
+OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
+
+# Mock Authentication (development only)
+PUBLIC_MOCK_AUTH=false
+```
+
+4. Run the development server:
 
 ```bash
 npm run dev
 ```
 
-4. Build for production:
+5. Build for production:
 
 ```bash
 npm run build
@@ -59,10 +79,66 @@ npm run build
 │ ├── pages/ # Astro pages
 │ │ └── api/ # API endpoints
 │ ├── components/ # UI components (Astro & React)
+│ ├── lib/
+│ │ ├── services/ # Business logic services
+│ │ ├── schemas/ # Zod validation schemas
+│ │ └── utils/ # Utility functions
+│ ├── db/ # Database clients and types
 │ ├── styles/ # Global styles (Material Design 3)
 │ └── assets/ # Static assets
 ├── public/ # Public assets
 ├── .ai/ # AI documentation & MD3 guides
+```
+
+## AI Integration
+
+This project uses **OpenRouter** for AI-powered flashcard generation with **Claude 3.5 Sonnet**.
+
+### OpenRouterService
+
+A fully-typed, reusable service for interacting with OpenRouter API:
+
+- **Type-safe responses** validated against Zod schemas
+- **Comprehensive error handling** with custom error types
+- **Automatic JSON schema generation** from Zod schemas
+- **Fail-fast configuration** validation
+
+#### Example Usage
+
+```typescript
+import { OpenRouterService } from './lib/services/openrouter.service';
+import { z } from 'zod';
+
+// Define response schema
+const responseSchema = z.object({
+  flashcards: z.array(z.object({
+    question: z.string(),
+    answer: z.string(),
+  })),
+});
+
+// Initialize service
+const openRouter = new OpenRouterService();
+
+// Make API call with full type safety
+const result = await openRouter.structuredChatCompletion({
+  schema: responseSchema,
+  model: 'anthropic/claude-3.5-sonnet',
+  messages: [
+    { role: 'system', content: 'You are a flashcard expert.' },
+    { role: 'user', content: 'Create flashcards from this text...' }
+  ],
+});
+
+// result.flashcards is fully typed!
+```
+
+### Testing the Integration
+
+Test endpoint available at: `GET /api/test-openrouter`
+
+```bash
+curl http://localhost:3000/api/test-openrouter
 ```
 
 ## Design System
