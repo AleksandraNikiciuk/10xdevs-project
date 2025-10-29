@@ -1,0 +1,29 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { supabaseAdmin as supabase } from "../db/supabase.client";
+import { listFlashcards } from "../lib/services/flashcard.service";
+import { DEFAULT_USER_ID } from "../db/supabase.client";
+import FlashcardsView from "../components/flashcards/FlashcardsView";
+import type { FlashcardDTO } from "../types";
+
+let flashcards: FlashcardDTO[] = [];
+let error: string | null = null;
+
+try {
+  const result = await listFlashcards({
+    query: { page: 1, limit: 100 },
+    userId: DEFAULT_USER_ID,
+    supabase,
+  });
+  flashcards = result.data;
+} catch (e) {
+  console.error(e);
+  error = "Failed to load flashcards.";
+}
+---
+
+<Layout title="Your Flashcards">
+  <main class="container mx-auto px-2 py-8">
+    <FlashcardsView client:load flashcards={flashcards} error={error} />
+  </main>
+</Layout>

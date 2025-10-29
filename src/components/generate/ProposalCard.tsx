@@ -1,4 +1,5 @@
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, Pencil } from "lucide-react";
+import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -14,6 +15,7 @@ interface ProposalCardProps {
 }
 
 export function ProposalCard({ proposal, onToggle, onEdit }: ProposalCardProps) {
+  const [isEditing, setIsEditing] = useState(false);
   const questionValidation = validateQuestion(proposal.question);
   const answerValidation = validateAnswer(proposal.answer);
 
@@ -30,7 +32,7 @@ export function ProposalCard({ proposal, onToggle, onEdit }: ProposalCardProps) 
   };
 
   return (
-    <Card className={!proposal.isSelected ? "opacity-60 transition-opacity duration-medium-2" : ""}>
+    <Card className={`h-full ${!proposal.isSelected ? "opacity-60 transition-opacity duration-medium-2" : ""}`}>
       <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-4 sm:gap-4">
         <button
           type="button"
@@ -48,6 +50,16 @@ export function ProposalCard({ proposal, onToggle, onEdit }: ProposalCardProps) 
         <div className="flex-1 space-y-1">
           <Badge variant={getBadgeVariant()}>{getBadgeText()}</Badge>
         </div>
+        {proposal.isSelected && (
+          <button
+            type="button"
+            onClick={() => setIsEditing((prev) => !prev)}
+            className="shrink-0 group transition-all duration-medium-2 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-md-primary focus-visible:ring-offset-2 rounded-full p-1"
+            aria-label="Edit flashcard"
+          >
+            <Pencil className="h-5 w-5 text-md-outline transition-colors group-hover:text-md-primary" />
+          </button>
+        )}
       </CardHeader>
       <CardContent className="space-y-6 pt-0 pl-[52px]">
         <div className="space-y-2">
@@ -59,15 +71,21 @@ export function ProposalCard({ proposal, onToggle, onEdit }: ProposalCardProps) 
               className={`text-label-small ${questionValidation.isValid ? "text-md-on-surface-variant" : "text-md-error"}`}
             />
           </div>
-          <Textarea
-            id={`question-${proposal.id}`}
-            value={proposal.question}
-            onChange={(e) => onEdit(proposal.id, "question", e.target.value)}
-            className="min-h-[60px] max-h-[200px] resize-y"
-            disabled={!proposal.isSelected}
-            aria-invalid={!questionValidation.isValid}
-            aria-describedby={!questionValidation.isValid ? `question-error-${proposal.id}` : undefined}
-          />
+          {isEditing ? (
+            <Textarea
+              id={`question-${proposal.id}`}
+              value={proposal.question}
+              onChange={(e) => onEdit(proposal.id, "question", e.target.value)}
+              className="min-h-[60px] max-h-[76px]"
+              disabled={!proposal.isSelected}
+              aria-invalid={!questionValidation.isValid}
+              aria-describedby={!questionValidation.isValid ? `question-error-${proposal.id}` : undefined}
+            />
+          ) : (
+            <p className="min-h-[60px] rounded-md border-2 border-transparent bg-md-surface-container px-4 py-3 text-body-large">
+              {proposal.question}
+            </p>
+          )}
           {!questionValidation.isValid && (
             <p id={`question-error-${proposal.id}`} className="text-label-small text-md-error" role="alert">
               {questionValidation.error}
@@ -84,15 +102,21 @@ export function ProposalCard({ proposal, onToggle, onEdit }: ProposalCardProps) 
               className={`text-label-small ${answerValidation.isValid ? "text-md-on-surface-variant" : "text-md-error"}`}
             />
           </div>
-          <Textarea
-            id={`answer-${proposal.id}`}
-            value={proposal.answer}
-            onChange={(e) => onEdit(proposal.id, "answer", e.target.value)}
-            className="min-h-[80px] max-h-[300px] resize-y sm:min-h-[100px]"
-            disabled={!proposal.isSelected}
-            aria-invalid={!answerValidation.isValid}
-            aria-describedby={!answerValidation.isValid ? `answer-error-${proposal.id}` : undefined}
-          />
+          {isEditing ? (
+            <Textarea
+              id={`answer-${proposal.id}`}
+              value={proposal.answer}
+              onChange={(e) => onEdit(proposal.id, "answer", e.target.value)}
+              className="min-h-[80px] max-h-[124px] sm:min-h-[100px]"
+              disabled={!proposal.isSelected}
+              aria-invalid={!answerValidation.isValid}
+              aria-describedby={!answerValidation.isValid ? `answer-error-${proposal.id}` : undefined}
+            />
+          ) : (
+            <p className="min-h-[80px] sm:min-h-[100px] rounded-md border-2 border-transparent bg-md-surface-container px-4 py-3 text-body-large">
+              {proposal.answer}
+            </p>
+          )}
           {!answerValidation.isValid && (
             <p id={`answer-error-${proposal.id}`} className="text-label-small text-md-error" role="alert">
               {answerValidation.error}

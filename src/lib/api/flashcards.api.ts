@@ -101,3 +101,28 @@ export async function saveFlashcards(command: CreateFlashcardsCommand): Promise<
     } as ErrorState;
   }
 }
+
+export async function deleteFlashcard(flashcardId: number): Promise<void> {
+  try {
+    const headers = await getAuthHeaders();
+
+    const response = await fetch(`/api/flashcards/${flashcardId}`, {
+      method: 'DELETE',
+      headers,
+    });
+
+    if (!response.ok) {
+      // For simplicity, using a generic error message for delete
+      throw new Error('Failed to delete flashcard. Please try again.');
+    }
+
+    // DELETE should not have a body, so we don't expect JSON
+    return;
+  } catch (error) {
+    console.error('Error deleting flashcard:', error);
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+}

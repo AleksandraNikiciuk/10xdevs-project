@@ -1,8 +1,54 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { GenerateView } from "../components/generate/GenerateView";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Zap, List, PenSquare } from "lucide-react";
+
+const navItems = [
+  {
+    href: "/generate",
+    title: "Generate with AI",
+    description: "Automatically create flashcards from your text using AI.",
+    icon: Zap,
+  },
+  {
+    href: "/flashcards",
+    title: "Browse Flashcards",
+    description: "View, edit, and manage all your created flashcards.",
+    icon: List,
+  },
+  {
+    href: "/manual-create",
+    title: "Create Manually",
+    description: "Add new flashcards one by one with your own content.",
+    icon: PenSquare,
+  },
+];
 ---
 
-<Layout>
-  <GenerateView client:load />
+<Layout title="Dashboard">
+  <main class="container mx-auto px-4 py-8">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold tracking-tight">Flashcard Dashboard</h1>
+      <p class="text-lg text-muted-foreground mt-2">Choose an option to get started</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        navItems.map((item) => (
+          <a href={item.href} class="block hover:scale-105 transition-transform duration-200">
+            <Card className="h-full hover:border-primary">
+              <CardHeader>
+                <div class="flex items-center">
+                  <item.icon class="h-6 w-6 mr-3" />
+                  <CardTitle>{item.title}</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>{item.description}</CardDescription>
+              </CardContent>
+            </Card>
+          </a>
+        ))
+      }
+    </div>
+  </main>
 </Layout>

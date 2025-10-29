@@ -8,6 +8,10 @@ import { ProposalsSection } from "./ProposalsSection";
 import { ProposalsSkeletonLoader } from "./ProposalsSkeletonLoader";
 import { ErrorAlert } from "./ErrorAlert";
 import { EmptyState } from "./EmptyState";
+import { Button } from "../ui/button";
+import { ArrowLeft } from "lucide-react";
+import { Toaster } from "@/components/ui/sonner";
+import { useCharacterValidation } from "@/hooks/useCharacterValidation";
 
 export function GenerateView() {
   const {
@@ -27,6 +31,8 @@ export function GenerateView() {
 
   const formRef = useRef<HTMLDivElement>(null);
   const proposalsRef = useRef<HTMLDivElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+  const validation = useCharacterValidation(sourceText);
 
   const isIdle = viewState === "idle";
   const isGenerating = viewState === "generating";
@@ -62,8 +68,18 @@ export function GenerateView() {
     }
   }, [viewState]);
 
+  const triggerFormSubmit = () => {
+    submitButtonRef.current?.click();
+  };
+
   return (
-    <div className="mx-auto max-w-4xl space-y-6 p-4 sm:space-y-8 sm:p-6">
+    <main className="container mx-auto px-4 py-8">
+      <a href="/" className="inline-block mb-4">
+        <Button variant="outline">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
+        </Button>
+      </a>
       <header className="space-y-3">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 space-y-3">
@@ -85,12 +101,21 @@ export function GenerateView() {
 
       <section aria-label="Generation form" ref={formRef}>
         <GenerationForm
+          ref={submitButtonRef}
           sourceText={sourceText}
           onSourceTextChange={setSourceText}
           onSubmit={handleGenerate}
           isDisabled={isFormDisabled}
         />
       </section>
+
+      {!isReviewing && !isSaving && (
+        <div className="mt-4 mb-4 flex justify-end">
+          <Button onClick={triggerFormSubmit} disabled={!validation.isValid || isFormDisabled}>
+            {isGenerating ? "Generating..." : "Generate Flashcards"}
+          </Button>
+        </div>
+      )}
 
       {isIdle && !isError && (
         <section aria-label="Empty state">
@@ -123,6 +148,7 @@ export function GenerateView() {
           {proposals.length} flashcard proposals loaded. {selectedCount} selected.
         </div>
       )}
-    </div>
+      <Toaster />
+    </main>
   );
 }
