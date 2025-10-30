@@ -8,8 +8,10 @@ vi.mock("@/hooks/useTheme");
 
 describe("ThemeToggle", () => {
   it("renders with sun icon for light theme", () => {
-    (useTheme as jest.Mock).mockReturnValue({
+    vi.mocked(useTheme).mockReturnValue({
+      theme: "light",
       effectiveTheme: "light",
+      setTheme: vi.fn(),
       toggleTheme: vi.fn(),
       mounted: true,
     });
@@ -21,22 +23,26 @@ describe("ThemeToggle", () => {
   });
 
   it("renders with moon icon for dark theme", () => {
-    (useTheme as jest.Mock).mockReturnValue({
+    vi.mocked(useTheme).mockReturnValue({
+      theme: "dark",
       effectiveTheme: "dark",
+      setTheme: vi.fn(),
       toggleTheme: vi.fn(),
       mounted: true,
     });
 
     render(<ThemeToggle />);
 
-    expect(screen.getByLabelText("Switch to dark mode")).toBeInTheDocument();
+    expect(screen.getByLabelText("Switch to light mode")).toBeInTheDocument();
     // Assuming Moon icon is rendered
   });
 
   it("calls toggleTheme on click", () => {
     const toggleTheme = vi.fn();
-    (useTheme as jest.Mock).mockReturnValue({
+    vi.mocked(useTheme).mockReturnValue({
+      theme: "light",
       effectiveTheme: "light",
+      setTheme: vi.fn(),
       toggleTheme,
       mounted: true,
     });
@@ -50,8 +56,10 @@ describe("ThemeToggle", () => {
   });
 
   it("is disabled when not mounted", () => {
-    (useTheme as jest.Mock).mockReturnValue({
+    vi.mocked(useTheme).mockReturnValue({
+      theme: "light",
       effectiveTheme: "light",
+      setTheme: vi.fn(),
       toggleTheme: vi.fn(),
       mounted: false,
     });
