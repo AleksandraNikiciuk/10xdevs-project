@@ -1,0 +1,470 @@
+# Plan Testów dla Aplikacji do Generowania Fiszek AI
+
+## 1. Wprowadzenie
+
+Celem tego dokumentu jest zdefiniowanie strategii testowania aplikacji do generowania fiszek. Plan obejmuje różne poziomy testów, od jednostkowych po E2E, aby zapewnić wysoką jakość, niezawodność i stabilność aplikacji.
+
+## 2. Proponowane Technologie
+
+W projekcie brakuje obecnie narzędzi do testowania. Rekomenduję następujący zestaw:
+
+### 2.1. Technologie Podstawowe (Wymagane)
+
+- **[Vitest](https://vitest.dev/)**: Do testów jednostkowych i integracyjnych. Jest to nowoczesny, szybki framework testowy, który świetnie integruje się z Vite (używanym przez Astro), co zapewnia błyskawiczne uruchamianie testów i doskonałe doświadczenie deweloperskie.
+- **[Playwright](https://playwright.dev/)**: Do testów End-to-End (E2E). Umożliwia testowanie aplikacji w różnych przeglądarkach (Chromium, Firefox, WebKit) i symulowanie rzeczywistych interakcji użytkownika, co jest kluczowe dla weryfikacji kompletnych przepływów w aplikacji.
+- **[Testing Library](https://testing-library.com/)**: Do testowania komponentów React. Biblioteka ta promuje dobre praktyki, zachęcając do pisania testów, które weryfikują działanie komponentów z perspektywy użytkownika.
+- **[@testing-library/user-event](https://testing-library.com/docs/user-event/intro)**: Symulacja zaawansowanych interakcji użytkownika (kliknięcia, wpisywanie tekstu, nawigacja klawiaturą). Bardziej realistyczne niż standardowe `fireEvent`.
+- **[MSW (Mock Service Worker)](https://mswjs.io/)**: Mockowanie żądań API na poziomie sieci. Umożliwia realistyczne testowanie bez prawdziwego API, działa zarówno w testach jak i w development mode.
+- **[@vitest/coverage-v8](https://vitest.dev/guide/coverage.html)**: Narzędzie do generowania raportów pokrycia kodu testami. Najszybsza opcja coverage dla Vitest, oparta na V8 engine.
+- **[@faker-js/faker](https://fakerjs.dev/)**: Generowanie realistycznych danych testowych (nazwy, emaile, teksty). Zapewnia spójność i ułatwia tworzenie test fixtures.
+- **[@axe-core/playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright)**: Automatyczne testy dostępności (a11y) zintegrowane z Playwright. Pomaga zapewnić, że aplikacja jest dostępna dla wszystkich użytkowników.
+
+### 2.2. Technologie Opcjonalne (Do rozważenia)
+
+- **[Storybook](https://storybook.js.org/)**: Narzędzie do izolowanego rozwoju komponentów UI, visual testing i dokumentacji. Świetne uzupełnienie testów automatycznych, pozwala na:
+  - Wizualne testy komponentów
+  - Dokumentację live
+  - Interaktywne playground dla komponentów
+  - Integrację z testami wizualnymi (Chromatic)
+- **[Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci)**: Automatyczne testy wydajności, dostępności, SEO i best practices. Integruje się z CI/CD i monitoruje metryki Core Web Vitals.
+- **[Playwright Component Testing](https://playwright.dev/docs/test-components)**: Alternatywne podejście do testowania komponentów w prawdziwej przeglądarce zamiast jsdom. Plusy: większa wierność, jedno narzędzie do wszystkiego. Minusy: wolniejsze niż Vitest.
+
+### Instalacja zależności:
+
+#### Podstawowe (wymagane):
+
+```bash
+npm install -D \
+  vitest \
+  @vitest/coverage-v8 \
+  @testing-library/react \
+  @testing-library/jest-dom \
+  @testing-library/user-event \
+  jsdom \
+  playwright \
+  @playwright/test \
+  msw \
+  @faker-js/faker \
+  @axe-core/playwright
+```
+
+#### Opcjonalne:
+
+```bash
+# Storybook
+npx storybook@latest init
+
+# Lighthouse CI
+npm install -D @lhci/cli
+
+# Playwright Component Testing (tylko jeśli wybierasz tę ścieżkę zamiast Vitest dla komponentów)
+npm install -D @playwright/experimental-ct-react
+```
+
+## 3. Rodzaje Testów
+
+### 3.1. Testy Jednostkowe (Unit Tests)
+
+**Cel:** Weryfikacja pojedynczych funkcji, komponentów lub modułów w izolacji.
+
+**Zakres:**
+
+- Funkcje pomocnicze w `src/lib/utils/`.
+- Logika walidacji schematów Zod w `src/lib/schemas/`.
+- Niestandardowe hooki (custom hooks) w `src/hooks/`, np. `useCharacterValidation`.
+- Serwisy w `src/lib/services/` (mockując zależności zewnętrzne, np. AI service).
+
+**Narzędzia:** Vitest, @testing-library/react, @faker-js/faker (do generowania danych testowych).
+
+### 3.2. Testy Integracyjne (Integration Tests)
+
+**Cel:** Sprawdzenie, czy kilka modułów lub komponentów poprawnie ze sobą współpracuje.
+
+**Zakres:**
+
+- Interakcja między formularzami (np. `LoginForm`) a logiką wysyłania zapytań do API (`src/lib/api/`).
+- Renderowanie list komponentów na podstawie danych (np. `FlashcardList` otrzymujący dane z API).
+- Kompleksowe komponenty, które składają się z mniejszych, np. `GenerateView`.
+
+**Narzędzia:** Vitest, @testing-library/react, @testing-library/user-event, MSW (do mockowania API).
+
+### 3.3. Testy End-to-End (E2E)
+
+**Cel:** Symulacja kompletnych scenariuszy użytkownika w działającej aplikacji w przeglądarce.
+
+**Zakres:**
+
+- **Ścieżka uwierzytelniania:** Rejestracja, logowanie, wylogowywanie, reset hasła.
+- **Główny przepływ generowania fiszek:**
+  1.  Użytkownik wprowadza tekst źródłowy.
+  2.  Klika przycisk "Generuj".
+  3.  Aplikacja wyświetla loader.
+  4.  Po chwili pojawiają się proponowane fiszki.
+  5.  Użytkownik zaznacza wybrane fiszki i zapisuje je.
+  6.  Aplikacja przekierowuje na listę zapisanych fiszek.
+- **Zarządzanie fiszkami:** Wyświetlanie listy fiszek, usuwanie pojedynczej fiszki, usuwanie wielu fiszek naraz.
+
+**Narzędzia:** Playwright, @axe-core/playwright (testy dostępności).
+
+### 3.4. Testy Dostępności (Accessibility Tests)
+
+**Cel:** Zapewnienie, że aplikacja jest dostępna dla wszystkich użytkowników, w tym osób z niepełnosprawnościami.
+
+**Zakres:**
+
+- Automatyczne skanowanie stron pod kątem problemów z dostępnością (WCAG compliance).
+- Weryfikacja prawidłowej struktury semantycznej HTML.
+- Sprawdzanie kontrastów kolorów.
+- Walidacja atrybutów ARIA.
+- Testowanie nawigacji klawiaturą.
+
+**Narzędzia:** @axe-core/playwright (w ramach testów E2E), Lighthouse CI (opcjonalne).
+
+### 3.5. Testy API z Mockingiem
+
+**Cel:** Testowanie komponentów i funkcji, które komunikują się z API, bez potrzeby uruchamiania prawdziwego backendu.
+
+**Zakres:**
+
+- Mockowanie odpowiedzi API dla różnych scenariuszy (sukces, błędy, timeout).
+- Testowanie obsługi błędów sieciowych.
+- Weryfikacja poprawności wysyłanych żądań.
+- Testowanie stanów ładowania.
+
+**Narzędzia:** MSW (Mock Service Worker), @faker-js/faker (generowanie danych odpowiedzi).
+
+## 4. Scenariusze Testowe (Test Cases)
+
+### 4.1. Uwierzytelnianie
+
+| ID      | Opis                                                                  | Typ Testu  | Priorytet |
+| :------ | :-------------------------------------------------------------------- | :--------- | :-------- |
+| AUTH-01 | Pomyślna rejestracja nowego użytkownika.                              | E2E        | Wysoki    |
+| AUTH-02 | Próba rejestracji z zajętym adresem e-mail.                           | E2E        | Wysoki    |
+| AUTH-03 | Walidacja pól formularza rejestracji (puste pola, niepoprawny email). | E2E / Unit | Wysoki    |
+| AUTH-04 | Pomyślne logowanie istniejącego użytkownika.                          | E2E        | Wysoki    |
+| AUTH-05 | Próba logowania z błędnym hasłem.                                     | E2E        | Wysoki    |
+| AUTH-06 | Pomyślne wylogowanie.                                                 | E2E        | Średni    |
+| AUTH-07 | Przepływ resetowania hasła.                                           | E2E        | Średni    |
+
+### 4.2. Generowanie Fiszek
+
+| ID     | Opis                                                                | Typ Testu  | Priorytet |
+| :----- | :------------------------------------------------------------------ | :--------- | :-------- |
+| GEN-01 | Pomyślne wygenerowanie i zapisanie propozycji fiszek.               | E2E        | Wysoki    |
+| GEN-02 | Walidacja pola tekstowego (np. minimalna/maksymalna liczba znaków). | E2E / Unit | Wysoki    |
+| GEN-03 | Wyświetlanie stanu ładowania (skeleton loader) podczas generowania. | E2E / Int  | Wysoki    |
+| GEN-04 | Wyświetlanie komunikatu o błędzie, gdy API generowania zwróci błąd. | E2E / Int  | Wysoki    |
+| GEN-05 | Wyświetlanie pustego stanu, gdy nie ma propozycji do wyświetlenia.  | E2E / Int  | Średni    |
+
+### 4.3. Zarządzanie Fiszkami
+
+| ID     | Opis                                                              | Typ Testu | Priorytet |
+| :----- | :---------------------------------------------------------------- | :-------- | :-------- |
+| MNG-01 | Poprawne wyświetlanie listy zapisanych fiszek.                    | E2E / Int | Wysoki    |
+| MNG-02 | Usuwanie pojedynczej fiszki z listy.                              | E2E       | Wysoki    |
+| MNG-03 | Zaznaczenie kilku fiszek i ich usunięcie (batch delete).          | E2E       | Wysoki    |
+| MNG-04 | Potwierdzenie usunięcia w oknie dialogowym.                       | E2E       | Średni    |
+| MNG-05 | Wyświetlanie pustego stanu, gdy użytkownik nie ma żadnych fiszek. | E2E / Int | Średni    |
+
+### 4.4. Testy API
+
+| ID     | Opis                                                                       | Typ Testu | Priorytet |
+| :----- | :------------------------------------------------------------------------- | :-------- | :-------- |
+| API-01 | Endpoint `POST /api/generations` poprawnie tworzy propozycje.              | Int       | Wysoki    |
+| API-02 | Endpoint `POST /api/flashcards` poprawnie zapisuje fiszki.                 | Int       | Wysoki    |
+| API-03 | Endpoint `DELETE /api/flashcards/:id` poprawnie usuwa fiszkę.              | Int       | Wysoki    |
+| API-04 | Endpoint `POST /api/flashcards/batch-delete` poprawnie usuwa wiele fiszek. | Int       | Wysoki    |
+| API-05 | Zabezpieczenie endpointów - wymagana autoryzacja.                          | Int       | Wysoki    |
+| API-06 | Obsługa błędów sieciowych (timeout, 500, etc.) w kliencie API.             | Int       | Wysoki    |
+| API-07 | Walidacja danych wysyłanych do API (schema validation).                    | Unit      | Wysoki    |
+| API-08 | Mockowanie API w testach komponentów (MSW).                                | Int       | Wysoki    |
+
+### 4.5. Testy Dostępności (a11y)
+
+| ID      | Opis                                                          | Typ Testu | Priorytet |
+| :------ | :------------------------------------------------------------ | :-------- | :-------- |
+| A11Y-01 | Skanowanie strony głównej pod kątem problemów z dostępnością. | E2E       | Wysoki    |
+| A11Y-02 | Weryfikacja dostępności formularzy (labele, aria-labels).     | E2E       | Wysoki    |
+| A11Y-03 | Nawigacja klawiaturą przez główny przepływ aplikacji.         | E2E       | Wysoki    |
+| A11Y-04 | Kontrast kolorów w trybie jasnym i ciemnym (WCAG AA).         | E2E       | Średni    |
+| A11Y-05 | Screen reader compatibility dla głównych komponentów.         | E2E       | Średni    |
+| A11Y-06 | Focus management w dialogach i modalach.                      | E2E       | Średni    |
+
+## 5. Uruchamianie Testów
+
+Testy powinny być uruchamiane:
+
+1.  Lokalnie przez deweloperów podczas pracy nad nowymi funkcjami.
+2.  Automatycznie w ramach procesu CI/CD (np. GitHub Actions) po każdym pushu do repozytorium.
+
+**Komendy:**
+
+```json
+// package.json - sekcja scripts
+{
+  "scripts": {
+    // Testy jednostkowe i integracyjne
+    "test": "vitest",
+    "test:unit": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+
+    // Testy E2E
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:headed": "playwright test --headed",
+
+    // Wszystkie testy
+    "test:all": "npm run test:unit && npm run test:e2e",
+
+    // Lighthouse CI (opcjonalne)
+    "test:lighthouse": "lhci autorun",
+
+    // Playwright setup
+    "test:e2e:install": "playwright install --with-deps"
+  }
+}
+```
+
+## 6. Pokrycie Kodu (Code Coverage)
+
+### 6.1. Minimalne Progi Pokrycia
+
+Zalecane minimalne progi pokrycia kodu testami:
+
+| Metryka    | Minimum | Docelowo |
+| :--------- | :------ | :------- |
+| Statements | 70%     | 80%      |
+| Branches   | 65%     | 75%      |
+| Functions  | 70%     | 80%      |
+| Lines      | 70%     | 80%      |
+
+### 6.2. Konfiguracja Coverage w Vitest
+
+```typescript
+// vitest.config.ts
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json", "html", "lcov"],
+      exclude: ["node_modules/", "src/test/", "**/*.d.ts", "**/*.config.*", "**/mockData", "dist/"],
+      thresholds: {
+        statements: 70,
+        branches: 65,
+        functions: 70,
+        lines: 70,
+      },
+    },
+  },
+});
+```
+
+### 6.3. Raportowanie Coverage
+
+- Raporty coverage powinny być generowane automatycznie w CI/CD.
+- Raporty HTML mogą być publikowane jako artifacts w GitHub Actions.
+- Można zintegrować z serwisami typu Codecov lub Coveralls dla wizualizacji.
+
+## 7. Integracja CI/CD
+
+### 7.1. GitHub Actions Workflow
+
+Przykładowa konfiguracja workflow dla testów:
+
+```yaml
+# .github/workflows/test.yml
+name: Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npm run test:e2e:install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  lighthouse-ci:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run Lighthouse CI
+        run: npm run test:lighthouse
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+```
+
+### 7.2. Strategie Uruchamiania w CI/CD
+
+- **Pull Requests:** Uruchamiaj wszystkie testy (unit + E2E + a11y).
+- **Push do main/develop:** Pełny zestaw testów + generowanie raportów coverage.
+- **Nightly builds:** Rozszerzone testy E2E + testy wydajnościowe (Lighthouse).
+- **Pre-deploy:** Obligatoryjne przejście wszystkich testów przed deploymentem.
+
+## 8. Dodatkowe Rekomendacje
+
+### 8.1. Visual Regression Testing (Opcjonalne)
+
+Jeśli zdecydujesz się na Storybook, możesz dodać visual regression testing:
+
+- **Chromatic:** Automatyczne wykrywanie zmian wizualnych w komponentach.
+- **Percy:** Alternatywa do Chromatic.
+- **Playwright Snapshots:** Wbudowane w Playwright, darmowe ale wymaga więcej konfiguracji.
+
+### 8.2. Performance Testing
+
+Lighthouse CI może monitorować:
+
+- Core Web Vitals (LCP, FID, CLS)
+- Performance Score
+- Accessibility Score
+- Best Practices Score
+- SEO Score
+
+### 8.3. Test Data Management
+
+Wykorzystaj @faker-js/faker do tworzenia spójnych test fixtures:
+
+```typescript
+// src/test/factories/flashcard.factory.ts
+import { faker } from "@faker-js/faker";
+
+export const createMockFlashcard = (overrides = {}) => ({
+  id: faker.string.uuid(),
+  question: faker.lorem.sentence(),
+  answer: faker.lorem.paragraph(),
+  userId: faker.string.uuid(),
+  createdAt: faker.date.recent().toISOString(),
+  ...overrides,
+});
+```
+
+### 8.4. MSW Setup Example
+
+```typescript
+// src/test/mocks/handlers.ts
+import { http, HttpResponse } from "msw";
+
+export const handlers = [
+  http.post("/api/generations", async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json({
+      proposals: [
+        { question: "Mock Q1", answer: "Mock A1" },
+        { question: "Mock Q2", answer: "Mock A2" },
+      ],
+    });
+  }),
+
+  http.get("/api/flashcards", () => {
+    return HttpResponse.json({
+      flashcards: [createMockFlashcard(), createMockFlashcard()],
+    });
+  }),
+];
+```
+
+## 9. Harmonogram Wdrożenia
+
+### Faza 1: Podstawowa Infrastruktura (Tydzień 1-2)
+
+1. Instalacja podstawowych zależności (Vitest, Playwright, Testing Library)
+2. Konfiguracja Vitest i Playwright
+3. Setup MSW dla mockowania API
+4. Pierwsze przykładowe testy
+
+### Faza 2: Testy Jednostkowe i Integracyjne (Tydzień 2-3)
+
+1. Testy funkcji pomocniczych i utils
+2. Testy schematów walidacji
+3. Testy custom hooks
+4. Testy komponentów React (wysokopoziomowe)
+
+### Faza 3: Testy E2E (Tydzień 3-4)
+
+1. Setup Playwright z fixtures
+2. Testy ścieżek uwierzytelniania
+3. Testy głównego flow generowania fiszek
+4. Testy zarządzania fiszkami
+
+### Faza 4: CI/CD i Coverage (Tydzień 4-5)
+
+1. Konfiguracja GitHub Actions
+2. Setup coverage reporting
+3. Integracja z Codecov/Coveralls
+4. Dokumentacja procesu testowania
+
+### Faza 5: Zaawansowane (Opcjonalne)
+
+1. Setup Storybook (jeśli wybrano)
+2. Konfiguracja Lighthouse CI
+3. Visual regression testing
+4. Performance monitoring

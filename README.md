@@ -10,6 +10,15 @@ A modern, opinionated starter template for building fast, accessible, and AI-fri
 - [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
 - [Material Design 3](https://m3.material.io/) - Design system for accessible, modern UI
 
+### Testing Stack
+
+- [Vitest](https://vitest.dev/) - Fast unit and integration testing framework that integrates with Vite
+- [Testing Library](https://testing-library.com/) - Simple and complete testing utilities for React components
+- [Playwright](https://playwright.dev/) - End-to-end testing for modern web apps across all browsers
+- [MSW](https://mswjs.io/) - API mocking library for browser and Node.js
+- [@faker-js/faker](https://fakerjs.dev/) - Generate realistic test data
+- [@axe-core/playwright](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright) - Accessibility testing with Playwright
+
 ## Prerequisites
 
 - Node.js v22.14.0 (as specified in `.nvmrc`)
@@ -70,6 +79,17 @@ npm run build
 - `npm run lint` - Run ESLint
 - `npm run lint:fix` - Fix ESLint issues
 
+### Testing Scripts
+
+- `npm run test` - Run Vitest in interactive mode
+- `npm run test:unit` - Run unit tests once
+- `npm run test:watch` - Run unit tests in watch mode
+- `npm run test:coverage` - Generate test coverage report
+- `npm run test:e2e` - Run Playwright end-to-end tests
+- `npm run test:e2e:ui` - Run Playwright tests with UI
+- `npm run test:e2e:debug` - Run Playwright tests in debug mode
+- `npm run test:all` - Run all tests (unit + e2e)
+
 ## Project Structure
 
 ```md
@@ -85,7 +105,14 @@ npm run build
 │ │ └── utils/ # Utility functions
 │ ├── db/ # Database clients and types
 │ ├── styles/ # Global styles (Material Design 3)
-│ └── assets/ # Static assets
+│ ├── assets/ # Static assets
+│ └── test/ # Test utilities and setup
+│   ├── setup.ts # Vitest setup file
+│   ├── mocks/ # MSW handlers and server setup
+│   └── factories/ # Test data factories
+├── tests/ # E2E tests with Playwright
+│ ├── e2e/ # End-to-end test scenarios
+│ └── fixtures/ # Test fixtures and data
 ├── public/ # Public assets
 ├── .ai/ # AI documentation & MD3 guides
 ```
