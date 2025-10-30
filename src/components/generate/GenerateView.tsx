@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Sparkles } from "lucide-react";
 import { useGenerateFlashcards } from "@/hooks/useGenerateFlashcards";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { GenerationForm } from "./GenerationForm";
 import { ProposalsSection } from "./ProposalsSection";
 import { ProposalsSkeletonLoader } from "./ProposalsSkeletonLoader";
@@ -95,7 +94,6 @@ export function GenerateView({ isUserLoggedIn }: GenerateViewProps) {
               Paste your text and let AI generate flashcards for you
             </p>
           </div>
-          <ThemeToggle />
         </div>
       </header>
 

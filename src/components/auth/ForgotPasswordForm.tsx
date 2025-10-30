@@ -69,7 +69,7 @@ export function ForgotPasswordForm() {
         <CardTitle className="text-2xl">Forgot Password</CardTitle>
         <CardDescription>Enter your email to reset your password.</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="contents">
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>

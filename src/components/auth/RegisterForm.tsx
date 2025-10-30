@@ -78,7 +78,7 @@ export function RegisterForm() {
         <CardTitle className="text-2xl">Sign Up</CardTitle>
         <CardDescription>Enter your information to create an account.</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="contents">
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>

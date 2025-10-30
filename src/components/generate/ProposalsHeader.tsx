@@ -15,7 +15,7 @@ interface ProposalsHeaderProps {
   onSave: () => void;
   onCancel: () => void;
   isSaving: boolean;
-  canSave: boolean;
+  isSaveDisabled: boolean;
 }
 
 export function ProposalsHeader({
@@ -24,7 +24,7 @@ export function ProposalsHeader({
   onSave,
   onCancel,
   isSaving,
-  canSave,
+  isSaveDisabled,
 }: ProposalsHeaderProps) {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
@@ -52,7 +52,7 @@ export function ProposalsHeader({
           <Button variant="outline" onClick={handleCancelClick} disabled={isSaving}>
             Cancel
           </Button>
-          <Button onClick={onSave} disabled={!canSave || isSaving}>
+          <Button onClick={onSave} disabled={isSaveDisabled || isSaving}>
             {isSaving ? "Saving..." : `Save Selected (${selectedCount})`}
           </Button>
         </div>
