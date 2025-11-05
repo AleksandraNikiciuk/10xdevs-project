@@ -13,9 +13,9 @@ export const prerender = false;
 
 /**
  * GET /api/flashcards/:flashcardId
- * 
+ *
  * Retrieves a specific flashcard by ID
- * 
+ *
  * Response (200):
  * {
  *   id: number,
@@ -26,7 +26,7 @@ export const prerender = false;
  *   created_at: string,
  *   updated_at: string
  * }
- * 
+ *
  * Errors:
  * - 400: Invalid ID parameter
  * - 403: Flashcard belongs to another user
@@ -125,18 +125,18 @@ export async function GET(context: APIContext) {
 
 /**
  * PATCH /api/flashcards/:flashcardId
- * 
+ *
  * Updates an existing flashcard
- * 
+ *
  * Request body:
  * {
  *   question?: string,
  *   answer?: string
  * }
- * 
+ *
  * Response (200):
  * FlashcardDTO
- * 
+ *
  * Errors:
  * - 400: Validation failed or invalid ID
  * - 403: Flashcard belongs to another user
@@ -282,11 +282,11 @@ export async function PATCH(context: APIContext) {
 
 /**
  * DELETE /api/flashcards/:flashcardId
- * 
+ *
  * Permanently deletes a flashcard
- * 
+ *
  * Response (204): No Content
- * 
+ *
  * Errors:
  * - 400: Invalid ID parameter
  * - 403: Flashcard belongs to another user
@@ -387,4 +387,3 @@ export async function DELETE(context: APIContext) {
     );
   }
 }
-

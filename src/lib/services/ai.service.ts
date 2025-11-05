@@ -1,19 +1,19 @@
 /**
  * AI Service for generating flashcard proposals
- * 
+ *
  * Development mode: Uses mock data
  * Production mode: Integrates with OpenRouter.ai API
  */
 
 import { z } from "zod";
 import type { AIGenerationResponse, AIFlashcardProposal, AIErrorCode } from "../../types";
-import { 
-  OpenRouterService, 
-  ConfigurationError, 
-  OpenRouterApiError, 
-  NetworkError, 
-  InvalidResponseJsonError, 
-  SchemaValidationError 
+import {
+  OpenRouterService,
+  ConfigurationError,
+  OpenRouterApiError,
+  NetworkError,
+  InvalidResponseJsonError,
+  SchemaValidationError,
 } from "./openrouter.service";
 
 // ============================================================================
@@ -29,7 +29,6 @@ export interface AIServiceError extends Error {
 // CONFIGURATION
 // ============================================================================
 
-const AI_SERVICE_TIMEOUT = 60000; // 60 seconds
 const AI_MODEL = "gpt-4o-mini";
 
 // ============================================================================
@@ -55,11 +54,7 @@ const AIResponseSchema = z.object({
 // ERROR FACTORY
 // ============================================================================
 
-function createAIServiceError(
-  code: AIServiceError["code"],
-  message: string,
-  statusCode: number
-): AIServiceError {
+function createAIServiceError(code: AIServiceError["code"], message: string, statusCode: number): AIServiceError {
   const error = new Error(message) as AIServiceError;
   error.code = code;
   error.statusCode = statusCode;
@@ -74,9 +69,7 @@ function createAIServiceError(
  * Mock AI service for development
  * Simulates API delay and returns sample flashcards
  */
-async function generateFlashcardsMock(
-  sourceText: string
-): Promise<AIGenerationResponse> {
+async function generateFlashcardsMock(sourceText: string): Promise<AIGenerationResponse> {
   // Simulate API delay (2 seconds)
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -105,9 +98,7 @@ async function generateFlashcardsMock(
  * Real AI service using OpenRouter.ai API
  * @throws {AIServiceError} When AI service fails or times out
  */
-async function generateFlashcardsReal(
-  sourceText: string
-): Promise<AIGenerationResponse> {
+async function generateFlashcardsReal(sourceText: string): Promise<AIGenerationResponse> {
   try {
     // Initialize OpenRouter service
     const openRouter = new OpenRouterService();
@@ -156,51 +147,27 @@ Remember to:
   } catch (error) {
     // Handle OpenRouter-specific errors
     if (error instanceof ConfigurationError) {
-      throw createAIServiceError(
-        "AI_SERVICE_ERROR",
-        "AI service configuration error: Missing API key",
-        500
-      );
+      throw createAIServiceError("AI_SERVICE_ERROR", "AI service configuration error: Missing API key", 500);
     }
 
     if (error instanceof OpenRouterApiError) {
       // Map API errors to AI service errors
       const statusCode = error.statusCode;
       if (statusCode === 401 || statusCode === 403) {
-        throw createAIServiceError(
-          "AI_SERVICE_ERROR",
-          "AI service authentication failed",
-          statusCode
-        );
+        throw createAIServiceError("AI_SERVICE_ERROR", "AI service authentication failed", statusCode);
       }
       if (statusCode === 429) {
-        throw createAIServiceError(
-          "AI_SERVICE_ERROR",
-          "AI service rate limit exceeded",
-          statusCode
-        );
+        throw createAIServiceError("AI_SERVICE_ERROR", "AI service rate limit exceeded", statusCode);
       }
-      throw createAIServiceError(
-        "AI_SERVICE_ERROR",
-        `AI service error: ${error.message}`,
-        statusCode
-      );
+      throw createAIServiceError("AI_SERVICE_ERROR", `AI service error: ${error.message}`, statusCode);
     }
 
     if (error instanceof NetworkError) {
-      throw createAIServiceError(
-        "AI_TIMEOUT",
-        "AI service connection timeout",
-        504
-      );
+      throw createAIServiceError("AI_TIMEOUT", "AI service connection timeout", 504);
     }
 
     if (error instanceof InvalidResponseJsonError) {
-      throw createAIServiceError(
-        "AI_INVALID_RESPONSE",
-        "AI service returned invalid response format",
-        422
-      );
+      throw createAIServiceError("AI_INVALID_RESPONSE", "AI service returned invalid response format", 422);
     }
 
     if (error instanceof SchemaValidationError) {
@@ -226,43 +193,31 @@ Remember to:
 
 /**
  * Generate flashcard proposals from source text using AI
- * 
+ *
  * @param sourceText - The source text to generate flashcards from
  * @returns AI generation response with flashcards and model info
  * @throws {AIServiceError} When AI service fails or times out
- * 
+ *
  * @example
  * const result = await generateFlashcards(sourceText);
  * console.log(`Generated ${result.flashcards.length} flashcards using ${result.model}`);
  */
-export async function generateFlashcards(
-  sourceText: string
-): Promise<AIGenerationResponse> {
+export async function generateFlashcards(sourceText: string): Promise<AIGenerationResponse> {
   // Use mock in development, real service in production
   const isDevelopment = import.meta.env.DEV;
 
   try {
-    const result = isDevelopment
-      ? await generateFlashcardsMock(sourceText)
-      : await generateFlashcardsReal(sourceText);
+    const result = isDevelopment ? await generateFlashcardsMock(sourceText) : await generateFlashcardsReal(sourceText);
 
     // Validate AI response
     if (!result.flashcards || result.flashcards.length === 0) {
-      throw createAIServiceError(
-        "AI_INVALID_RESPONSE",
-        "AI returned no flashcards",
-        422
-      );
+      throw createAIServiceError("AI_INVALID_RESPONSE", "AI returned no flashcards", 422);
     }
 
     // Validate each flashcard
     for (const flashcard of result.flashcards) {
       if (!flashcard.question?.trim() || !flashcard.answer?.trim()) {
-        throw createAIServiceError(
-          "AI_INVALID_RESPONSE",
-          "AI returned invalid flashcard format",
-          422
-        );
+        throw createAIServiceError("AI_INVALID_RESPONSE", "AI returned invalid flashcard format", 422);
       }
     }
 
@@ -281,4 +236,3 @@ export async function generateFlashcards(
     );
   }
 }
-

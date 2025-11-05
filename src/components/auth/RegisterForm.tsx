@@ -61,7 +61,7 @@ export function RegisterForm() {
       } else {
         setApiError(responseData.error || "An unknown error occurred.");
       }
-    } catch (err) {
+    } catch {
       setApiError("Failed to connect to the server.");
     }
   };
@@ -73,12 +73,12 @@ export function RegisterForm() {
   const isFormInvalid = !formData.email || !formData.password || !formData.confirmPassword || errors !== null;
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm" data-test-id="register-form-card">
       <CardHeader>
         <CardTitle className="text-2xl">Sign Up</CardTitle>
         <CardDescription>Enter your information to create an account.</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit} className="contents">
+      <form onSubmit={handleSubmit} className="contents" data-test-id="register-form">
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -89,13 +89,29 @@ export function RegisterForm() {
               required
               value={formData.email}
               onChange={handleInputChange}
+              data-test-id="register-email-input"
             />
-            {fieldErrors?.email && <p className="text-sm text-red-600">{fieldErrors.email[0]}</p>}
+            {fieldErrors?.email && (
+              <p className="text-sm text-red-600" data-test-id="register-email-error">
+                {fieldErrors.email[0]}
+              </p>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required value={formData.password} onChange={handleInputChange} />
-            {fieldErrors?.password && <p className="text-sm text-red-600">{fieldErrors.password[0]}</p>}
+            <Input
+              id="password"
+              type="password"
+              required
+              value={formData.password}
+              onChange={handleInputChange}
+              data-test-id="register-password-input"
+            />
+            {fieldErrors?.password && (
+              <p className="text-sm text-red-600" data-test-id="register-password-error">
+                {fieldErrors.password[0]}
+              </p>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -105,19 +121,32 @@ export function RegisterForm() {
               required
               value={formData.confirmPassword}
               onChange={handleInputChange}
+              data-test-id="register-confirm-password-input"
             />
-            {fieldErrors?.confirmPassword && <p className="text-sm text-red-600">{fieldErrors.confirmPassword[0]}</p>}
+            {fieldErrors?.confirmPassword && (
+              <p className="text-sm text-red-600" data-test-id="register-confirm-password-error">
+                {fieldErrors.confirmPassword[0]}
+              </p>
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-start">
-          <Button className="w-full" type="submit" disabled={isFormInvalid}>
+          <Button className="w-full" type="submit" disabled={isFormInvalid} data-test-id="register-submit-button">
             Create account
           </Button>
-          {apiError && <p className="mt-2 text-sm text-red-600">{apiError}</p>}
-          {successMessage && <p className="mt-2 text-sm text-green-600">{successMessage}</p>}
+          {apiError && (
+            <p className="mt-2 text-sm text-red-600" data-test-id="register-api-error">
+              {apiError}
+            </p>
+          )}
+          {successMessage && (
+            <p className="mt-2 text-sm text-green-600" data-test-id="register-success-message">
+              {successMessage}
+            </p>
+          )}
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <a href="/login" className="underline">
+            <a href="/login" className="underline" data-test-id="register-signin-link">
               Sign in
             </a>
           </div>

@@ -31,10 +31,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
   if (error) {
     if (error.message.includes("User already registered")) {
-      return new Response(
-        JSON.stringify({ error: "User with this email already exists." }),
-        { status: 409 }
-      );
+      return new Response(JSON.stringify({ error: "User with this email already exists." }), { status: 409 });
     }
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,

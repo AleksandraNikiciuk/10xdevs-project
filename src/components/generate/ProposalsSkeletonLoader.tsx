@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function ProposalsSkeletonLoader() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-test-id="proposals-skeleton-loader">
       {/* Loading Header */}
       <div className="flex flex-col items-center justify-center gap-4 py-8">
         <Loader2 className="h-10 w-10 animate-spin text-md-primary" />
@@ -17,9 +17,9 @@ export function ProposalsSkeletonLoader() {
       </div>
 
       {/* Skeleton Cards in Grid */}
-      <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2" data-test-id="proposals-skeleton-grid">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="animate-pulse">
+          <Card key={i} className="animate-pulse" data-test-id={`proposal-skeleton-card-${i}`}>
             <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-4">
               <Skeleton className="h-7 w-7 shrink-0 rounded-full" />
               <div className="flex-1">

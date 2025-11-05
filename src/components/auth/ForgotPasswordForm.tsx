@@ -52,7 +52,7 @@ export function ForgotPasswordForm() {
       } else {
         setApiError(data.error || "An unknown error occurred.");
       }
-    } catch (err) {
+    } catch {
       setApiError("Failed to connect to the server.");
     }
   };
@@ -64,12 +64,12 @@ export function ForgotPasswordForm() {
   const isFormInvalid = !formData.email || errors !== null;
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm" data-test-id="forgot-password-form-card">
       <CardHeader>
         <CardTitle className="text-2xl">Forgot Password</CardTitle>
         <CardDescription>Enter your email to reset your password.</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit} className="contents">
+      <form onSubmit={handleSubmit} className="contents" data-test-id="forgot-password-form">
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -81,31 +81,41 @@ export function ForgotPasswordForm() {
               value={formData.email}
               onChange={handleInputChange}
               aria-describedby="email-error"
+              data-test-id="forgot-password-email-input"
             />
             {fieldErrors?.email && (
-              <p id="email-error" className="text-sm text-red-600">
+              <p id="email-error" className="text-sm text-red-600" data-test-id="forgot-password-email-error">
                 {fieldErrors.email[0]}
               </p>
             )}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col pt-4">
-          <Button className="w-full" type="submit" disabled={isFormInvalid}>
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={isFormInvalid}
+            data-test-id="forgot-password-submit-button"
+          >
             Send reset link
           </Button>
           {apiMessage && (
-            <p className="mt-2 text-sm text-green-600" aria-live="assertive">
+            <p
+              className="mt-2 text-sm text-green-600"
+              aria-live="assertive"
+              data-test-id="forgot-password-success-message"
+            >
               {apiMessage}
             </p>
           )}
           {apiError && (
-            <p className="mt-2 text-sm text-red-600" aria-live="assertive">
+            <p className="mt-2 text-sm text-red-600" aria-live="assertive" data-test-id="forgot-password-api-error">
               {apiError}
             </p>
           )}
           <div className="mt-4 text-center text-sm">
             Remember your password?{" "}
-            <a href="/login" className="underline">
+            <a href="/login" className="underline" data-test-id="forgot-password-signin-link">
               Sign in
             </a>
           </div>

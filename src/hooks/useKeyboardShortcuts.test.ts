@@ -120,5 +120,3 @@ describe("useKeyboardShortcuts", () => {
     expect(removeListenerSpy).toHaveBeenCalledWith("keydown", handlerRef);
   });
 });
-
-

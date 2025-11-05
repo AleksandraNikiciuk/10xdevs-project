@@ -73,5 +73,3 @@ describe("useCharacterValidation", () => {
     expect(result.current.state).toBe("above-max");
   });
 });
-
-

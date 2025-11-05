@@ -1,29 +1,26 @@
 import type { APIContext } from "astro";
 import { ZodError } from "zod";
 import { BatchDeleteFlashcardsSchema } from "../../../lib/schemas/flashcard.schema";
-import {
-  batchDeleteFlashcards,
-  type FlashcardServiceError,
-} from "../../../lib/services/flashcard.service";
+import { batchDeleteFlashcards, type FlashcardServiceError } from "../../../lib/services/flashcard.service";
 import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 
 export const prerender = false;
 
 /**
  * POST /api/flashcards/batch-delete
- * 
+ *
  * Deletes multiple flashcards at once
- * 
+ *
  * Request body:
  * {
  *   flashcard_ids: number[]
  * }
- * 
+ *
  * Response (200):
  * {
  *   deleted_count: number
  * }
- * 
+ *
  * Errors:
  * - 400: Validation failed (empty array, invalid IDs, or more than 100 IDs)
  * - 403: One or more flashcards belong to another user
@@ -140,4 +137,3 @@ export async function POST(context: APIContext) {
     );
   }
 }
-

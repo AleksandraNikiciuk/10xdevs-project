@@ -119,7 +119,6 @@ export function useGenerateFlashcards(): UseGenerateFlashcardsReturn {
       if (errorState.shouldRedirect && errorState.redirectUrl) {
         const url = errorState.redirectUrl;
         setTimeout(() => {
-          // eslint-disable-next-line react-compiler/react-compiler
           window.location.href = url;
         }, 2000);
       }

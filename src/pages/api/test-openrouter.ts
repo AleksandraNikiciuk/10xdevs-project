@@ -1,7 +1,7 @@
 /**
  * Test endpoint for OpenRouter service
  * GET /api/test-openrouter
- * 
+ *
  * This endpoint is for development/testing purposes only.
  * Tests the OpenRouter integration with a simple example.
  */
@@ -25,7 +25,8 @@ export const GET: APIRoute = async () => {
     });
 
     // Test text
-    const testText = "Artificial Intelligence is transforming the world of technology. Machine learning algorithms are becoming more sophisticated every day. The future of AI looks very promising and exciting.";
+    const testText =
+      "Artificial Intelligence is transforming the world of technology. Machine learning algorithms are becoming more sophisticated every day. The future of AI looks very promising and exciting.";
 
     // Make API call
     const result = await openRouter.structuredChatCompletion({
@@ -34,7 +35,8 @@ export const GET: APIRoute = async () => {
       messages: [
         {
           role: "system",
-          content: "You are a text analysis assistant. Analyze the given text and provide a summary, keywords, and sentiment.",
+          content:
+            "You are a text analysis assistant. Analyze the given text and provide a summary, keywords, and sentiment.",
         },
         {
           role: "user",
@@ -79,4 +81,3 @@ export const GET: APIRoute = async () => {
     );
   }
 };
-

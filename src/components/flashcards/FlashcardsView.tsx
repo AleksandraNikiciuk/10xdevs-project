@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { FlashcardDTO } from "../../../types";
+import type { FlashcardDTO } from "../../types";
 import FlashcardList from "./FlashcardList";
 import { Layers, ArrowLeft } from "lucide-react";
 import { deleteFlashcard } from "@/lib/api/flashcards.api";
@@ -20,6 +20,7 @@ const FlashcardsView: React.FC<FlashcardsViewProps> = ({ flashcards: initialFlas
       setFlashcards((prevFlashcards) => prevFlashcards.filter((f) => f.id !== flashcardId));
       toast.success("Flashcard deleted successfully!");
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       toast.error(error instanceof Error ? error.message : "Failed to delete flashcard.");
     }

@@ -54,7 +54,7 @@ export function LoginForm() {
         const errorData = await response.json();
         setApiError(errorData.error || "An unknown error occurred.");
       }
-    } catch (err) {
+    } catch {
       setApiError("Failed to connect to the server.");
     }
   };
@@ -66,12 +66,12 @@ export function LoginForm() {
   const isFormInvalid = !formData.email || !formData.password || errors !== null;
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm" data-test-id="login-form-card">
       <CardHeader>
         <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>Enter your email below to login to your account.</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit} className="contents">
+      <form onSubmit={handleSubmit} className="contents" data-test-id="login-form">
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -83,9 +83,10 @@ export function LoginForm() {
               value={formData.email}
               onChange={handleInputChange}
               aria-describedby="email-error"
+              data-test-id="login-email-input"
             />
             {fieldErrors?.email && (
-              <p id="email-error" className="text-sm text-red-600">
+              <p id="email-error" className="text-sm text-red-600" data-test-id="login-email-error">
                 {fieldErrors.email[0]}
               </p>
             )}
@@ -99,31 +100,37 @@ export function LoginForm() {
               value={formData.password}
               onChange={handleInputChange}
               aria-describedby="password-error"
+              data-test-id="login-password-input"
             />
             {fieldErrors?.password && (
-              <p id="password-error" className="text-sm text-red-600">
+              <p id="password-error" className="text-sm text-red-600" data-test-id="login-password-error">
                 {fieldErrors.password[0]}
               </p>
             )}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col pt-4">
-          <Button className="w-full" type="submit" disabled={isFormInvalid}>
+          <Button className="w-full" type="submit" disabled={isFormInvalid} data-test-id="login-submit-button">
             Sign in
           </Button>
           {apiError && (
-            <p id="form-error" className="mt-2 text-sm text-red-600" aria-live="assertive">
+            <p
+              id="form-error"
+              className="mt-2 text-sm text-red-600"
+              aria-live="assertive"
+              data-test-id="login-api-error"
+            >
               {apiError}
             </p>
           )}
           <div className="mt-4 text-center text-sm">
-            <a href="/forgot-password" className="underline">
+            <a href="/forgot-password" className="underline" data-test-id="login-forgot-password-link">
               Forgot password?
             </a>
           </div>
           <div className="mt-4 text-center text-sm">
-            Don't have an account?{" "}
-            <a href="/register" className="underline">
+            Don&apos;t have an account?{" "}
+            <a href="/register" className="underline" data-test-id="login-signup-link">
               Sign up
             </a>
           </div>

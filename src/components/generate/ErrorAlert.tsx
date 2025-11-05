@@ -7,11 +7,12 @@ interface ErrorAlertProps {
   error: ErrorState;
   onRetry?: () => void;
   onDismiss?: () => void;
+  dataTestId?: string;
 }
 
-export function ErrorAlert({ error, onRetry, onDismiss }: ErrorAlertProps) {
+export function ErrorAlert({ error, onRetry, onDismiss, dataTestId }: ErrorAlertProps) {
   return (
-    <Alert variant="destructive">
+    <Alert variant="destructive" data-test-id={dataTestId}>
       <AlertCircle />
       <AlertTitle>Error</AlertTitle>
       <AlertDescription className="mt-2 flex flex-col gap-3">

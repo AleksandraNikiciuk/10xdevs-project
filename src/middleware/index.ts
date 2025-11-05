@@ -21,7 +21,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     if (user) {
       context.locals.user = user;
     } else {
-      const { data, error } = await context.locals.supabase.auth.refreshSession({
+      const { data } = await context.locals.supabase.auth.refreshSession({
         refresh_token: refreshToken,
       });
       if (data.user) {

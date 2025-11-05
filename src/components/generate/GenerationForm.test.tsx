@@ -12,7 +12,15 @@ const { SourceTextInputMock } = vi.hoisted(() => ({
 }));
 
 vi.mock("@/components/generate/SourceTextInput", () => {
-  const SourceTextInput = ({ value, onChange, disabled }: any) => {
+  const SourceTextInput = ({
+    value,
+    onChange,
+    disabled,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+    disabled: boolean;
+  }) => {
     SourceTextInputMock({ value, onChange, disabled });
     return (
       <div data-testid="source-text-input">
@@ -67,8 +75,9 @@ describe("GenerationForm", () => {
 
     const form = document.querySelector("form");
     expect(form).not.toBeNull();
+    if (!form) return;
 
-    fireEvent.submit(form!);
+    fireEvent.submit(form);
 
     expect(handleSubmit).toHaveBeenCalledTimes(1);
   });
@@ -82,7 +91,8 @@ describe("GenerationForm", () => {
     );
 
     const form = document.querySelector("form");
-    fireEvent.submit(form!);
+    if (!form) throw new Error("Form not found");
+    fireEvent.submit(form);
 
     expect(handleSubmit).not.toHaveBeenCalled();
   });
@@ -95,7 +105,8 @@ describe("GenerationForm", () => {
     );
 
     const form = document.querySelector("form");
-    fireEvent.submit(form!);
+    if (!form) throw new Error("Form not found");
+    fireEvent.submit(form);
 
     expect(handleSubmit).not.toHaveBeenCalled();
   });

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { SourceTextInput } from "./SourceTextInput";
 import { useCharacterValidation } from "@/hooks/useCharacterValidation";
 import { forwardRef } from "react";
@@ -22,10 +21,12 @@ export const GenerationForm = forwardRef<HTMLButtonElement, GenerationFormProps>
     };
 
     return (
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" data-test-id="generation-form">
         <SourceTextInput value={sourceText} onChange={onSourceTextChange} disabled={isDisabled} />
         <button type="submit" ref={ref} className="hidden" />
       </form>
     );
   }
 );
+
+GenerationForm.displayName = "GenerationForm";

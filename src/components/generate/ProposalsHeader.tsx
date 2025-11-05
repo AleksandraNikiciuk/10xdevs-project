@@ -42,24 +42,32 @@ export function ProposalsHeader({
   };
 
   return (
-    <>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-body-medium text-md-on-surface-variant">
+    <div data-test-id="proposals-header">
+      <div
+        className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        data-test-id="proposals-header-summary"
+      >
+        <div className="text-body-medium text-md-on-surface-variant" data-test-id="proposals-selection-counter">
           Selected: <span className="text-label-large text-md-on-surface">{selectedCount}</span> / {totalCount}{" "}
           flashcards
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={handleCancelClick} disabled={isSaving}>
+        <div className="flex gap-3" data-test-id="proposals-header-actions">
+          <Button
+            variant="outline"
+            onClick={handleCancelClick}
+            disabled={isSaving}
+            data-test-id="cancel-generation-button"
+          >
             Cancel
           </Button>
-          <Button onClick={onSave} disabled={isSaveDisabled || isSaving}>
+          <Button onClick={onSave} disabled={isSaveDisabled || isSaving} data-test-id="save-selected-button">
             {isSaving ? "Saving..." : `Save Selected (${selectedCount})`}
           </Button>
         </div>
       </div>
 
-      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <DialogContent>
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog} data-test-id="cancel-generation-dialog">
+        <DialogContent data-test-id="cancel-generation-dialog-content">
           <DialogHeader>
             <DialogTitle>Cancel Generation?</DialogTitle>
             <DialogDescription>
@@ -68,15 +76,19 @@ export function ProposalsHeader({
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCancelDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowCancelDialog(false)}
+              data-test-id="cancel-dialog-keep-editing-button"
+            >
               Keep Editing
             </Button>
-            <Button variant="destructive" onClick={handleConfirmCancel}>
+            <Button variant="destructive" onClick={handleConfirmCancel} data-test-id="cancel-dialog-confirm-button">
               Yes, Cancel
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

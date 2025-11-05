@@ -25,7 +25,7 @@ import {
 // FREE options (may require OpenRouter account setup):
 // - "google/gemini-flash-1.5-8b-exp:free" - Fast, supports function calling
 // - "meta-llama/llama-3.1-8b-instruct:free" - Supports tools
-// 
+//
 // PAID but CHEAP options (work immediately):
 // - "gpt-4o-mini" - $0.15/1M tokens, excellent quality
 // - "anthropic/claude-3-haiku" - $0.25/1M tokens, very good
@@ -112,7 +112,7 @@ function calculateDuration(startTime: number): number {
  */
 async function generateFlashcardsWithAI(
   sourceText: string
-): Promise<{ flashcards: Array<{ question: string; answer: string }>; model: string }> {
+): Promise<{ flashcards: { question: string; answer: string }[]; model: string }> {
   // Initialize OpenRouter service
   const openRouter = new OpenRouterService();
 

@@ -3,7 +3,10 @@ import { Card } from "@/components/ui/card";
 
 export function EmptyState() {
   return (
-    <Card className="flex flex-col items-center justify-center gap-4 py-12 text-center sm:py-16">
+    <Card
+      className="flex flex-col items-center justify-center gap-4 py-12 text-center sm:py-16"
+      data-test-id="empty-state-card"
+    >
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-md-primary-container sm:h-20 sm:w-20">
         <Lightbulb className="h-8 w-8 text-md-on-primary-container sm:h-10 sm:w-10" />
       </div>

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { expect, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useTheme } from "@/hooks/useTheme";
 

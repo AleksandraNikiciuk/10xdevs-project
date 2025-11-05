@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
+import { z } from "zod";
+import zodToJsonSchema from "zod-to-json-schema";
 
 /**
  * Configuration error thrown when OPENROUTER_API_KEY is missing
@@ -7,7 +7,7 @@ import zodToJsonSchema from 'zod-to-json-schema';
 export class ConfigurationError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'ConfigurationError';
+    this.name = "ConfigurationError";
   }
 }
 
@@ -20,7 +20,7 @@ export class OpenRouterApiError extends Error {
 
   constructor(message: string, statusCode: number, responseBody: unknown) {
     super(message);
-    this.name = 'OpenRouterApiError';
+    this.name = "OpenRouterApiError";
     this.statusCode = statusCode;
     this.responseBody = responseBody;
   }
@@ -32,7 +32,7 @@ export class OpenRouterApiError extends Error {
 export class NetworkError extends Error {
   constructor(message: string, cause?: unknown) {
     super(message);
-    this.name = 'NetworkError';
+    this.name = "NetworkError";
     this.cause = cause;
   }
 }
@@ -43,7 +43,7 @@ export class NetworkError extends Error {
 export class InvalidResponseJsonError extends Error {
   constructor(message: string, cause?: unknown) {
     super(message);
-    this.name = 'InvalidResponseJsonError';
+    this.name = "InvalidResponseJsonError";
     this.cause = cause;
   }
 }
@@ -56,7 +56,7 @@ export class SchemaValidationError extends Error {
 
   constructor(validationIssues: string) {
     super(`Schema validation failed: ${validationIssues}`);
-    this.name = 'SchemaValidationError';
+    this.name = "SchemaValidationError";
     this.validationIssues = validationIssues;
   }
 }
@@ -64,31 +64,31 @@ export class SchemaValidationError extends Error {
 /**
  * Message type for chat completion
  */
-type Message = {
-  role: 'system' | 'user' | 'assistant';
+interface Message {
+  role: "system" | "user" | "assistant";
   content: string;
-};
+}
 
 /**
  * Parameters for structured chat completion
  */
-type StructuredChatCompletionParams<T extends z.ZodTypeAny> = {
+interface StructuredChatCompletionParams<T extends z.ZodTypeAny> {
   schema: T;
   messages: Message[];
   model: string;
   params?: Record<string, unknown>;
-};
+}
 
 /**
  * OpenRouter API response structure
  */
 interface OpenRouterApiResponse {
-  choices?: Array<{
+  choices?: {
     message?: {
       content?: string;
       role?: string;
     };
-  }>;
+  }[];
 }
 
 /**
@@ -104,7 +104,7 @@ interface OpenRouterApiResponse {
  */
 export class OpenRouterService {
   private readonly apiKey: string;
-  private readonly baseUrl: string = 'https://openrouter.ai/api/v1/chat/completions';
+  private readonly baseUrl: string = "https://openrouter.ai/api/v1/chat/completions";
 
   /**
    * Creates a new OpenRouterService instance.
@@ -114,9 +114,7 @@ export class OpenRouterService {
     const apiKey = import.meta.env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY;
 
     if (!apiKey) {
-      throw new ConfigurationError(
-        'OPENROUTER_API_KEY is not set in environment variables.'
-      );
+      throw new ConfigurationError("OPENROUTER_API_KEY is not set in environment variables.");
     }
 
     this.apiKey = apiKey;
@@ -156,10 +154,7 @@ export class OpenRouterService {
 
       // Wrap unknown errors as NetworkError
       if (error instanceof TypeError || error instanceof Error) {
-        throw new NetworkError(
-          `Unexpected error during API call: ${error.message}`,
-          error
-        );
+        throw new NetworkError(`Unexpected error during API call: ${error.message}`, error);
       }
 
       throw error;
@@ -180,15 +175,15 @@ export class OpenRouterService {
     params,
   }: StructuredChatCompletionParams<T>) {
     // Convert Zod schema to JSON Schema
-    const fullJsonSchema = zodToJsonSchema(schema, 'responseSchema');
-    
+    const fullJsonSchema = zodToJsonSchema(schema, "responseSchema");
+
     // Extract the actual schema definition (remove $schema and other meta fields)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { $schema, definitions, ...jsonSchema } = fullJsonSchema as any;
+    const { $schema, definitions, ...jsonSchema } = fullJsonSchema as Record<string, unknown>;
 
     // Add instruction to return JSON in system message
     const enhancedMessages = [...messages];
-    if (enhancedMessages.length > 0 && enhancedMessages[0].role === 'system') {
+    if (enhancedMessages.length > 0 && enhancedMessages[0].role === "system") {
       enhancedMessages[0] = {
         ...enhancedMessages[0],
         content: `${enhancedMessages[0].content}\n\nIMPORTANT: You must respond with ONLY valid JSON that matches this exact schema:\n${JSON.stringify(jsonSchema, null, 2)}\n\nDo not include any explanatory text, markdown formatting, or code blocks. Return only raw JSON.`,
@@ -198,7 +193,7 @@ export class OpenRouterService {
     return {
       model,
       messages: enhancedMessages,
-      response_format: { type: 'json_object' },
+      response_format: { type: "json_object" },
       ...params,
     };
   }
@@ -216,18 +211,18 @@ export class OpenRouterService {
 
     try {
       response = await fetch(this.baseUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'http://localhost:4321',
-          'X-Title': '10xdevs-project',
+          "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:4321",
+          "X-Title": "10xdevs-project",
         },
         body: JSON.stringify(payload),
       });
     } catch (error) {
       throw new NetworkError(
-        `Failed to connect to OpenRouter API: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to connect to OpenRouter API: ${error instanceof Error ? error.message : "Unknown error"}`,
         error
       );
     }
@@ -241,7 +236,7 @@ export class OpenRouterService {
       }
 
       // Log detailed error for debugging
-      console.error('OpenRouter API Error:', {
+      console.error("OpenRouter API Error:", {
         status: response.status,
         statusText: response.statusText,
         errorData,
@@ -258,10 +253,7 @@ export class OpenRouterService {
     try {
       return await response.json();
     } catch (error) {
-      throw new InvalidResponseJsonError(
-        'Failed to parse API response as JSON',
-        error
-      );
+      throw new InvalidResponseJsonError("Failed to parse API response as JSON", error);
     }
   }
 
@@ -273,17 +265,12 @@ export class OpenRouterService {
    * @throws {InvalidResponseJsonError} If message content cannot be parsed as JSON
    * @throws {SchemaValidationError} If parsed data doesn't match the schema
    */
-  private _parseAndValidateResponse<T extends z.ZodTypeAny>(
-    apiResponse: OpenRouterApiResponse,
-    schema: T
-  ): z.infer<T> {
+  private _parseAndValidateResponse<T extends z.ZodTypeAny>(apiResponse: OpenRouterApiResponse, schema: T): z.infer<T> {
     // Get the message content
     const messageContent = apiResponse.choices?.[0]?.message?.content;
 
     if (!messageContent) {
-      throw new InvalidResponseJsonError(
-        'Invalid response structure: No message content found in API response.'
-      );
+      throw new InvalidResponseJsonError("Invalid response structure: No message content found in API response.");
     }
 
     // Parse JSON from message content
@@ -300,7 +287,7 @@ export class OpenRouterService {
     // Validate against Zod schema
     const validationResult = schema.safeParse(parsedData);
     if (!validationResult.success) {
-      console.error('Schema validation failed:', {
+      console.error("Schema validation failed:", {
         errors: validationResult.error.issues,
         receivedData: parsedData,
       });
@@ -310,4 +297,3 @@ export class OpenRouterService {
     return validationResult.data;
   }
 }
-

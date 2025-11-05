@@ -1,5 +1,5 @@
 import React from "react";
-import type { FlashcardDTO } from "../../../types";
+import type { FlashcardDTO } from "../../types";
 import FlashcardItem from "./FlashcardItem";
 
 interface FlashcardListProps {

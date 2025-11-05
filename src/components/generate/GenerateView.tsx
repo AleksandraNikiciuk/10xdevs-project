@@ -76,9 +76,9 @@ export function GenerateView({ isUserLoggedIn }: GenerateViewProps) {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <a href="/" className="inline-block mb-4">
-        <Button variant="outline">
+    <main className="container mx-auto px-4 py-8" data-test-id="generate-view">
+      <a href="/" className="inline-block mb-4" data-test-id="back-to-dashboard-link">
+        <Button variant="outline" data-test-id="back-to-dashboard-button">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Dashboard
         </Button>
@@ -98,10 +98,15 @@ export function GenerateView({ isUserLoggedIn }: GenerateViewProps) {
       </header>
 
       {isError && error && (
-        <ErrorAlert error={error} onRetry={error.canRetry ? handleGenerate : undefined} onDismiss={clearError} />
+        <ErrorAlert
+          error={error}
+          onRetry={error.canRetry ? handleGenerate : undefined}
+          onDismiss={clearError}
+          dataTestId="generation-error-alert"
+        />
       )}
 
-      <section aria-label="Generation form" ref={formRef}>
+      <section aria-label="Generation form" ref={formRef} data-test-id="generation-form-section">
         <GenerationForm
           ref={submitButtonRef}
           sourceText={sourceText}
@@ -112,27 +117,31 @@ export function GenerateView({ isUserLoggedIn }: GenerateViewProps) {
       </section>
 
       {!isReviewing && !isSaving && (
-        <div className="mt-4 mb-4 flex justify-end">
-          <Button onClick={triggerFormSubmit} disabled={!validation.isValid || isFormDisabled}>
+        <div className="mt-4 mb-4 flex justify-end" data-test-id="generate-action-container">
+          <Button
+            onClick={triggerFormSubmit}
+            disabled={!validation.isValid || isFormDisabled}
+            data-test-id="generate-submit-button"
+          >
             {isGenerating ? "Generating..." : "Generate Flashcards"}
           </Button>
         </div>
       )}
 
       {isIdle && !isError && (
-        <section aria-label="Empty state">
+        <section aria-label="Empty state" data-test-id="empty-state-section">
           <EmptyState />
         </section>
       )}
 
       {isGenerating && (
-        <section aria-label="Loading proposals" aria-busy="true">
+        <section aria-label="Loading proposals" aria-busy="true" data-test-id="proposals-loading-section">
           <ProposalsSkeletonLoader />
         </section>
       )}
 
       {(isReviewing || isSaving) && (
-        <section aria-label="Flashcard proposals" ref={proposalsRef}>
+        <section aria-label="Flashcard proposals" ref={proposalsRef} data-test-id="proposals-section">
           <ProposalsSection
             proposals={proposals}
             selectedCount={selectedCount}
@@ -147,7 +156,7 @@ export function GenerateView({ isUserLoggedIn }: GenerateViewProps) {
       )}
 
       {isReviewing && (
-        <div className="sr-only" role="status" aria-live="polite">
+        <div className="sr-only" role="status" aria-live="polite" data-test-id="proposals-status">
           {proposals.length} flashcard proposals loaded. {selectedCount} selected.
         </div>
       )}

@@ -13,13 +13,16 @@ export function SourceTextInput({ value, onChange, disabled = false }: SourceTex
   const validation = useCharacterValidation(value);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-test-id="source-text-input">
       <div className="flex items-center justify-between gap-2">
-        <Label htmlFor="source-text">Source Text</Label>
+        <Label htmlFor="source-text" data-test-id="source-text-label">
+          Source Text
+        </Label>
         <CharacterCounter
           count={validation.count}
           max={10000}
           className={`text-xs sm:text-sm ${validation.colorClass}`}
+          dataTestId="source-text-character-counter"
         />
       </div>
       <Textarea
@@ -31,9 +34,15 @@ export function SourceTextInput({ value, onChange, disabled = false }: SourceTex
         className="min-h-[150px] max-h-[400px] resize-y sm:min-h-[200px] sm:max-h-[200px]"
         aria-invalid={!validation.isValid}
         aria-describedby={!validation.isValid ? "source-text-error" : undefined}
+        data-test-id="source-text-textarea"
       />
       {!validation.isValid && (
-        <p id="source-text-error" className={`text-xs sm:text-sm ${validation.colorClass}`} role="alert">
+        <p
+          id="source-text-error"
+          className={`text-xs sm:text-sm ${validation.colorClass}`}
+          role="alert"
+          data-test-id="source-text-error"
+        >
           {validation.message}
         </p>
       )}

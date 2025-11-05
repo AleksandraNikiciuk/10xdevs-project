@@ -31,18 +31,16 @@ const toastErrorMock = vi.mocked(toast.error);
 function createGenerationResult(
   overrides: Partial<CreateGenerationResultDTO["generation"]> = {}
 ): CreateGenerationResultDTO {
-  const flashcardsProposals =
-    overrides.flashcardsProposals ??
-    [
-      {
-        id: 1,
-        question: "Default question",
-        answer: "Default answer",
-        source: "ai-full" as const,
-        generation_id: overrides.id ?? 101,
-        created_at: "2024-01-01T00:00:00.000Z",
-      },
-    ];
+  const flashcardsProposals = overrides.flashcardsProposals ?? [
+    {
+      id: 1,
+      question: "Default question",
+      answer: "Default answer",
+      source: "ai-full" as const,
+      generation_id: overrides.id ?? 101,
+      created_at: "2024-01-01T00:00:00.000Z",
+    },
+  ];
 
   return {
     generation: {
@@ -379,5 +377,3 @@ describe("useGenerateFlashcards", () => {
     expect(result.current.selectedCount).toBe(0);
   });
 });
-
-

@@ -58,9 +58,18 @@ const reactConfig = tseslint.config({
 
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
+  {
+    ignores: ["src/layouts/Layout.astro"],
+  },
   baseConfig,
   jsxA11yConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
-  eslintPluginPrettier
+  eslintPluginPrettier,
+  {
+    files: ["**/*.astro"],
+    rules: {
+      "prettier/prettier": "off",
+    },
+  }
 );

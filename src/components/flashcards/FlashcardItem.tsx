@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import type { FlashcardDTO, FlashcardSource } from "../../../types";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
+import type { FlashcardDTO, FlashcardSource } from "../../types";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { HelpCircle, CheckCircle, Trash2 } from "lucide-react";
 import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
 import { Badge } from "@/components/ui/badge";
@@ -47,11 +47,26 @@ const FlashcardItem: React.FC<FlashcardItemProps> = ({ flashcard, onDelete }) =>
     </button>
   );
 
-  const { text, variant } = sourceMap[flashcard.source] || { text: "Unknown", variant: "destructive" };
+  const { text, variant } = sourceMap[flashcard.source as FlashcardSource] || {
+    text: "Unknown",
+    variant: "default" as const,
+  };
 
   return (
     <>
-      <div className="flip-card h-[250px]" onClick={handleCardClick}>
+      <div
+        className="flip-card h-[250px]"
+        onClick={handleCardClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleCardClick();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Flip flashcard"
+      >
         <div className={`flip-card-inner ${isFlipped ? "is-flipped" : ""}`}>
           <div className="flip-card-front">
             <Card className="h-full relative flashcard-question-bg">
