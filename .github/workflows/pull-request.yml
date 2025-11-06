@@ -112,20 +112,30 @@ jobs:
           path: playwright-report
         continue-on-error: true
 
+      - name: Set job status variables
+        id: status
+        run: |
+          echo "lint_status=${{ needs.lint.result == 'success' && '✅ Passed' || '❌ Failed' }}" >> $GITHUB_OUTPUT
+          echo "unit_status=${{ needs.unit-tests.result == 'success' && '✅ Passed' || '❌ Failed' }}" >> $GITHUB_OUTPUT
+          echo "e2e_status=${{ (needs.e2e-tests.result == 'success' && '✅ Passed') || (needs.e2e-tests.result == 'skipped' && '⏭️ Skipped') || '❌ Failed' }}" >> $GITHUB_OUTPUT
+          echo "all_passed=${{ needs.lint.result == 'success' && needs.unit-tests.result == 'success' && (needs.e2e-tests.result == 'success' || needs.e2e-tests.result == 'skipped') && 'true' || 'false' }}" >> $GITHUB_OUTPUT
+
       - name: Create PR comment
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: test-results
           message: |
-            ## 🚀 PR Tests Completed Successfully!
+            ${{ steps.status.outputs.all_passed == 'true' && '## 🚀 PR Tests Completed Successfully!' || '## ⚠️ PR Tests Failed' }}
 
             ### Summary:
-            - ✅ Lint: Passed
-            - ✅ Unit Tests: Passed
-            - ✅ E2E Tests: Passed
+            - ${{ steps.status.outputs.lint_status }} Lint
+            - ${{ steps.status.outputs.unit_status }} Unit Tests
+            - ${{ steps.status.outputs.e2e_status }} E2E Tests
 
-            ### Coverage Reports:
+            ${{ steps.status.outputs.all_passed == 'true' && '### Coverage Reports:
             - Unit Test Coverage: Available in artifacts
-            - E2E Test Results: Available in artifacts
+            - E2E Test Results: Available in artifacts' || '### Action Required:
+            - Please check the workflow logs for details on the failures
+            - Fix the issues and push changes to update the PR' }}
 
             *Automated comment from GitHub Actions*
