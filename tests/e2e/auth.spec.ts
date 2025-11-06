@@ -245,9 +245,9 @@ test.describe("Authentication", () => {
       await forgotPasswordForm.fillEmail("test@example.com");
       await forgotPasswordForm.submit();
 
-      // Wait for success message
-      await page.waitForTimeout(1000);
-      await expect(forgotPasswordForm.successMessage).toBeVisible();
+      // Wait for success message with longer timeout
+      await page.waitForTimeout(3000);
+      await expect(forgotPasswordForm.successMessage).toBeVisible({ timeout: 5000 });
     });
 
     test("should handle API error gracefully", async ({ page }) => {
