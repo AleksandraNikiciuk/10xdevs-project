@@ -14,6 +14,16 @@ npm install
 
 To zainstaluje nowy adapter Cloudflare oraz zaktualizuje wszystkie zależności.
 
+### Wrangler Configuration (WAŻNE!)
+
+Projekt zawiera `wrangler.jsonc` z flagą `disable_nodejs_process_v2` aby naprawić problem `[object Object]` na Cloudflare Pages.
+
+**Problem:** Od compatibility date `2025-09-15`, Cloudflare domyślnie włącza `enable_nodejs_process_v2` który powoduje konflikt z Astro.
+
+**Rozwiązanie:** Flaga `disable_nodejs_process_v2` w `wrangler.jsonc` wyłącza problematyczną implementację.
+
+Zobacz: [Astro Issue #14511](https://github.com/withastro/astro/issues/14511)
+
 ### Adapter Astro
 
 Projekt wykorzystuje `@astrojs/cloudflare` adapter dla kompatybilności z Cloudflare Pages:
