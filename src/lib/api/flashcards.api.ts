@@ -1,6 +1,13 @@
 import type { CreateFlashcardsCommand, CreateFlashcardsResultDTO } from "@/types";
 import type { ErrorState } from "@/components/generate/types";
-import { supabaseClient } from "@/db/supabase.client";
+
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+  return null;
+}
 
 async function getAuthHeaders(): Promise<HeadersInit> {
   if (import.meta.env.PUBLIC_MOCK_AUTH === "true") {
@@ -10,16 +17,14 @@ async function getAuthHeaders(): Promise<HeadersInit> {
     };
   }
 
-  const {
-    data: { session },
-  } = await supabaseClient.auth.getSession();
+  const accessToken = getCookie("sb-access-token");
 
-  if (!session?.access_token) {
+  if (!accessToken) {
     throw new Error("Unauthorized");
   }
 
   return {
-    Authorization: `Bearer ${session.access_token}`,
+    Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
   };
 }

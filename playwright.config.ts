@@ -43,14 +43,9 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run dev",
+    command: "npm run dev:test",
     url: "http://localhost:4321",
     reuseExistingServer: !process.env.CI,
-    env: {
-      PUBLIC_SUPABASE_URL: process.env.SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL || "",
-      PUBLIC_SUPABASE_KEY: process.env.SUPABASE_KEY || process.env.PUBLIC_SUPABASE_KEY || "",
-      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
-    },
   },
 
   /* Global teardown - cleans up Supabase database after all tests */

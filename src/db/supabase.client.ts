@@ -3,8 +3,8 @@ import type { SupabaseClient as SupabaseClientType } from "@supabase/supabase-js
 
 import type { Database } from "../db/database.types.ts";
 
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.SUPABASE_URL || "";
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_KEY || import.meta.env.SUPABASE_KEY || "";
+const supabaseUrl = import.meta.env.SUPABASE_URL || "";
+const supabaseAnonKey = import.meta.env.SUPABASE_KEY || "";
 const supabaseServiceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 // Client for public/authenticated operations (respects RLS)
@@ -13,10 +13,12 @@ export const supabaseClient = createClient<Database>(
   supabaseAnonKey || "placeholder-key"
 );
 
-// Client for server-side operations (bypasses RLS)
+// Client for server-side operations
+// If service_role_key is available, bypasses RLS (production)
+// If not available, uses anon key with RLS (e.g., in tests with authenticated user)
 export const supabaseAdmin = createClient<Database>(
   supabaseUrl || "https://placeholder.supabase.co",
-  supabaseServiceRoleKey || "placeholder-key",
+  supabaseServiceRoleKey || supabaseAnonKey || "placeholder-key",
   {
     auth: {
       autoRefreshToken: false,
