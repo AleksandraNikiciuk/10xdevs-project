@@ -107,9 +107,9 @@ npm run build
 │ ├── styles/ # Global styles (Material Design 3)
 │ ├── assets/ # Static assets
 │ └── test/ # Test utilities and setup
-│   ├── setup.ts # Vitest setup file
-│   ├── mocks/ # MSW handlers and server setup
-│   └── factories/ # Test data factories
+│ ├── setup.ts # Vitest setup file
+│ ├── mocks/ # MSW handlers and server setup
+│ └── factories/ # Test data factories
 ├── tests/ # E2E tests with Playwright
 │ ├── e2e/ # End-to-end test scenarios
 │ └── fixtures/ # Test fixtures and data
@@ -133,15 +133,17 @@ A fully-typed, reusable service for interacting with OpenRouter API:
 #### Example Usage
 
 ```typescript
-import { OpenRouterService } from './lib/services/openrouter.service';
-import { z } from 'zod';
+import { OpenRouterService } from "./lib/services/openrouter.service";
+import { z } from "zod";
 
 // Define response schema
 const responseSchema = z.object({
-  flashcards: z.array(z.object({
-    question: z.string(),
-    answer: z.string(),
-  })),
+  flashcards: z.array(
+    z.object({
+      question: z.string(),
+      answer: z.string(),
+    })
+  ),
 });
 
 // Initialize service
@@ -150,10 +152,10 @@ const openRouter = new OpenRouterService();
 // Make API call with full type safety
 const result = await openRouter.structuredChatCompletion({
   schema: responseSchema,
-  model: 'anthropic/claude-3.5-sonnet',
+  model: "anthropic/claude-3.5-sonnet",
   messages: [
-    { role: 'system', content: 'You are a flashcard expert.' },
-    { role: 'user', content: 'Create flashcards from this text...' }
+    { role: "system", content: "You are a flashcard expert." },
+    { role: "user", content: "Create flashcards from this text..." },
   ],
 });
 
@@ -226,10 +228,6 @@ This project is configured with AI development tools to enhance the development 
 ### Cursor IDE
 
 The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
-
-### GitHub Copilot
-
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
 
 ### Windsurf
 

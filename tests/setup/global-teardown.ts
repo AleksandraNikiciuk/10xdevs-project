@@ -12,8 +12,8 @@ import type { Database } from "../../src/db/database.types";
 async function globalTeardown() {
   console.log("\n🧹 Starting database cleanup after E2E tests...\n");
 
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_KEY || process.env.PUBLIC_SUPABASE_KEY;
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_KEY;
   const e2eUsername = process.env.E2E_USERNAME;
   const e2ePassword = process.env.E2E_PASSWORD;
   const e2eUserId = process.env.E2E_USERNAME_ID;
