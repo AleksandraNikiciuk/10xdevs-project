@@ -1,17 +1,13 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Auth Callback Fallback", () => {
-  test("should redirect from index page to /auth/callback when tokens are in URL", async ({
-    page,
-  }) => {
+  test("should redirect from index page to /auth/callback when tokens are in URL", async ({ page }) => {
     // Mock tokens that would come from Supabase
     const mockAccessToken = "mock_access_token_123";
     const mockRefreshToken = "mock_refresh_token_456";
 
     // Navigate to index with tokens in hash (simulating Supabase redirect)
-    await page.goto(
-      `http://localhost:4321/#access_token=${mockAccessToken}&refresh_token=${mockRefreshToken}`
-    );
+    await page.goto(`http://localhost:4321/#access_token=${mockAccessToken}&refresh_token=${mockRefreshToken}`);
 
     // Wait for redirect to /auth/callback
     await page.waitForURL(/\/auth\/callback/, { timeout: 5000 });
@@ -24,19 +20,14 @@ test.describe("Auth Callback Fallback", () => {
     expect(page.url()).toContain(`refresh_token=${mockRefreshToken}`);
   });
 
-  test("should redirect from login page to /auth/callback when tokens are in URL", async ({
-    context,
-    page,
-  }) => {
+  test("should redirect from login page to /auth/callback when tokens are in URL", async ({ context, page }) => {
     // Clear all cookies to ensure no existing session
     await context.clearCookies();
 
     const mockAccessToken = "mock_access_token_789";
     const mockRefreshToken = "mock_refresh_token_012";
 
-    await page.goto(
-      `http://localhost:4321/login#access_token=${mockAccessToken}&refresh_token=${mockRefreshToken}`
-    );
+    await page.goto(`http://localhost:4321/login#access_token=${mockAccessToken}&refresh_token=${mockRefreshToken}`);
 
     await page.waitForURL(/\/auth\/callback/, { timeout: 5000 });
 
@@ -44,15 +35,11 @@ test.describe("Auth Callback Fallback", () => {
     expect(page.url()).toContain(`access_token=${mockAccessToken}`);
   });
 
-  test("should redirect from register page to /auth/callback when tokens are in URL", async ({
-    page,
-  }) => {
+  test("should redirect from register page to /auth/callback when tokens are in URL", async ({ page }) => {
     const mockAccessToken = "mock_access_token_abc";
     const mockRefreshToken = "mock_refresh_token_def";
 
-    await page.goto(
-      `http://localhost:4321/register#access_token=${mockAccessToken}&refresh_token=${mockRefreshToken}`
-    );
+    await page.goto(`http://localhost:4321/register#access_token=${mockAccessToken}&refresh_token=${mockRefreshToken}`);
 
     await page.waitForURL(/\/auth\/callback/, { timeout: 5000 });
 
@@ -70,9 +57,7 @@ test.describe("Auth Callback Fallback", () => {
     expect(page.url()).toBe("http://localhost:4321/");
   });
 
-  test("should NOT redirect when only access_token in URL (missing refresh_token)", async ({
-    page,
-  }) => {
+  test("should NOT redirect when only access_token in URL (missing refresh_token)", async ({ page }) => {
     await page.goto("http://localhost:4321/#access_token=mock_token");
 
     await page.waitForTimeout(1000);
@@ -82,10 +67,7 @@ test.describe("Auth Callback Fallback", () => {
     expect(page.url()).not.toContain("/auth/callback");
   });
 
-  test("should display verification message and handle invalid tokens", async ({
-    context,
-    page,
-  }) => {
+  test("should display verification message and handle invalid tokens", async ({ context, page }) => {
     // Clear all cookies to ensure no existing session
     await context.clearCookies();
 
@@ -111,4 +93,3 @@ test.describe("Auth Callback Fallback", () => {
     expect(page.url()).toContain("/login");
   });
 });
-

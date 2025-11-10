@@ -12,6 +12,7 @@ import { RegisterForm } from "@/components/auth/RegisterForm";
 
   <!-- Fallback handler for email verification tokens -->
   <script is:inline>
+    /* eslint-disable */
     (function () {
       const hash = window.location.hash.substring(1);
       if (hash) {
@@ -25,5 +26,6 @@ import { RegisterForm } from "@/components/auth/RegisterForm";
         }
       }
     })();
+    /* eslint-enable */
   </script>
 </Layout>

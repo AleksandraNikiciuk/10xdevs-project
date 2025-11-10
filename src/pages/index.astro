@@ -61,6 +61,7 @@ const navItems = [
 
   <!-- Fallback handler for email verification tokens -->
   <script is:inline>
+    /* eslint-disable */
     (function () {
       // Check if there are auth tokens in the URL hash
       const hash = window.location.hash.substring(1);
@@ -76,5 +77,6 @@ const navItems = [
         }
       }
     })();
+    /* eslint-enable */
   </script>
 </Layout>
