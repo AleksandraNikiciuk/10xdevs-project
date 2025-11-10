@@ -21,8 +21,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
   };
 
   console.log("SUPABASE_URL available:", !!env.SUPABASE_URL);
+  console.log("SUPABASE_URL starts with:", env.SUPABASE_URL?.substring(0, 20));
   console.log("SUPABASE_KEY available:", !!env.SUPABASE_KEY);
+  console.log("SUPABASE_KEY starts with:", env.SUPABASE_KEY?.substring(0, 10));
   console.log("SUPABASE_SERVICE_ROLE_KEY available:", !!env.SUPABASE_SERVICE_ROLE_KEY);
+  console.log("SUPABASE_SERVICE_ROLE_KEY starts with:", env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10));
 
   context.locals.supabase = createSupabaseAdmin({
     SUPABASE_URL: env.SUPABASE_URL,
