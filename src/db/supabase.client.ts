@@ -3,9 +3,10 @@ import type { SupabaseClient as SupabaseClientType } from "@supabase/supabase-js
 
 import type { Database } from "../db/database.types.ts";
 
-const supabaseUrl = import.meta.env.SUPABASE_URL || "";
-const supabaseAnonKey = import.meta.env.SUPABASE_KEY || "";
-const supabaseServiceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || "";
+// Cloudflare Workers compatibility: use process.env instead of import.meta.env
+const supabaseUrl = process.env.SUPABASE_URL || import.meta.env.SUPABASE_URL || "";
+const supabaseAnonKey = process.env.SUPABASE_KEY || import.meta.env.SUPABASE_KEY || "";
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 // Client for public/authenticated operations (respects RLS)
 export const supabaseClient = createClient<Database>(

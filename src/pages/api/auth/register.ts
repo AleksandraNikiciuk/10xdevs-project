@@ -24,10 +24,23 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     );
   }
 
-  const { data, error } = await supabaseAdmin.auth.signUp({
-    email: validatedData.data.email,
-    password: validatedData.data.password,
-  });
+  let data, error;
+  try {
+    const result = await supabaseAdmin.auth.signUp({
+      email: validatedData.data.email,
+      password: validatedData.data.password,
+    });
+    data = result.data;
+    error = result.error;
+  } catch (err) {
+    return new Response(
+      JSON.stringify({
+        error: "Failed to connect to authentication service",
+        details: err instanceof Error ? err.message : String(err),
+      }),
+      { status: 500 }
+    );
+  }
 
   if (error) {
     if (error.message.includes("User already registered")) {
