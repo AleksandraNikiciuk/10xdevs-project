@@ -1,19 +1,18 @@
 import { defineMiddleware } from "astro:middleware";
 
-import { createSupabaseAdmin, supabaseAdmin } from "../db/supabase.client.ts";
+import { createSupabaseAdmin } from "../db/supabase.client.ts";
 
 const protectedRoutes = ["/flashcards", "/manual-create"];
 const authRoutes = ["/login", "/register", "/forgot-password"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  // Initialize Supabase client with runtime env (Cloudflare) or fallback to import.meta.env (dev)
-  // In Cloudflare Pages, context.locals.runtime.env contains environment variables
-  if (context.locals.runtime?.env) {
-    context.locals.supabase = createSupabaseAdmin(context.locals.runtime.env);
-  } else {
-    // Fallback for development/testing where runtime.env is not available
-    context.locals.supabase = supabaseAdmin;
-  }
+  // Initialize Supabase client with env vars
+  // With Astro 5 env schema, import.meta.env is available both in dev and production (Cloudflare)
+  context.locals.supabase = createSupabaseAdmin({
+    SUPABASE_URL: import.meta.env.SUPABASE_URL,
+    SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+  });
 
   const accessToken = context.cookies.get("sb-access-token")?.value;
   const refreshToken = context.cookies.get("sb-refresh-token")?.value;

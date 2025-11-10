@@ -12,11 +12,11 @@ import { OpenRouterService } from "../../lib/services/openrouter.service";
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ locals }) => {
+export const GET: APIRoute = async () => {
   try {
-    // Get OpenRouter API key from runtime env (Cloudflare) or import.meta.env (dev)
-    const openrouterApiKey = locals.runtime?.env?.OPENROUTER_API_KEY || import.meta.env.OPENROUTER_API_KEY;
-
+    // Get OpenRouter API key from import.meta.env (works in both dev and production with Astro 5)
+    const openrouterApiKey = import.meta.env.OPENROUTER_API_KEY;
+    
     // Initialize service
     const openRouter = new OpenRouterService(openrouterApiKey);
 
