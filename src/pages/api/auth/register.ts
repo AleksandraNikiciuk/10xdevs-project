@@ -47,6 +47,9 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       console.log("[REGISTER] signUp completed");
       data = result.data;
       error = result.error;
+      console.log("[REGISTER] Has error:", !!error);
+      console.log("[REGISTER] Has data:", !!data);
+      console.log("[REGISTER] Has session:", !!data?.session);
     } catch (err) {
       return new Response(
         JSON.stringify({
@@ -63,6 +66,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     }
 
     if (error) {
+      console.log("[REGISTER] Error from Supabase:", error.message);
       if (error.message.includes("User already registered")) {
         return new Response(JSON.stringify({ error: "User with this email already exists." }), {
           status: 409,
@@ -80,13 +84,17 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     }
 
     if (data.session) {
+      console.log("[REGISTER] User has session, setting cookies");
       const { access_token, refresh_token } = data.session;
+      console.log("[REGISTER] Setting sb-access-token cookie");
       cookies.set("sb-access-token", access_token, {
         path: "/",
       });
+      console.log("[REGISTER] Setting sb-refresh-token cookie");
       cookies.set("sb-refresh-token", refresh_token, {
         path: "/",
       });
+      console.log("[REGISTER] Returning success response");
       return new Response(JSON.stringify({ message: "User created and logged in successfully" }), {
         status: 201,
         headers: {
@@ -95,6 +103,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       });
     }
 
+    console.log("[REGISTER] No session, returning email verification response");
     return new Response(
       JSON.stringify({
         message: "User created successfully. Please check your email to verify your account.",
