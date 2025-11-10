@@ -7,11 +7,18 @@ const authRoutes = ["/login", "/register", "/forgot-password"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   // Initialize Supabase client with env vars
-  // With Astro 5 env schema, import.meta.env is available both in dev and production (Cloudflare)
-  context.locals.supabase = createSupabaseAdmin({
+  // In Cloudflare Pages production: use context.locals.runtime.env
+  // In development: use import.meta.env
+  const env = context.locals.runtime?.env || {
     SUPABASE_URL: import.meta.env.SUPABASE_URL,
     SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
     SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+  };
+
+  context.locals.supabase = createSupabaseAdmin({
+    SUPABASE_URL: env.SUPABASE_URL,
+    SUPABASE_KEY: env.SUPABASE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: env.SUPABASE_SERVICE_ROLE_KEY,
   });
 
   const accessToken = context.cookies.get("sb-access-token")?.value;

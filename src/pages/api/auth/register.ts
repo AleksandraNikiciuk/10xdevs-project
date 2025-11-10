@@ -19,7 +19,12 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
         error: "Invalid data",
         details: validatedData.error.flatten(),
       }),
-      { status: 400 }
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
   }
 
@@ -37,16 +42,29 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
         error: "Failed to connect to authentication service",
         details: err instanceof Error ? err.message : String(err),
       }),
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
   }
 
   if (error) {
     if (error.message.includes("User already registered")) {
-      return new Response(JSON.stringify({ error: "User with this email already exists." }), { status: 409 });
+      return new Response(JSON.stringify({ error: "User with this email already exists." }), {
+        status: 409,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     }
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   }
 
@@ -60,6 +78,9 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     });
     return new Response(JSON.stringify({ message: "User created and logged in successfully" }), {
       status: 201,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   }
 
@@ -67,6 +88,11 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     JSON.stringify({
       message: "User created successfully. Please check your email to verify your account.",
     }),
-    { status: 201 }
+    {
+      status: 201,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
   );
 };
