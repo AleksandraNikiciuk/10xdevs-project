@@ -19,13 +19,37 @@
     </div>
 
     <script is:inline>
+      /* eslint-disable */
       (function () {
+        console.log('[CALLBACK PAGE] Full URL:', window.location.href);
+        console.log('[CALLBACK PAGE] Hash:', window.location.hash);
+        console.log('[CALLBACK PAGE] Search:', window.location.search);
+        
+        // Try to get tokens from hash first (e.g., #access_token=...)
+        let accessToken = null;
+        let refreshToken = null;
+        
         const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const accessToken = params.get('access_token');
-        const refreshToken = params.get('refresh_token');
+        if (hash) {
+          const hashParams = new URLSearchParams(hash);
+          accessToken = hashParams.get('access_token');
+          refreshToken = hashParams.get('refresh_token');
+          console.log('[CALLBACK PAGE] Tokens from hash - access:', !!accessToken, 'refresh:', !!refreshToken);
+        }
+        
+        // If not in hash, try query params (e.g., ?access_token=...)
+        if (!accessToken || !refreshToken) {
+          const search = window.location.search.substring(1);
+          if (search) {
+            const searchParams = new URLSearchParams(search);
+            accessToken = searchParams.get('access_token');
+            refreshToken = searchParams.get('refresh_token');
+            console.log('[CALLBACK PAGE] Tokens from query - access:', !!accessToken, 'refresh:', !!refreshToken);
+          }
+        }
 
         if (accessToken && refreshToken) {
+          console.log('[CALLBACK PAGE] Sending tokens to API...');
           fetch('/api/auth/callback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -35,23 +59,30 @@
             }),
           })
             .then(function (response) {
+              console.log('[CALLBACK PAGE] API response status:', response.status);
               if (response.ok) {
+                console.log('[CALLBACK PAGE] Success! Redirecting to /generate');
                 window.location.href = '/generate';
               } else {
-                response.json().then(function () {
+                return response.json().then(function (data) {
+                  console.error('[CALLBACK PAGE] API error:', data);
+                  alert('Failed to verify email: ' + (data.error || 'Unknown error'));
                   window.location.href = '/login';
                 });
               }
             })
-            .catch(function () {
+            .catch(function (error) {
+              console.error('[CALLBACK PAGE] Fetch error:', error);
               alert('Failed to verify email. Please try logging in manually.');
               window.location.href = '/login';
             });
         } else {
+          console.error('[CALLBACK PAGE] Missing tokens!');
           alert('Invalid verification link. Please try again.');
           window.location.href = '/login';
         }
       })();
+      /* eslint-enable */
     </script>
   </body>
 </html>

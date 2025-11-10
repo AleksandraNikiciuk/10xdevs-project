@@ -14,15 +14,30 @@ import { LoginForm } from "@/components/auth/LoginForm";
   <script is:inline>
     /* eslint-disable */
     (function () {
+      console.log("[LOGIN] Checking for auth tokens...");
       const hash = window.location.hash.substring(1);
+      const search = window.location.search.substring(1);
+      
       if (hash) {
         const params = new URLSearchParams(hash);
         const accessToken = params.get("access_token");
         const refreshToken = params.get("refresh_token");
 
         if (accessToken && refreshToken) {
-          console.log("[LOGIN] Found auth tokens in URL, redirecting to /auth/callback");
+          console.log("[LOGIN] Found auth tokens in hash, redirecting to /auth/callback");
           window.location.href = "/auth/callback" + window.location.hash;
+          return;
+        }
+      }
+      
+      if (search) {
+        const params = new URLSearchParams(search);
+        const accessToken = params.get("access_token");
+        const refreshToken = params.get("refresh_token");
+
+        if (accessToken && refreshToken) {
+          console.log("[LOGIN] Found auth tokens in query, redirecting to /auth/callback");
+          window.location.href = "/auth/callback" + window.location.search;
         }
       }
     })();
