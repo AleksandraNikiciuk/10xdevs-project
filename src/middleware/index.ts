@@ -1,14 +1,19 @@
 import { defineMiddleware } from "astro:middleware";
 
-import { supabaseAdmin } from "../db/supabase.client.ts";
+import { createSupabaseAdmin, supabaseAdmin } from "../db/supabase.client.ts";
 
 const protectedRoutes = ["/flashcards", "/manual-create"];
 const authRoutes = ["/login", "/register", "/forgot-password"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  // Use admin client for server-side operations (bypasses RLS)
-  // This is safe because we're on the server and validate user_id in our code
-  context.locals.supabase = supabaseAdmin;
+  // Initialize Supabase client with runtime env (Cloudflare) or fallback to import.meta.env (dev)
+  // In Cloudflare Pages, context.locals.runtime.env contains environment variables
+  if (context.locals.runtime?.env) {
+    context.locals.supabase = createSupabaseAdmin(context.locals.runtime.env);
+  } else {
+    // Fallback for development/testing where runtime.env is not available
+    context.locals.supabase = supabaseAdmin;
+  }
 
   const accessToken = context.cookies.get("sb-access-token")?.value;
   const refreshToken = context.cookies.get("sb-refresh-token")?.value;

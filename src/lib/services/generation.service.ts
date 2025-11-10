@@ -69,6 +69,7 @@ export interface GenerationServiceError extends Error {
 interface CreateGenerationParams {
   sourceText: string;
   supabase: SupabaseClient;
+  openrouterApiKey?: string;
 }
 
 // ============================================================================
@@ -111,10 +112,11 @@ function calculateDuration(startTime: number): number {
  * @throws {Error} Various OpenRouter errors that need to be caught and mapped
  */
 async function generateFlashcardsWithAI(
-  sourceText: string
+  sourceText: string,
+  openrouterApiKey?: string
 ): Promise<{ flashcards: { question: string; answer: string }[]; model: string }> {
   // Initialize OpenRouter service
-  const openRouter = new OpenRouterService();
+  const openRouter = new OpenRouterService(openrouterApiKey);
 
   // Create system prompt for flashcard generation
   const systemPrompt = `You are an expert educational content creator specializing in flashcard generation.
@@ -187,7 +189,7 @@ ${sourceText}`;
  * });
  */
 export async function createGeneration(params: CreateGenerationParams): Promise<CreateGenerationResultDTO> {
-  const { sourceText, supabase } = params;
+  const { sourceText, supabase, openrouterApiKey } = params;
   const userId = DEFAULT_USER_ID;
 
   // Start timer for generation duration
@@ -201,7 +203,7 @@ export async function createGeneration(params: CreateGenerationParams): Promise<
     // Step 2: Generate flashcards using OpenRouter AI
     let aiResponse;
     try {
-      aiResponse = await generateFlashcardsWithAI(sourceText);
+      aiResponse = await generateFlashcardsWithAI(sourceText, openrouterApiKey);
     } catch (error) {
       // Map OpenRouter errors to GenerationServiceError
       let errorCode = "AI_SERVICE_ERROR";

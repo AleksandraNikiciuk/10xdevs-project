@@ -1,12 +1,11 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { supabaseAdmin } from "@/db/supabase.client";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email(),
 });
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   const formData = await request.formData();
   const email = formData.get("email");
 
@@ -24,7 +23,7 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  const { error } = await supabaseAdmin.auth.resetPasswordForEmail(validatedData.data.email, {
+  const { error } = await locals.supabase.auth.resetPasswordForEmail(validatedData.data.email, {
     redirectTo: `${new URL(request.url).origin}/reset-password`,
   });
 

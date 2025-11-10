@@ -1,10 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { supabaseAdmin as supabase } from "../db/supabase.client";
 import { listFlashcards } from "../lib/services/flashcard.service";
 import { DEFAULT_USER_ID } from "../db/supabase.client";
 import FlashcardsView from "../components/flashcards/FlashcardsView";
 import type { FlashcardDTO } from "../types";
+
+// Use Supabase client from locals (set by middleware with runtime.env)
+const supabase = Astro.locals.supabase;
 
 let flashcards: FlashcardDTO[] = [];
 let error: string | null = null;

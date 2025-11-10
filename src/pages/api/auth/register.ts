@@ -1,8 +1,7 @@
 import type { APIRoute } from "astro";
-import { supabaseAdmin } from "@/db/supabase.client";
 import { registerSchema } from "@/lib/schemas/auth.schema";
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
@@ -26,7 +25,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
   let data, error;
   try {
-    const result = await supabaseAdmin.auth.signUp({
+    const result = await locals.supabase.auth.signUp({
       email: validatedData.data.email,
       password: validatedData.data.password,
     });

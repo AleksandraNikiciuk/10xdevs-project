@@ -1,8 +1,7 @@
 import type { APIRoute } from "astro";
-import { supabaseAdmin } from "@/db/supabase.client";
 import { loginSchema } from "@/lib/schemas/auth.schema";
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
@@ -22,7 +21,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     );
   }
 
-  const { data, error } = await supabaseAdmin.auth.signInWithPassword({
+  const { data, error } = await locals.supabase.auth.signInWithPassword({
     email: validatedData.data.email,
     password: validatedData.data.password,
   });

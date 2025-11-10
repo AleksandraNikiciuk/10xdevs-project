@@ -70,13 +70,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
       throw error;
     }
 
-    // Step 4: Create generation
+    // Step 4: Get OpenRouter API key from runtime env (Cloudflare) or import.meta.env (dev)
+    const openrouterApiKey = locals.runtime?.env?.OPENROUTER_API_KEY || import.meta.env.OPENROUTER_API_KEY;
+
+    // Step 5: Create generation
     const result: CreateGenerationResultDTO = await createGeneration({
       sourceText: validatedData.source_text,
       supabase,
+      openrouterApiKey,
     });
 
-    // Step 5: Return success response (201 Created)
+    // Step 6: Return success response (201 Created)
     return new Response(JSON.stringify(result), {
       status: 201,
       headers: {

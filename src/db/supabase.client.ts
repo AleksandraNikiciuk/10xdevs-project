@@ -3,30 +3,71 @@ import type { SupabaseClient as SupabaseClientType } from "@supabase/supabase-js
 
 import type { Database } from "../db/database.types.ts";
 
-// Cloudflare Workers compatibility: use process.env instead of import.meta.env
-const supabaseUrl = process.env.SUPABASE_URL || import.meta.env.SUPABASE_URL || "";
-const supabaseAnonKey = process.env.SUPABASE_KEY || import.meta.env.SUPABASE_KEY || "";
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY || "";
+/**
+ * Environment variables interface for Supabase configuration
+ */
+export interface SupabaseEnv {
+  SUPABASE_URL: string;
+  SUPABASE_KEY: string;
+  SUPABASE_SERVICE_ROLE_KEY: string;
+}
 
-// Client for public/authenticated operations (respects RLS)
-export const supabaseClient = createClient<Database>(
-  supabaseUrl || "https://placeholder.supabase.co",
-  supabaseAnonKey || "placeholder-key"
-);
+/**
+ * Creates a Supabase client for public/authenticated operations (respects RLS)
+ * Used in development with import.meta.env and in production with runtime.env
+ */
+export function createSupabaseClient(env?: SupabaseEnv): SupabaseClientType<Database> {
+  // Try to get from passed env, then from process.env, then from import.meta.env
+  const supabaseUrl = env?.SUPABASE_URL || 
+    (typeof process !== 'undefined' ? process.env.SUPABASE_URL : undefined) || 
+    (typeof import.meta !== 'undefined' ? import.meta.env.SUPABASE_URL : undefined) || 
+    "https://placeholder.supabase.co";
+  
+  const supabaseAnonKey = env?.SUPABASE_KEY || 
+    (typeof process !== 'undefined' ? process.env.SUPABASE_KEY : undefined) || 
+    (typeof import.meta !== 'undefined' ? import.meta.env.SUPABASE_KEY : undefined) || 
+    "placeholder-key";
 
-// Client for server-side operations
-// If service_role_key is available, bypasses RLS (production)
-// If not available, uses anon key with RLS (e.g., in tests with authenticated user)
-export const supabaseAdmin = createClient<Database>(
-  supabaseUrl || "https://placeholder.supabase.co",
-  supabaseServiceRoleKey || supabaseAnonKey || "placeholder-key",
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-);
+  return createClient<Database>(supabaseUrl, supabaseAnonKey);
+}
+
+/**
+ * Creates a Supabase admin client for server-side operations
+ * If service_role_key is available, bypasses RLS (production)
+ * If not available, uses anon key with RLS (e.g., in tests with authenticated user)
+ */
+export function createSupabaseAdmin(env?: SupabaseEnv): SupabaseClientType<Database> {
+  // Try to get from passed env, then from process.env, then from import.meta.env
+  const supabaseUrl = env?.SUPABASE_URL || 
+    (typeof process !== 'undefined' ? process.env.SUPABASE_URL : undefined) || 
+    (typeof import.meta !== 'undefined' ? import.meta.env.SUPABASE_URL : undefined) || 
+    "https://placeholder.supabase.co";
+  
+  const supabaseServiceRoleKey = env?.SUPABASE_SERVICE_ROLE_KEY || 
+    (typeof process !== 'undefined' ? process.env.SUPABASE_SERVICE_ROLE_KEY : undefined) || 
+    (typeof import.meta !== 'undefined' ? import.meta.env.SUPABASE_SERVICE_ROLE_KEY : undefined);
+  
+  const supabaseAnonKey = env?.SUPABASE_KEY || 
+    (typeof process !== 'undefined' ? process.env.SUPABASE_KEY : undefined) || 
+    (typeof import.meta !== 'undefined' ? import.meta.env.SUPABASE_KEY : undefined) || 
+    "placeholder-key";
+
+  return createClient<Database>(
+    supabaseUrl,
+    supabaseServiceRoleKey || supabaseAnonKey,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
+}
+
+// Legacy exports for backward compatibility in development/tests
+// These will work in dev mode with import.meta.env
+export const supabaseClient = createSupabaseClient();
+export const supabaseAdmin = createSupabaseAdmin();
 
 export type SupabaseClient = SupabaseClientType<Database>;
 
