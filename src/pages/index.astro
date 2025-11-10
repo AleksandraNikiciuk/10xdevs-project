@@ -63,40 +63,49 @@ const navItems = [
   <script is:inline>
     /* eslint-disable */
     (function () {
-      console.log("[INDEX] Checking for auth tokens...");
+      // IMMEDIATE execution check
+      var hasHash = window.location.hash.indexOf("access_token") > -1;
+      var hasQuery = window.location.search.indexOf("access_token") > -1;
+      
+      console.log("[INDEX] Script executing! Hash has token:", hasHash, "Query has token:", hasQuery);
       console.log("[INDEX] Full URL:", window.location.href);
       console.log("[INDEX] Hash:", window.location.hash);
       console.log("[INDEX] Search:", window.location.search);
 
       // Check if there are auth tokens in the URL hash
-      const hash = window.location.hash.substring(1);
-      if (hash) {
-        const params = new URLSearchParams(hash);
-        const accessToken = params.get("access_token");
-        const refreshToken = params.get("refresh_token");
+      var hash = window.location.hash.substring(1);
+      if (hash && hash.indexOf("access_token") > -1) {
+        console.log("[INDEX] Processing hash...");
+        var params = new URLSearchParams(hash);
+        var accessToken = params.get("access_token");
+        var refreshToken = params.get("refresh_token");
 
         console.log("[INDEX] Found in hash - access:", !!accessToken, "refresh:", !!refreshToken);
 
         // If we have tokens, redirect to the callback page
         if (accessToken && refreshToken) {
-          console.log("[INDEX] Redirecting to /auth/callback with tokens...");
+          console.log("[INDEX] ✓ REDIRECTING to /auth/callback with tokens...");
           window.location.href = "/auth/callback" + window.location.hash;
+          return; // Stop execution
+        }
+      }
+      
+      // Check query params
+      var search = window.location.search.substring(1);
+      if (search && search.indexOf("access_token") > -1) {
+        console.log("[INDEX] Processing query params...");
+        var params = new URLSearchParams(search);
+        var accessToken = params.get("access_token");
+        var refreshToken = params.get("refresh_token");
+
+        console.log("[INDEX] Found in query - access:", !!accessToken, "refresh:", !!refreshToken);
+
+        if (accessToken && refreshToken) {
+          console.log("[INDEX] ✓ REDIRECTING to /auth/callback with query params...");
+          window.location.href = "/auth/callback" + window.location.search;
         }
       } else {
-        console.log("[INDEX] No hash in URL, checking query params...");
-        const search = window.location.search.substring(1);
-        if (search) {
-          const params = new URLSearchParams(search);
-          const accessToken = params.get("access_token");
-          const refreshToken = params.get("refresh_token");
-
-          console.log("[INDEX] Found in query - access:", !!accessToken, "refresh:", !!refreshToken);
-
-          if (accessToken && refreshToken) {
-            console.log("[INDEX] Redirecting to /auth/callback with query params...");
-            window.location.href = "/auth/callback" + window.location.search;
-          }
-        }
+        console.log("[INDEX] No auth tokens found in URL");
       }
     })();
     /* eslint-enable */
