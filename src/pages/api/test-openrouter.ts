@@ -16,7 +16,7 @@ export const GET: APIRoute = async () => {
   try {
     // Get OpenRouter API key from import.meta.env (works in both dev and production with Astro 5)
     const openrouterApiKey = import.meta.env.OPENROUTER_API_KEY;
-    
+
     // Initialize service
     const openRouter = new OpenRouterService(openrouterApiKey);
 
