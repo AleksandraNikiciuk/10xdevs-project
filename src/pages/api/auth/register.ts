@@ -19,6 +19,8 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     });
 
     console.log("[REGISTER] Validation result:", validatedData.success);
+    console.log("[REGISTER] Supabase client available:", !!locals.supabase);
+    console.log("[REGISTER] Supabase auth available:", !!locals.supabase?.auth);
 
     if (!validatedData.success) {
       return new Response(
@@ -37,10 +39,12 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
 
     let data, error;
     try {
+      console.log("[REGISTER] About to call signUp");
       const result = await locals.supabase.auth.signUp({
         email: validatedData.data.email,
         password: validatedData.data.password,
       });
+      console.log("[REGISTER] signUp completed");
       data = result.data;
       error = result.error;
     } catch (err) {
