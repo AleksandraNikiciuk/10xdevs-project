@@ -67,7 +67,7 @@ const navItems = [
       console.log("[INDEX] Full URL:", window.location.href);
       console.log("[INDEX] Hash:", window.location.hash);
       console.log("[INDEX] Search:", window.location.search);
-      
+
       // Check if there are auth tokens in the URL hash
       const hash = window.location.hash.substring(1);
       if (hash) {
@@ -89,9 +89,9 @@ const navItems = [
           const params = new URLSearchParams(search);
           const accessToken = params.get("access_token");
           const refreshToken = params.get("refresh_token");
-          
+
           console.log("[INDEX] Found in query - access:", !!accessToken, "refresh:", !!refreshToken);
-          
+
           if (accessToken && refreshToken) {
             console.log("[INDEX] Redirecting to /auth/callback with query params...");
             window.location.href = "/auth/callback" + window.location.search;

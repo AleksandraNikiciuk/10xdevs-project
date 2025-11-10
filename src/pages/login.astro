@@ -17,7 +17,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
       console.log("[LOGIN] Checking for auth tokens...");
       const hash = window.location.hash.substring(1);
       const search = window.location.search.substring(1);
-      
+
       if (hash) {
         const params = new URLSearchParams(hash);
         const accessToken = params.get("access_token");
@@ -29,7 +29,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
           return;
         }
       }
-      
+
       if (search) {
         const params = new URLSearchParams(search);
         const accessToken = params.get("access_token");

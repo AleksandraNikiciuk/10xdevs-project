@@ -9,21 +9,77 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verifying...</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .container {
+        background: #f5f5f5;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+      .log-entry {
+        padding: 8px;
+        margin: 4px 0;
+        background: white;
+        border-left: 3px solid #4CAF50;
+        font-family: monospace;
+        font-size: 12px;
+      }
+      .log-entry.error {
+        border-left-color: #f44336;
+        background: #ffebee;
+      }
+      .log-entry.info {
+        border-left-color: #2196F3;
+      }
+      h2 {
+        margin-top: 0;
+      }
+    </style>
   </head>
   <body>
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: system-ui;">
-      <div style="text-align: center;">
-        <h2>Verifying your email...</h2>
-        <p>Please wait while we log you in.</p>
-      </div>
+    <div style="text-align: center;">
+      <h2>Verifying your email...</h2>
+      <p id="status">Please wait while we log you in.</p>
+    </div>
+    
+    <div class="container">
+      <h3>Debug Logs:</h3>
+      <div id="logs"></div>
     </div>
 
     <script is:inline>
       /* eslint-disable */
       (function () {
-        console.log('[CALLBACK PAGE] Full URL:', window.location.href);
-        console.log('[CALLBACK PAGE] Hash:', window.location.hash);
-        console.log('[CALLBACK PAGE] Search:', window.location.search);
+        const logsDiv = document.getElementById('logs');
+        const statusP = document.getElementById('status');
+        
+        function addLog(message, type) {
+          type = type || 'info';
+          const entry = document.createElement('div');
+          entry.className = 'log-entry ' + type;
+          entry.textContent = new Date().toISOString().split('T')[1].split('.')[0] + ' - ' + message;
+          logsDiv.appendChild(entry);
+          console.log("[CALLBACK PAGE]", message);
+          
+          // Save to localStorage
+          const logs = JSON.parse(localStorage.getItem('auth_debug_logs') || '[]');
+          logs.push({ time: new Date().toISOString(), message: message, type: type });
+          localStorage.setItem('auth_debug_logs', JSON.stringify(logs.slice(-50))); // Keep last 50
+        }
+        
+        function setStatus(message) {
+          statusP.textContent = message;
+        }
+        
+        addLog("Full URL: " + window.location.href);
+        addLog("Hash: " + window.location.hash);
+        addLog("Search: " + window.location.search);
         
         // Try to get tokens from hash first (e.g., #access_token=...)
         let accessToken = null;
@@ -31,55 +87,75 @@
         
         const hash = window.location.hash.substring(1);
         if (hash) {
+          addLog("Parsing hash parameters...");
           const hashParams = new URLSearchParams(hash);
-          accessToken = hashParams.get('access_token');
-          refreshToken = hashParams.get('refresh_token');
-          console.log('[CALLBACK PAGE] Tokens from hash - access:', !!accessToken, 'refresh:', !!refreshToken);
+          accessToken = hashParams.get("access_token");
+          refreshToken = hashParams.get("refresh_token");
+          addLog("Tokens from hash - access: " + !!accessToken + ", refresh: " + !!refreshToken);
+          if (accessToken) addLog("Access token length: " + accessToken.length);
+          if (refreshToken) addLog("Refresh token length: " + refreshToken.length);
         }
         
         // If not in hash, try query params (e.g., ?access_token=...)
         if (!accessToken || !refreshToken) {
           const search = window.location.search.substring(1);
           if (search) {
+            addLog("Parsing query parameters...");
             const searchParams = new URLSearchParams(search);
-            accessToken = searchParams.get('access_token');
-            refreshToken = searchParams.get('refresh_token');
-            console.log('[CALLBACK PAGE] Tokens from query - access:', !!accessToken, 'refresh:', !!refreshToken);
+            accessToken = searchParams.get("access_token");
+            refreshToken = searchParams.get("refresh_token");
+            addLog("Tokens from query - access: " + !!accessToken + ", refresh: " + !!refreshToken);
           }
         }
 
         if (accessToken && refreshToken) {
-          console.log('[CALLBACK PAGE] Sending tokens to API...');
-          fetch('/api/auth/callback', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+          addLog("✓ Both tokens found! Sending to API...");
+          setStatus("Verifying tokens with server...");
+          
+          fetch("/api/auth/callback", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               access_token: accessToken,
               refresh_token: refreshToken,
             }),
           })
             .then(function (response) {
-              console.log('[CALLBACK PAGE] API response status:', response.status);
+              addLog("API response status: " + response.status);
               if (response.ok) {
-                console.log('[CALLBACK PAGE] Success! Redirecting to /generate');
-                window.location.href = '/generate';
+                return response.json().then(function(data) {
+                  addLog("✓ Success! User: " + (data.user ? data.user.email : 'unknown'), 'info');
+                  setStatus("Success! Redirecting to dashboard...");
+                  setTimeout(function() {
+                    window.location.href = "/generate";
+                  }, 2000); // 2 second delay so user can see the logs
+                });
               } else {
                 return response.json().then(function (data) {
-                  console.error('[CALLBACK PAGE] API error:', data);
-                  alert('Failed to verify email: ' + (data.error || 'Unknown error'));
-                  window.location.href = '/login';
+                  addLog("✗ API error: " + JSON.stringify(data), 'error');
+                  setStatus("Verification failed!");
+                  alert("Failed to verify email: " + (data.error || "Unknown error"));
+                  setTimeout(function() {
+                    window.location.href = "/login";
+                  }, 1000);
                 });
               }
             })
             .catch(function (error) {
-              console.error('[CALLBACK PAGE] Fetch error:', error);
-              alert('Failed to verify email. Please try logging in manually.');
-              window.location.href = '/login';
+              addLog("✗ Fetch error: " + error.message, 'error');
+              setStatus("Connection error!");
+              alert("Failed to verify email. Please try logging in manually.");
+              setTimeout(function() {
+                window.location.href = "/login";
+              }, 1000);
             });
         } else {
-          console.error('[CALLBACK PAGE] Missing tokens!');
-          alert('Invalid verification link. Please try again.');
-          window.location.href = '/login';
+          addLog("✗ Missing tokens! access: " + !!accessToken + ", refresh: " + !!refreshToken, 'error');
+          setStatus("Invalid verification link!");
+          alert("Invalid verification link. Please try again.");
+          setTimeout(function() {
+            window.location.href = "/login";
+          }, 1000);
         }
       })();
       /* eslint-enable */
