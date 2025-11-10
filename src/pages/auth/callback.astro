@@ -18,50 +18,40 @@
       </div>
     </div>
 
-    <script>
-      // Extract tokens from URL hash fragment
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
+    <script is:inline>
+      (function () {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
 
-      const accessToken = params.get('access_token');
-      const refreshToken = params.get('refresh_token');
-      const type = params.get('type');
-
-      console.log('[CALLBACK] Hash params:', { hasAccessToken: !!accessToken, hasRefreshToken: !!refreshToken, type });
-
-      if (accessToken && refreshToken) {
-        // Send tokens to server to set cookies
-        fetch('/api/auth/callback', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          }),
-        })
-          .then((response) => {
-            console.log('[CALLBACK] Server response status:', response.status);
-            if (response.ok) {
-              // Redirect to generate page
-              window.location.href = '/generate';
-            } else {
-              return response.json().then((data) => {
-                throw new Error(data.error || 'Failed to set session');
-              });
-            }
+        if (accessToken && refreshToken) {
+          fetch('/api/auth/callback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            }),
           })
-          .catch((error) => {
-            console.error('[CALLBACK] Error:', error);
-            alert('Failed to verify email. Please try logging in manually.');
-            window.location.href = '/login';
-          });
-      } else {
-        console.error('[CALLBACK] Missing tokens in URL hash');
-        alert('Invalid verification link. Please try again.');
-        window.location.href = '/login';
-      }
+            .then(function (response) {
+              if (response.ok) {
+                window.location.href = '/generate';
+              } else {
+                response.json().then(function () {
+                  window.location.href = '/login';
+                });
+              }
+            })
+            .catch(function () {
+              alert('Failed to verify email. Please try logging in manually.');
+              window.location.href = '/login';
+            });
+        } else {
+          alert('Invalid verification link. Please try again.');
+          window.location.href = '/login';
+        }
+      })();
     </script>
   </body>
 </html>
