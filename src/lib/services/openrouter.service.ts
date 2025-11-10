@@ -112,9 +112,10 @@ export class OpenRouterService {
    * @throws {ConfigurationError} If OPENROUTER_API_KEY is not provided and not set in environment variables
    */
   constructor(apiKey?: string) {
-    const key = apiKey || 
-      (typeof import.meta !== 'undefined' ? import.meta.env.OPENROUTER_API_KEY : undefined) || 
-      (typeof process !== 'undefined' ? process.env.OPENROUTER_API_KEY : undefined);
+    const key =
+      apiKey ||
+      (typeof import.meta !== "undefined" ? import.meta.env.OPENROUTER_API_KEY : undefined) ||
+      (typeof process !== "undefined" ? process.env.OPENROUTER_API_KEY : undefined);
 
     if (!key) {
       throw new ConfigurationError("OPENROUTER_API_KEY is not set in environment variables.");

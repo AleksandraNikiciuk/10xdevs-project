@@ -7,6 +7,7 @@ Aplikacja nie działała na produkcji (Cloudflare Pages) z błędem 500 podczas 
 ### Przyczyna
 
 Z flagą `disable_nodejs_process_v2` w Cloudflare Workers/Pages:
+
 - Zmienne środowiskowe NIE są dostępne przez `process.env` ani `import.meta.env` w runtime
 - Kod próbował odczytać zmienne podczas importu modułów, co nie działa na Cloudflare
 - Zmienne w Cloudflare Pages są dostępne tylko przez `context.locals.runtime.env`
@@ -23,11 +24,13 @@ Z flagą `disable_nodejs_process_v2` w Cloudflare Workers/Pages:
 ### Produkcja (Cloudflare Pages)
 
 Zmienne są już dodane w Cloudflare Dashboard:
+
 - **Workers & Pages** → **10xdevs-project** → **Settings** → **Variables and Secrets** → **Production**
 
 Wymagane zmienne:
+
 - `SUPABASE_URL`
-- `SUPABASE_KEY` 
+- `SUPABASE_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `OPENROUTER_API_KEY`
 
@@ -55,11 +58,13 @@ npx wrangler pages dev ./dist
 ## Jak działa teraz aplikacja
 
 ### W Development
+
 - Używa `import.meta.env` z plików `.env`
 - Fallback do legacy `process.env`
 - Kompatybilne z Astro dev server
 
 ### Na Produkcji (Cloudflare)
+
 - Middleware pobiera zmienne z `context.locals.runtime.env`
 - Tworzy klientów Supabase dynamicznie z tymi zmiennymi
 - Przekazuje `OPENROUTER_API_KEY` do serwisów AI
@@ -133,12 +138,14 @@ Każdy push do `master` branch automatycznie deployuje na Cloudflare Pages.
 ### Błąd "OPENROUTER_API_KEY is not set"?
 
 Oznacza to że:
+
 - Zmienna nie jest ustawiona w Cloudflare, LUB
 - Nie zrobiono re-deploy po dodaniu zmiennej
 
 ### Błąd Supabase connection?
 
 Sprawdź czy zmienne Supabase są prawidłowe:
+
 - `SUPABASE_URL` - powinien zawierać pełny URL (https://xxx.supabase.co)
 - `SUPABASE_KEY` - anon/public key
 - `SUPABASE_SERVICE_ROLE_KEY` - service role key (secret)
@@ -148,6 +155,7 @@ Sprawdź czy zmienne Supabase są prawidłowe:
 ### Flaga `disable_nodejs_process_v2`
 
 Ta flaga jest ustawiona **świadomie** w `wrangler.jsonc`. Dzięki niej:
+
 - Aplikacja jest bardziej kompatybilna z Cloudflare Workers runtime
 - Kod jest bardziej explicitly przystosowany do serverless environment
 - Zmniejsza ryzyko nieoczekiwanych zachowań związanych z `process.env`
@@ -155,6 +163,7 @@ Ta flaga jest ustawiona **świadomie** w `wrangler.jsonc`. Dzięki niej:
 ### Kompatybilność wsteczna
 
 Wszystkie zmiany zachowują kompatybilność wsteczną:
+
 - Development mode działa jak wcześniej
 - Testy działają bez zmian
 - Legacy exports są dostępne
@@ -164,4 +173,3 @@ Wszystkie zmiany zachowują kompatybilność wsteczną:
 1. **Monitoring** - dodaj Cloudflare Analytics/Logging
 2. **Secrets rotation** - regularnie zmieniaj klucze API
 3. **Environment-specific configs** - rozważ separate configs dla staging
-

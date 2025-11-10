@@ -16,7 +16,7 @@ export const GET: APIRoute = async ({ locals }) => {
   try {
     // Get OpenRouter API key from runtime env (Cloudflare) or import.meta.env (dev)
     const openrouterApiKey = locals.runtime?.env?.OPENROUTER_API_KEY || import.meta.env.OPENROUTER_API_KEY;
-    
+
     // Initialize service
     const openRouter = new OpenRouterService(openrouterApiKey);
 

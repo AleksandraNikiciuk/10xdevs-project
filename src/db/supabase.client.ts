@@ -18,14 +18,16 @@ export interface SupabaseEnv {
  */
 export function createSupabaseClient(env?: SupabaseEnv): SupabaseClientType<Database> {
   // Try to get from passed env, then from process.env, then from import.meta.env
-  const supabaseUrl = env?.SUPABASE_URL || 
-    (typeof process !== 'undefined' ? process.env.SUPABASE_URL : undefined) || 
-    (typeof import.meta !== 'undefined' ? import.meta.env.SUPABASE_URL : undefined) || 
+  const supabaseUrl =
+    env?.SUPABASE_URL ||
+    (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined) ||
+    (typeof import.meta !== "undefined" ? import.meta.env.SUPABASE_URL : undefined) ||
     "https://placeholder.supabase.co";
-  
-  const supabaseAnonKey = env?.SUPABASE_KEY || 
-    (typeof process !== 'undefined' ? process.env.SUPABASE_KEY : undefined) || 
-    (typeof import.meta !== 'undefined' ? import.meta.env.SUPABASE_KEY : undefined) || 
+
+  const supabaseAnonKey =
+    env?.SUPABASE_KEY ||
+    (typeof process !== "undefined" ? process.env.SUPABASE_KEY : undefined) ||
+    (typeof import.meta !== "undefined" ? import.meta.env.SUPABASE_KEY : undefined) ||
     "placeholder-key";
 
   return createClient<Database>(supabaseUrl, supabaseAnonKey);
@@ -38,30 +40,29 @@ export function createSupabaseClient(env?: SupabaseEnv): SupabaseClientType<Data
  */
 export function createSupabaseAdmin(env?: SupabaseEnv): SupabaseClientType<Database> {
   // Try to get from passed env, then from process.env, then from import.meta.env
-  const supabaseUrl = env?.SUPABASE_URL || 
-    (typeof process !== 'undefined' ? process.env.SUPABASE_URL : undefined) || 
-    (typeof import.meta !== 'undefined' ? import.meta.env.SUPABASE_URL : undefined) || 
+  const supabaseUrl =
+    env?.SUPABASE_URL ||
+    (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined) ||
+    (typeof import.meta !== "undefined" ? import.meta.env.SUPABASE_URL : undefined) ||
     "https://placeholder.supabase.co";
-  
-  const supabaseServiceRoleKey = env?.SUPABASE_SERVICE_ROLE_KEY || 
-    (typeof process !== 'undefined' ? process.env.SUPABASE_SERVICE_ROLE_KEY : undefined) || 
-    (typeof import.meta !== 'undefined' ? import.meta.env.SUPABASE_SERVICE_ROLE_KEY : undefined);
-  
-  const supabaseAnonKey = env?.SUPABASE_KEY || 
-    (typeof process !== 'undefined' ? process.env.SUPABASE_KEY : undefined) || 
-    (typeof import.meta !== 'undefined' ? import.meta.env.SUPABASE_KEY : undefined) || 
+
+  const supabaseServiceRoleKey =
+    env?.SUPABASE_SERVICE_ROLE_KEY ||
+    (typeof process !== "undefined" ? process.env.SUPABASE_SERVICE_ROLE_KEY : undefined) ||
+    (typeof import.meta !== "undefined" ? import.meta.env.SUPABASE_SERVICE_ROLE_KEY : undefined);
+
+  const supabaseAnonKey =
+    env?.SUPABASE_KEY ||
+    (typeof process !== "undefined" ? process.env.SUPABASE_KEY : undefined) ||
+    (typeof import.meta !== "undefined" ? import.meta.env.SUPABASE_KEY : undefined) ||
     "placeholder-key";
 
-  return createClient<Database>(
-    supabaseUrl,
-    supabaseServiceRoleKey || supabaseAnonKey,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    }
-  );
+  return createClient<Database>(supabaseUrl, supabaseServiceRoleKey || supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 }
 
 // Legacy exports for backward compatibility in development/tests
