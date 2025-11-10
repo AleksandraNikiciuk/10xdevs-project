@@ -43,6 +43,9 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       const result = await locals.supabase.auth.signUp({
         email: validatedData.data.email,
         password: validatedData.data.password,
+        options: {
+          emailRedirectTo: `${new URL(request.url).origin}/auth/callback`,
+        },
       });
       console.log("[REGISTER] signUp completed");
       data = result.data;
