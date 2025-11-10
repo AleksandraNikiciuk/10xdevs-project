@@ -11,7 +11,10 @@
     <title>Verifying...</title>
     <style>
       body {
-        font-family: system-ui, -apple-system, sans-serif;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
         max-width: 800px;
         margin: 0 auto;
         padding: 20px;
@@ -26,7 +29,7 @@
         padding: 8px;
         margin: 4px 0;
         background: white;
-        border-left: 3px solid #4CAF50;
+        border-left: 3px solid #4caf50;
         font-family: monospace;
         font-size: 12px;
       }
@@ -35,7 +38,7 @@
         background: #ffebee;
       }
       .log-entry.info {
-        border-left-color: #2196F3;
+        border-left-color: #2196f3;
       }
       h2 {
         margin-top: 0;
@@ -47,7 +50,7 @@
       <h2>Verifying your email...</h2>
       <p id="status">Please wait while we log you in.</p>
     </div>
-    
+
     <div class="container">
       <h3>Debug Logs:</h3>
       <div id="logs"></div>
@@ -56,35 +59,35 @@
     <script is:inline>
       /* eslint-disable */
       (function () {
-        const logsDiv = document.getElementById('logs');
-        const statusP = document.getElementById('status');
-        
+        const logsDiv = document.getElementById("logs");
+        const statusP = document.getElementById("status");
+
         function addLog(message, type) {
-          type = type || 'info';
-          const entry = document.createElement('div');
-          entry.className = 'log-entry ' + type;
-          entry.textContent = new Date().toISOString().split('T')[1].split('.')[0] + ' - ' + message;
+          type = type || "info";
+          const entry = document.createElement("div");
+          entry.className = "log-entry " + type;
+          entry.textContent = new Date().toISOString().split("T")[1].split(".")[0] + " - " + message;
           logsDiv.appendChild(entry);
           console.log("[CALLBACK PAGE]", message);
-          
+
           // Save to localStorage
-          const logs = JSON.parse(localStorage.getItem('auth_debug_logs') || '[]');
+          const logs = JSON.parse(localStorage.getItem("auth_debug_logs") || "[]");
           logs.push({ time: new Date().toISOString(), message: message, type: type });
-          localStorage.setItem('auth_debug_logs', JSON.stringify(logs.slice(-50))); // Keep last 50
+          localStorage.setItem("auth_debug_logs", JSON.stringify(logs.slice(-50))); // Keep last 50
         }
-        
+
         function setStatus(message) {
           statusP.textContent = message;
         }
-        
+
         addLog("Full URL: " + window.location.href);
         addLog("Hash: " + window.location.hash);
         addLog("Search: " + window.location.search);
-        
+
         // Try to get tokens from hash first (e.g., #access_token=...)
         let accessToken = null;
         let refreshToken = null;
-        
+
         const hash = window.location.hash.substring(1);
         if (hash) {
           addLog("Parsing hash parameters...");
@@ -95,7 +98,7 @@
           if (accessToken) addLog("Access token length: " + accessToken.length);
           if (refreshToken) addLog("Refresh token length: " + refreshToken.length);
         }
-        
+
         // If not in hash, try query params (e.g., ?access_token=...)
         if (!accessToken || !refreshToken) {
           const search = window.location.search.substring(1);
@@ -111,7 +114,7 @@
         if (accessToken && refreshToken) {
           addLog("✓ Both tokens found! Sending to API...");
           setStatus("Verifying tokens with server...");
-          
+
           fetch("/api/auth/callback", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -123,37 +126,37 @@
             .then(function (response) {
               addLog("API response status: " + response.status);
               if (response.ok) {
-                return response.json().then(function(data) {
-                  addLog("✓ Success! User: " + (data.user ? data.user.email : 'unknown'), 'info');
+                return response.json().then(function (data) {
+                  addLog("✓ Success! User: " + (data.user ? data.user.email : "unknown"), "info");
                   setStatus("Success! Redirecting to dashboard...");
-                  setTimeout(function() {
+                  setTimeout(function () {
                     window.location.href = "/generate";
                   }, 2000); // 2 second delay so user can see the logs
                 });
               } else {
                 return response.json().then(function (data) {
-                  addLog("✗ API error: " + JSON.stringify(data), 'error');
+                  addLog("✗ API error: " + JSON.stringify(data), "error");
                   setStatus("Verification failed!");
                   alert("Failed to verify email: " + (data.error || "Unknown error"));
-                  setTimeout(function() {
+                  setTimeout(function () {
                     window.location.href = "/login";
                   }, 1000);
                 });
               }
             })
             .catch(function (error) {
-              addLog("✗ Fetch error: " + error.message, 'error');
+              addLog("✗ Fetch error: " + error.message, "error");
               setStatus("Connection error!");
               alert("Failed to verify email. Please try logging in manually.");
-              setTimeout(function() {
+              setTimeout(function () {
                 window.location.href = "/login";
               }, 1000);
             });
         } else {
-          addLog("✗ Missing tokens! access: " + !!accessToken + ", refresh: " + !!refreshToken, 'error');
+          addLog("✗ Missing tokens! access: " + !!accessToken + ", refresh: " + !!refreshToken, "error");
           setStatus("Invalid verification link!");
           alert("Invalid verification link. Please try again.");
-          setTimeout(function() {
+          setTimeout(function () {
             window.location.href = "/login";
           }, 1000);
         }
