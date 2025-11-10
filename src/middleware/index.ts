@@ -9,11 +9,20 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Initialize Supabase client with env vars
   // In Cloudflare Pages production: use context.locals.runtime.env
   // In development: use import.meta.env
+
+  // Debug logging to see what's available
+  console.log("Runtime exists:", !!context.locals.runtime);
+  console.log("Runtime env exists:", !!context.locals.runtime?.env);
+
   const env = context.locals.runtime?.env || {
     SUPABASE_URL: import.meta.env.SUPABASE_URL,
     SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
     SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
   };
+
+  console.log("SUPABASE_URL available:", !!env.SUPABASE_URL);
+  console.log("SUPABASE_KEY available:", !!env.SUPABASE_KEY);
+  console.log("SUPABASE_SERVICE_ROLE_KEY available:", !!env.SUPABASE_SERVICE_ROLE_KEY);
 
   context.locals.supabase = createSupabaseAdmin({
     SUPABASE_URL: env.SUPABASE_URL,
