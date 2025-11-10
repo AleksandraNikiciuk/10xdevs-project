@@ -29,17 +29,13 @@ Ten dokument pomoże Ci zaktualizować istniejące komponenty do Material Design
 ### Przed (Legacy)
 
 ```tsx
-<div className="bg-primary text-primary-foreground">
-  Przycisk
-</div>
+<div className="bg-primary text-primary-foreground">Przycisk</div>
 ```
 
 ### Po (MD3 - Rekomendowane)
 
 ```tsx
-<div className="bg-md-primary text-md-on-primary">
-  Przycisk
-</div>
+<div className="bg-md-primary text-md-on-primary">Przycisk</div>
 ```
 
 ### Nowe możliwości - Containers
@@ -84,6 +80,7 @@ Ten dokument pomoże Ci zaktualizować istniejące komponenty do Material Design
 ```
 
 **Co się zmieniło?**
+
 - ❌ `bg-card` → ✅ `elevation-2` (automatyczny background + shadow)
 - ❌ `rounded-lg` → ✅ `shape-md` (MD3 shape token)
 - ❌ `shadow-md` → ✅ (wbudowane w elevation)
@@ -111,6 +108,7 @@ Ten dokument pomoże Ci zaktualizować istniejące komponenty do Material Design
 ```
 
 **Zalety state layers:**
+
 - ✅ Automatyczny hover (8% opacity overlay)
 - ✅ Automatyczny focus (12% opacity overlay)
 - ✅ Automatyczny active/pressed (12% opacity overlay)
@@ -170,15 +168,16 @@ Ten dokument pomoże Ci zaktualizować istniejące komponenty do Material Design
 
 ### Type Scale - Kiedy używać?
 
-| **Class**              | **Użycie**                                      |
-|------------------------|-------------------------------------------------|
-| `text-display-*`       | Hero sections, główne nagłówki strony           |
-| `text-headline-*`      | Nagłówki sekcji, ważne tytuły                   |
-| `text-title-*`         | Tytuły komponentów (karty, dialogi)             |
-| `text-body-*`          | Tekst treści, paragrafy                         |
-| `text-label-*`         | Etykiety przycisków, pól formularza, tagi       |
+| **Class**         | **Użycie**                                |
+| ----------------- | ----------------------------------------- |
+| `text-display-*`  | Hero sections, główne nagłówki strony     |
+| `text-headline-*` | Nagłówki sekcji, ważne tytuły             |
+| `text-title-*`    | Tytuły komponentów (karty, dialogi)       |
+| `text-body-*`     | Tekst treści, paragrafy                   |
+| `text-label-*`    | Etykiety przycisków, pól formularza, tagi |
 
 **Zalety:**
+
 - ✅ Precyzyjne `line-height` dla czytelności
 - ✅ Zoptymalizowane `letter-spacing`
 - ✅ Spójne wagi czcionek (`font-weight`)
@@ -208,6 +207,7 @@ Ten dokument pomoże Ci zaktualizować istniejące komponenty do Material Design
 ```
 
 **Kiedy używać którego?**
+
 - **Extra Small (4px)**: Małe przyciski, chips, badges
 - **Small (8px)**: Karty, input fields
 - **Medium (12px)**: Dialogi, większe karty (domyślny)
@@ -222,33 +222,29 @@ Ten dokument pomoże Ci zaktualizować istniejące komponenty do Material Design
 ### Przed
 
 ```tsx
-<div className="transition-all duration-300 ease-in-out">
-  Element
-</div>
+<div className="transition-all duration-300 ease-in-out">Element</div>
 ```
 
 ### Po (MD3 Motion)
 
 ```tsx
-<div className="transition-all duration-medium-2 transition-standard">
-  Element
-</div>
+<div className="transition-all duration-medium-2 transition-standard">Element</div>
 ```
 
 ### Motion Tokens - Kiedy używać?
 
-| **Duration**        | **Czas**  | **Użycie**                                  |
-|---------------------|-----------|---------------------------------------------|
-| `duration-short-*`  | 50-200ms  | Micro-interactions (hover, focus)           |
-| `duration-medium-*` | 250-400ms | Standard transitions (expand, fade)         |
-| `duration-long-*`   | 450-600ms | Complex animations (page transitions)       |
+| **Duration**        | **Czas**  | **Użycie**                            |
+| ------------------- | --------- | ------------------------------------- |
+| `duration-short-*`  | 50-200ms  | Micro-interactions (hover, focus)     |
+| `duration-medium-*` | 250-400ms | Standard transitions (expand, fade)   |
+| `duration-long-*`   | 450-600ms | Complex animations (page transitions) |
 
-| **Easing**                        | **Użycie**                           |
-|-----------------------------------|--------------------------------------|
-| `transition-standard`             | Większość animacji                   |
-| `transition-emphasized`           | Ważne akcje użytkownika              |
-| `transition-emphasized-decelerate`| Entrance animations (wejście)        |
-| `transition-emphasized-accelerate`| Exit animations (wyjście)            |
+| **Easing**                         | **Użycie**                    |
+| ---------------------------------- | ----------------------------- |
+| `transition-standard`              | Większość animacji            |
+| `transition-emphasized`            | Ważne akcje użytkownika       |
+| `transition-emphasized-decelerate` | Entrance animations (wejście) |
+| `transition-emphasized-accelerate` | Exit animations (wyjście)     |
 
 **Przykłady:**
 
@@ -364,17 +360,9 @@ function ProductCard({ name, price, image }: ProductCardProps) {
 function ProductCard({ name, price, image }: ProductCardProps) {
   return (
     <article className="elevation-2 shape-md p-6 transition-all duration-medium-2 transition-standard hover:elevation-3">
-      <img 
-        src={image} 
-        alt={name} 
-        className="w-full h-48 object-cover shape-sm mb-4" 
-      />
-      <h3 className="text-title-large text-md-on-surface mb-2">
-        {name}
-      </h3>
-      <p className="text-headline-small text-md-primary mb-4">
-        ${price}
-      </p>
+      <img src={image} alt={name} className="w-full h-48 object-cover shape-sm mb-4" />
+      <h3 className="text-title-large text-md-on-surface mb-2">{name}</h3>
+      <p className="text-headline-small text-md-primary mb-4">${price}</p>
       <button className="state-layer w-full bg-md-primary text-md-on-primary py-3 shape-full text-label-large">
         Dodaj do koszyka
       </button>
@@ -398,7 +386,7 @@ function ProductCard({ name, price, image }: ProductCardProps) {
 
 ## 📱 Dark Mode
 
-**Nie musisz nic zmieniać!** 
+**Nie musisz nic zmieniać!**
 
 Wszystkie tokeny MD3 automatycznie adaptują się do dark mode:
 
@@ -415,18 +403,21 @@ Wszystkie tokeny MD3 automatycznie adaptują się do dark mode:
 ## 🎯 Priorytety migracji
 
 ### 1. Krytyczne (zrób najpierw)
+
 - [ ] Przyciski głównych akcji (CTA)
 - [ ] Formularze (inputy, focus indicators)
 - [ ] Komunikaty błędów
 - [ ] Nawigacja
 
 ### 2. Ważne (zrób wkrótce)
+
 - [ ] Karty produktów/treści
 - [ ] Dialogi i modals
 - [ ] Alerty i toasts
 - [ ] Typografia nagłówków
 
 ### 3. Opcjonalne (zrób gdy masz czas)
+
 - [ ] Dekoracyjne elementy
 - [ ] Footers
 - [ ] Marketing sections
@@ -487,10 +478,12 @@ Wszystkie tokeny MD3 automatycznie adaptują się do dark mode:
 
 ```tsx
 // W rare cases gdy potrzebujesz raw value
-<div style={{ 
-  backgroundColor: 'var(--md-primary)',
-  borderRadius: 'var(--md-shape-large)'
-}}>
+<div
+  style={{
+    backgroundColor: "var(--md-primary)",
+    borderRadius: "var(--md-shape-large)",
+  }}
+>
   Custom styling
 </div>
 ```
@@ -503,12 +496,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'brand-primary': 'var(--md-primary)',
-        'brand-surface': 'var(--md-surface-container)',
-      }
-    }
-  }
-}
+        "brand-primary": "var(--md-primary)",
+        "brand-surface": "var(--md-surface-container)",
+      },
+    },
+  },
+};
 ```
 
 ### 3. Create component variants
@@ -520,7 +513,7 @@ const buttonVariants = {
   secondary: "state-layer bg-md-secondary-container text-md-on-secondary-container",
   tertiary: "state-layer bg-md-tertiary-container text-md-on-tertiary-container",
   outlined: "state-layer border border-md-outline text-md-primary",
-  text: "state-layer text-md-primary"
+  text: "state-layer text-md-primary",
 };
 ```
 
@@ -536,4 +529,3 @@ const buttonVariants = {
 ---
 
 **Happy migrating! 🚀**
-

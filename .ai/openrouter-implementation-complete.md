@@ -22,6 +22,7 @@ Główny serwis z pełną funkcjonalnością:
   - `_parseAndValidateResponse()` - parsowanie i walidacja odpowiedzi
 
 **Kluczowe cechy:**
+
 - Pełne typowanie generyczne z Zod
 - Automatyczna konwersja schematów Zod do JSON Schema
 - Wsparcie dla `import.meta.env` (Astro) i `process.env` (Node)
@@ -33,11 +34,11 @@ Główny serwis z pełną funkcjonalnością:
 5 dedykowanych klas błędów dla precyzyjnej obsługi:
 
 ```typescript
-- ConfigurationError       // Brak klucza API
-- OpenRouterApiError       // Błędy API (401, 429, 5xx)
-- NetworkError            // Problemy z połączeniem
-- InvalidResponseJsonError // Nieparsowalne JSON
-- SchemaValidationError   // Niezgodność ze schematem Zod
+-ConfigurationError - // Brak klucza API
+  OpenRouterApiError - // Błędy API (401, 429, 5xx)
+  NetworkError - // Problemy z połączeniem
+  InvalidResponseJsonError - // Nieparsowalne JSON
+  SchemaValidationError; // Niezgodność ze schematem Zod
 ```
 
 ### 3. Integracja z ai.service.ts
@@ -83,16 +84,16 @@ Zintegrowano `OpenRouterService` z istniejącą logiką generowania fiszek:
 
 ## 🎯 Zgodność z Planem Implementacji
 
-| Krok | Status | Szczegóły |
-|------|--------|-----------|
-| 1. Konfiguracja Środowiska | ✅ | Zależności zainstalowane, struktura plików utworzona |
-| 2. Definicja Klasy i Typów | ✅ | Wszystkie typy i klasy błędów zdefiniowane |
-| 3. Implementacja Konstruktora | ✅ | Fail-fast validation dla API key |
-| 4. Metoda Publiczna | ✅ | `structuredChatCompletion<T>()` w pełni funkcjonalna |
-| 5. Metody Prywatne | ✅ | 3 metody pomocnicze zaimplementowane |
-| 6. Integracja z Aplikacją | ✅ | `ai.service.ts` używa OpenRouterService |
-| 7. Konfiguracja Zmiennych | ✅ | `env.d.ts` zaktualizowany, README udokumentowany |
-| 8. Testowanie | ✅ | Endpoint testowy utworzony |
+| Krok                          | Status | Szczegóły                                            |
+| ----------------------------- | ------ | ---------------------------------------------------- |
+| 1. Konfiguracja Środowiska    | ✅     | Zależności zainstalowane, struktura plików utworzona |
+| 2. Definicja Klasy i Typów    | ✅     | Wszystkie typy i klasy błędów zdefiniowane           |
+| 3. Implementacja Konstruktora | ✅     | Fail-fast validation dla API key                     |
+| 4. Metoda Publiczna           | ✅     | `structuredChatCompletion<T>()` w pełni funkcjonalna |
+| 5. Metody Prywatne            | ✅     | 3 metody pomocnicze zaimplementowane                 |
+| 6. Integracja z Aplikacją     | ✅     | `ai.service.ts` używa OpenRouterService              |
+| 7. Konfiguracja Zmiennych     | ✅     | `env.d.ts` zaktualizowany, README udokumentowany     |
+| 8. Testowanie                 | ✅     | Endpoint testowy utworzony                           |
 
 ---
 
@@ -158,6 +159,7 @@ curl http://localhost:3000/api/test-openrouter
 ```
 
 Oczekiwana odpowiedź:
+
 ```json
 {
   "success": true,
@@ -236,8 +238,8 @@ Content-Type: application/json
 ### Przykład 1: Podstawowe użycie
 
 ```typescript
-import { OpenRouterService } from './lib/services/openrouter.service';
-import { z } from 'zod';
+import { OpenRouterService } from "./lib/services/openrouter.service";
+import { z } from "zod";
 
 const service = new OpenRouterService();
 
@@ -248,10 +250,8 @@ const schema = z.object({
 
 const result = await service.structuredChatCompletion({
   schema,
-  model: 'anthropic/claude-3.5-sonnet',
-  messages: [
-    { role: 'user', content: 'What is 2+2?' }
-  ],
+  model: "anthropic/claude-3.5-sonnet",
+  messages: [{ role: "user", content: "What is 2+2?" }],
 });
 
 console.log(result.answer); // Fully typed!
@@ -260,10 +260,10 @@ console.log(result.answer); // Fully typed!
 ### Przykład 2: Obsługa błędów
 
 ```typescript
-import { 
-  OpenRouterService, 
-  ConfigurationError, 
-  OpenRouterApiError 
+import {
+  OpenRouterService,
+  ConfigurationError,
+  OpenRouterApiError
 } from './lib/services/openrouter.service';
 
 try {
@@ -350,6 +350,5 @@ Serwis jest w pełni funkcjonalny, ale można rozważyć następujące usprawnie
 
 ---
 
-*Wygenerowano: 2025-10-29*
-*Wersja: 1.0.0*
-
+_Wygenerowano: 2025-10-29_
+_Wersja: 1.0.0_

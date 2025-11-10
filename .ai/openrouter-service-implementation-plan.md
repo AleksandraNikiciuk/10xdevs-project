@@ -89,17 +89,21 @@ Usługa będzie implementować dedykowane, niestandardowe klasy błędów, aby u
 W pliku `src/lib/services/openrouter.service.ts` zdefiniuj szkielet klasy, niestandardowe błędy oraz typy wejściowe.
 
 ```typescript
-import { z } from 'zod';
-import zodToJsonSchema from 'zod-to-json-schema';
+import { z } from "zod";
+import zodToJsonSchema from "zod-to-json-schema";
 
 // Definicje niestandardowych błędów
-export class ConfigurationError extends Error { /* ... */ }
-export class OpenRouterApiError extends Error { /* ... */ }
+export class ConfigurationError extends Error {
+  /* ... */
+}
+export class OpenRouterApiError extends Error {
+  /* ... */
+}
 // ... (pozostałe klasy błędów)
 
 // Typy
 type Message = {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 };
 
@@ -237,8 +241,8 @@ Użyj nowej usługi w istniejącej logice, np. w `src/lib/services/generation.se
 
 ```typescript
 // Przykład w innym serwisie
-import { OpenRouterService } from './openrouter.service';
-import { z } from 'zod';
+import { OpenRouterService } from "./openrouter.service";
+import { z } from "zod";
 
 const flashcardSchema = z.object({
   question: z.string(),
@@ -253,10 +257,10 @@ const flashcardsResponseSchema = z.object({
 const openRouter = new OpenRouterService();
 const result = await openRouter.structuredChatCompletion({
   schema: flashcardsResponseSchema,
-  model: 'anthropic/claude-3.5-sonnet',
+  model: "anthropic/claude-3.5-sonnet",
   messages: [
-    { role: 'system', content: 'You are a flashcard expert.' },
-    { role: 'user', content: 'Create flashcards from this text: ...' }
+    { role: "system", content: "You are a flashcard expert." },
+    { role: "user", content: "Create flashcards from this text: ..." },
   ],
 });
 

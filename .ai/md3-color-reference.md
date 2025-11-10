@@ -21,6 +21,7 @@ bg-md-error-container → text-md-on-error-container
 ## 🎯 Primary - Główny kolor marki
 
 ### Kiedy używać?
+
 - Główne przyciski akcji (CTA)
 - Floating Action Buttons (FABs)
 - Aktywne stany nawigacji
@@ -28,12 +29,12 @@ bg-md-error-container → text-md-on-error-container
 
 ### Kolory
 
-| **Token**                        | **Light Mode**         | **Dark Mode**          | **Użycie**                    |
-|----------------------------------|------------------------|------------------------|-------------------------------|
-| `bg-md-primary`                  | Ciemny niebieski       | Jasny niebieski        | Wypełnione przyciski          |
-| `text-md-on-primary`             | Biały                  | Ciemny niebieski       | Tekst na primary              |
-| `bg-md-primary-container`        | Bardzo jasny niebieski | Ciemniejszy niebieski  | Subtelne tła                  |
-| `text-md-on-primary-container`   | Ciemny niebieski       | Jasny niebieski        | Tekst na primary-container    |
+| **Token**                      | **Light Mode**         | **Dark Mode**         | **Użycie**                 |
+| ------------------------------ | ---------------------- | --------------------- | -------------------------- |
+| `bg-md-primary`                | Ciemny niebieski       | Jasny niebieski       | Wypełnione przyciski       |
+| `text-md-on-primary`           | Biały                  | Ciemny niebieski      | Tekst na primary           |
+| `bg-md-primary-container`      | Bardzo jasny niebieski | Ciemniejszy niebieski | Subtelne tła               |
+| `text-md-on-primary-container` | Ciemny niebieski       | Jasny niebieski       | Tekst na primary-container |
 
 ### Przykłady
 
@@ -64,6 +65,7 @@ bg-md-error-container → text-md-on-error-container
 ## 🎨 Secondary - Drugorzędny akcent
 
 ### Kiedy używać?
+
 - Drugorzędne przyciski akcji
 - Filtry i toggles
 - Chips i badges (kategorie)
@@ -71,12 +73,12 @@ bg-md-error-container → text-md-on-error-container
 
 ### Kolory
 
-| **Token**                           | **Light Mode**         | **Dark Mode**          | **Użycie**                       |
-|-------------------------------------|------------------------|------------------------|----------------------------------|
-| `bg-md-secondary`                   | Średni fiolet/niebieski| Jasny fiolet/niebieski | Mniej ważne wypełnienia          |
-| `text-md-on-secondary`              | Biały                  | Ciemny fiolet          | Tekst na secondary               |
-| `bg-md-secondary-container`         | Bardzo jasny fiolet    | Ciemny fiolet          | Subtelne tła (najczęstsze)       |
-| `text-md-on-secondary-container`    | Ciemny fiolet          | Jasny fiolet           | Tekst na secondary-container     |
+| **Token**                        | **Light Mode**          | **Dark Mode**          | **Użycie**                   |
+| -------------------------------- | ----------------------- | ---------------------- | ---------------------------- |
+| `bg-md-secondary`                | Średni fiolet/niebieski | Jasny fiolet/niebieski | Mniej ważne wypełnienia      |
+| `text-md-on-secondary`           | Biały                   | Ciemny fiolet          | Tekst na secondary           |
+| `bg-md-secondary-container`      | Bardzo jasny fiolet     | Ciemny fiolet          | Subtelne tła (najczęstsze)   |
+| `text-md-on-secondary-container` | Ciemny fiolet           | Jasny fiolet           | Tekst na secondary-container |
 
 ### Przykłady
 
@@ -102,6 +104,7 @@ bg-md-error-container → text-md-on-error-container
 ## 💜 Tertiary - Trzeci akcent (NOWY!)
 
 ### Kiedy używać?
+
 - Alternatywne akcje
 - Ekspresja marki (np. promocje, highlights)
 - Kontrastujące akcenty
@@ -109,12 +112,12 @@ bg-md-error-container → text-md-on-error-container
 
 ### Kolory
 
-| **Token**                          | **Light Mode**         | **Dark Mode**          | **Użycie**                    |
-|------------------------------------|------------------------|------------------------|-------------------------------|
-| `bg-md-tertiary`                   | Średni różowy/fiolet   | Jasny różowy/fiolet    | Wypełnienia tertiary          |
-| `text-md-on-tertiary`              | Biały                  | Ciemny różowy          | Tekst na tertiary             |
-| `bg-md-tertiary-container`         | Bardzo jasny różowy    | Ciemny różowy          | Subtelne tła tertiary         |
-| `text-md-on-tertiary-container`    | Ciemny różowy          | Jasny różowy           | Tekst na tertiary-container   |
+| **Token**                       | **Light Mode**       | **Dark Mode**       | **Użycie**                  |
+| ------------------------------- | -------------------- | ------------------- | --------------------------- |
+| `bg-md-tertiary`                | Średni różowy/fiolet | Jasny różowy/fiolet | Wypełnienia tertiary        |
+| `text-md-on-tertiary`           | Biały                | Ciemny różowy       | Tekst na tertiary           |
+| `bg-md-tertiary-container`      | Bardzo jasny różowy  | Ciemny różowy       | Subtelne tła tertiary       |
+| `text-md-on-tertiary-container` | Ciemny różowy        | Jasny różowy        | Tekst na tertiary-container |
 
 ### Przykłady
 
@@ -140,6 +143,7 @@ bg-md-error-container → text-md-on-error-container
 ## 🚨 Error - Komunikaty błędów
 
 ### Kiedy używać?
+
 - Komunikaty błędów
 - Walidacja formularzy
 - Destructive actions (usuń, anuluj)
@@ -147,12 +151,12 @@ bg-md-error-container → text-md-on-error-container
 
 ### Kolory
 
-| **Token**                       | **Light Mode**         | **Dark Mode**          | **Użycie**                    |
-|---------------------------------|------------------------|------------------------|-------------------------------|
-| `bg-md-error`                   | Średni czerwony        | Jasny czerwony         | Wypełnienia error             |
-| `text-md-on-error`              | Biały                  | Ciemny czerwony        | Tekst na error                |
-| `bg-md-error-container`         | Bardzo jasny czerwony  | Ciemny czerwony        | Subtelne tła error            |
-| `text-md-on-error-container`    | Ciemny czerwony        | Jasny czerwony         | Tekst na error-container      |
+| **Token**                    | **Light Mode**        | **Dark Mode**   | **Użycie**               |
+| ---------------------------- | --------------------- | --------------- | ------------------------ |
+| `bg-md-error`                | Średni czerwony       | Jasny czerwony  | Wypełnienia error        |
+| `text-md-on-error`           | Biały                 | Ciemny czerwony | Tekst na error           |
+| `bg-md-error-container`      | Bardzo jasny czerwony | Ciemny czerwony | Subtelne tła error       |
+| `text-md-on-error-container` | Ciemny czerwony       | Jasny czerwony  | Tekst na error-container |
 
 ### Przykłady
 
@@ -180,6 +184,7 @@ bg-md-error-container → text-md-on-error-container
 ## 🌫️ Surface - Powierzchnie i tła
 
 ### Kiedy używać?
+
 - Główne tło aplikacji (`bg-md-surface`)
 - Karty (`bg-md-surface-container`)
 - Dialogi (`bg-md-surface-container-high`)
@@ -187,23 +192,23 @@ bg-md-error-container → text-md-on-error-container
 
 ### Kolory
 
-| **Token**                           | **Light Mode**  | **Dark Mode**  | **Użycie**                          |
-|-------------------------------------|-----------------|----------------|-------------------------------------|
-| `bg-md-surface`                     | Prawie biały    | Bardzo ciemny  | Główne tło app                      |
-| `text-md-on-surface`                | Prawie czarny   | Prawie biały   | Główny tekst                        |
-| `bg-md-surface-dim`                 | Szary           | Czarny         | Przyciemnione obszary               |
-| `bg-md-surface-bright`              | Biały           | Jasnoszary     | Rozjaśnione obszary                 |
-| `text-md-on-surface-variant`        | Średnioszary    | Jasnoszary     | Drugorzędny tekst                   |
+| **Token**                    | **Light Mode** | **Dark Mode** | **Użycie**            |
+| ---------------------------- | -------------- | ------------- | --------------------- |
+| `bg-md-surface`              | Prawie biały   | Bardzo ciemny | Główne tło app        |
+| `text-md-on-surface`         | Prawie czarny  | Prawie biały  | Główny tekst          |
+| `bg-md-surface-dim`          | Szary          | Czarny        | Przyciemnione obszary |
+| `bg-md-surface-bright`       | Biały          | Jasnoszary    | Rozjaśnione obszary   |
+| `text-md-on-surface-variant` | Średnioszary   | Jasnoszary    | Drugorzędny tekst     |
 
 ### Surface Containers (Elevation)
 
-| **Token**                           | **Elevation** | **Użycie**                          |
-|-------------------------------------|---------------|-------------------------------------|
-| `bg-md-surface-container-lowest`    | 0             | Tło na powierzchni (inline)         |
-| `bg-md-surface-container-low`       | 1             | Karty płaskie                       |
-| `bg-md-surface-container`           | 2             | Karty standardowe                   |
-| `bg-md-surface-container-high`      | 3             | Dialogi, bottom sheets              |
-| `bg-md-surface-container-highest`   | 4-5           | Tooltips, popovers, menus           |
+| **Token**                         | **Elevation** | **Użycie**                  |
+| --------------------------------- | ------------- | --------------------------- |
+| `bg-md-surface-container-lowest`  | 0             | Tło na powierzchni (inline) |
+| `bg-md-surface-container-low`     | 1             | Karty płaskie               |
+| `bg-md-surface-container`         | 2             | Karty standardowe           |
+| `bg-md-surface-container-high`    | 3             | Dialogi, bottom sheets      |
+| `bg-md-surface-container-highest` | 4-5           | Tooltips, popovers, menus   |
 
 ### Przykłady
 
@@ -233,6 +238,7 @@ bg-md-error-container → text-md-on-error-container
 ## 🔲 Outline - Obramowania
 
 ### Kiedy używać?
+
 - Borders na kartach
 - Outlined buttons
 - Dividers
@@ -240,10 +246,10 @@ bg-md-error-container → text-md-on-error-container
 
 ### Kolory
 
-| **Token**                    | **Light Mode** | **Dark Mode** | **Użycie**                    |
-|------------------------------|----------------|---------------|-------------------------------|
-| `border-md-outline`          | Średnioszary   | Średnioszary  | Standardowe borders           |
-| `border-md-outline-variant`  | Jasnoszary     | Ciemnoszary   | Subtelniejsze borders         |
+| **Token**                   | **Light Mode** | **Dark Mode** | **Użycie**            |
+| --------------------------- | -------------- | ------------- | --------------------- |
+| `border-md-outline`         | Średnioszary   | Średnioszary  | Standardowe borders   |
+| `border-md-outline-variant` | Jasnoszary     | Ciemnoszary   | Subtelniejsze borders |
 
 ### Przykłady
 
@@ -270,17 +276,18 @@ bg-md-error-container → text-md-on-error-container
 ## 🔄 Inverse - Odwrócone kolory
 
 ### Kiedy używać?
+
 - Snackbars
 - Tooltips
 - Inverse buttons w kontekście
 
 ### Kolory
 
-| **Token**                      | **Light Mode** | **Dark Mode** | **Użycie**                    |
-|--------------------------------|----------------|---------------|-------------------------------|
-| `bg-md-inverse-surface`        | Ciemny         | Jasny         | Tło inverse                   |
-| `text-md-inverse-on-surface`   | Jasny          | Ciemny        | Tekst na inverse              |
-| `text-md-inverse-primary`      | Jasny primary  | Ciemny primary| Primary w inverse context     |
+| **Token**                    | **Light Mode** | **Dark Mode**  | **Użycie**                |
+| ---------------------------- | -------------- | -------------- | ------------------------- |
+| `bg-md-inverse-surface`      | Ciemny         | Jasny          | Tło inverse               |
+| `text-md-inverse-on-surface` | Jasny          | Ciemny         | Tekst na inverse          |
+| `text-md-inverse-primary`    | Jasny primary  | Ciemny primary | Primary w inverse context |
 
 ### Przykłady
 
@@ -302,15 +309,16 @@ bg-md-error-container → text-md-on-error-container
 ## 🎭 Scrim - Półprzezroczyste nakładki
 
 ### Kiedy używać?
+
 - Overlay za dialogami
 - Overlay za menu
 - Darkening backgrounds
 
 ### Kolory
 
-| **Token**        | **Kolor** | **Użycie**                    |
-|------------------|-----------|-------------------------------|
-| `bg-md-scrim`    | Czarny    | Overlay (z opacity)           |
+| **Token**     | **Kolor** | **Użycie**          |
+| ------------- | --------- | ------------------- |
+| `bg-md-scrim` | Czarny    | Overlay (z opacity) |
 
 ### Przykłady
 
@@ -352,13 +360,13 @@ bg-md-error-container → text-md-on-error-container
 ## 🎨 Quick Copy Snippets
 
 ### Primary Button
+
 ```tsx
-<button className="bg-md-primary text-md-on-primary px-6 py-3 rounded-full">
-  Primary Action
-</button>
+<button className="bg-md-primary text-md-on-primary px-6 py-3 rounded-full">Primary Action</button>
 ```
 
 ### Secondary Button
+
 ```tsx
 <button className="bg-md-secondary-container text-md-on-secondary-container px-6 py-3 rounded-full">
   Secondary Action
@@ -366,20 +374,19 @@ bg-md-error-container → text-md-on-error-container
 ```
 
 ### Card
+
 ```tsx
-<div className="bg-md-surface-container text-md-on-surface p-6 rounded-lg">
-  Card content
-</div>
+<div className="bg-md-surface-container text-md-on-surface p-6 rounded-lg">Card content</div>
 ```
 
 ### Error Alert
+
 ```tsx
-<div className="bg-md-error-container text-md-on-error-container p-4 rounded-lg">
-  Error message
-</div>
+<div className="bg-md-error-container text-md-on-error-container p-4 rounded-lg">Error message</div>
 ```
 
 ### Input
+
 ```tsx
 <input className="bg-md-surface-container-highest text-md-on-surface border border-md-outline px-4 py-2 rounded-lg" />
 ```
@@ -402,6 +409,7 @@ Przed użyciem kombinacji kolorów, sprawdź:
 ## 🚫 Anty-wzorce
 
 ### ❌ Nie mieszaj "on" colors
+
 ```tsx
 <!-- ŹLE -->
 <div className="bg-md-primary text-md-on-secondary">
@@ -410,6 +418,7 @@ Przed użyciem kombinacji kolorów, sprawdź:
 ```
 
 ### ❌ Nie używaj hardcoded colors
+
 ```tsx
 <!-- ŹLE -->
 <div className="bg-blue-500 text-white">
@@ -423,6 +432,7 @@ Przed użyciem kombinacji kolorów, sprawdź:
 ```
 
 ### ❌ Nie używaj zbyt wielu akcentów
+
 ```tsx
 <!-- ŹLE - za dużo kolorów -->
 <div>
@@ -446,6 +456,5 @@ Przed użyciem kombinacji kolorów, sprawdź:
 
 ```css
 /* Inspect element → Computed → --md-primary */
---md-primary: oklch(0.45 0.15 264)
+--md-primary: oklch(0.45 0.15 264);
 ```
-

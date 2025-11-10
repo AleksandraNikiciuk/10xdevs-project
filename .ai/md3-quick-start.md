@@ -11,7 +11,7 @@
 ✅ Automatyczne state layers  
 ✅ WCAG AA dostępność  
 ✅ Dark mode out of the box  
-✅ Type scale dla spójnej typografii  
+✅ Type scale dla spójnej typografii
 
 ---
 
@@ -35,7 +35,7 @@
 </div>
 ```
 
-**Zasada:** Zawsze używaj koloru "on-*" dla tekstu na kolorowym tle.
+**Zasada:** Zawsze używaj koloru "on-\*" dla tekstu na kolorowym tle.
 
 ---
 
@@ -121,9 +121,7 @@
     <CardTitle>Product Name</CardTitle>
     <CardDescription>Short description</CardDescription>
   </CardHeader>
-  <CardContent>
-    {/* Main content */}
-  </CardContent>
+  <CardContent>{/* Main content */}</CardContent>
   <CardFooter>
     <Button>Action</Button>
   </CardFooter>
@@ -185,14 +183,8 @@
 ```tsx
 <div className="space-y-2">
   <Label htmlFor="message">Message</Label>
-  <Textarea
-    id="message"
-    placeholder="Enter your message"
-    className="min-h-32"
-  />
-  <p className="text-label-small text-md-on-surface-variant">
-    Max 500 characters
-  </p>
+  <Textarea id="message" placeholder="Enter your message" className="min-h-32" />
+  <p className="text-label-small text-md-on-surface-variant">Max 500 characters</p>
 </div>
 ```
 
@@ -203,9 +195,7 @@
 ```tsx
 <div className="flex items-center gap-2">
   <Checkbox id="terms" />
-  <Label htmlFor="terms">
-    I agree to terms and conditions
-  </Label>
+  <Label htmlFor="terms">I agree to terms and conditions</Label>
 </div>
 ```
 
@@ -221,9 +211,7 @@
   <DialogContent>
     <DialogHeader>
       <DialogTitle>Dialog Title</DialogTitle>
-      <DialogDescription>
-        Dialog description text.
-      </DialogDescription>
+      <DialogDescription>Dialog description text.</DialogDescription>
     </DialogHeader>
     {/* Content */}
     <DialogFooter>
@@ -243,15 +231,13 @@
 ```tsx
 <section className="py-16 px-4">
   <div className="max-w-4xl mx-auto text-center space-y-6">
-    <h1 className="text-display-large text-md-on-surface">
-      Welcome to Our App
-    </h1>
-    <p className="text-body-large text-md-on-surface-variant">
-      Build amazing things with Material Design 3
-    </p>
+    <h1 className="text-display-large text-md-on-surface">Welcome to Our App</h1>
+    <p className="text-body-large text-md-on-surface-variant">Build amazing things with Material Design 3</p>
     <div className="flex gap-4 justify-center">
       <Button size="lg">Get Started</Button>
-      <Button variant="outline" size="lg">Learn More</Button>
+      <Button variant="outline" size="lg">
+        Learn More
+      </Button>
     </div>
   </div>
 </section>
@@ -274,9 +260,7 @@
   </CardHeader>
   <CardContent>
     <img src="/product.jpg" alt="Product" className="w-full shape-sm" />
-    <p className="text-body-medium text-md-on-surface mt-4">
-      Product description text goes here.
-    </p>
+    <p className="text-body-medium text-md-on-surface mt-4">Product description text goes here.</p>
   </CardContent>
   <CardFooter className="border-t">
     <div className="flex items-center justify-between w-full">
@@ -305,14 +289,16 @@
 
   <div className="flex items-center gap-2">
     <Checkbox id="newsletter" />
-    <Label htmlFor="newsletter">
-      Subscribe to newsletter
-    </Label>
+    <Label htmlFor="newsletter">Subscribe to newsletter</Label>
   </div>
 
   <div className="flex gap-3">
-    <Button type="submit" className="flex-1">Submit</Button>
-    <Button type="button" variant="outline">Cancel</Button>
+    <Button type="submit" className="flex-1">
+      Submit
+    </Button>
+    <Button type="button" variant="outline">
+      Cancel
+    </Button>
   </div>
 </form>
 ```
@@ -326,17 +312,13 @@
   <Alert variant="info">
     <InfoIcon />
     <AlertTitle>Pro Tip</AlertTitle>
-    <AlertDescription>
-      You can use keyboard shortcuts to speed up your workflow.
-    </AlertDescription>
+    <AlertDescription>You can use keyboard shortcuts to speed up your workflow.</AlertDescription>
   </Alert>
 
   <Alert variant="success">
     <CheckIcon />
     <AlertTitle>Success</AlertTitle>
-    <AlertDescription>
-      Your changes have been saved successfully.
-    </AlertDescription>
+    <AlertDescription>Your changes have been saved successfully.</AlertDescription>
   </Alert>
 </div>
 ```
@@ -346,6 +328,7 @@
 ## ⚡ Utility Classes Cheatsheet
 
 ### Kolory
+
 ```css
 bg-md-primary              /* Primary background */
 text-md-on-primary         /* Text on primary */
@@ -357,6 +340,7 @@ text-md-error              /* Error text */
 ```
 
 ### Typografia
+
 ```css
 text-display-large         /* Hero headings (57px) */
 text-headline-large        /* Section titles (32px) */
@@ -366,6 +350,7 @@ text-label-large           /* Buttons (14px) */
 ```
 
 ### Shape
+
 ```css
 shape-xs    /* 4px - chips */
 shape-sm    /* 8px - cards */
@@ -375,6 +360,7 @@ shape-full  /* 9999px - pills */
 ```
 
 ### Elevation
+
 ```css
 elevation-0  /* Flush with surface */
 elevation-1  /* Subtle lift */
@@ -384,6 +370,7 @@ elevation-4  /* High prominence */
 ```
 
 ### Motion
+
 ```css
 duration-short-2           /* 100ms - micro interactions */
 duration-medium-2          /* 300ms - standard transitions */
@@ -397,12 +384,15 @@ transition-emphasized      /* Important actions */
 ## 🎓 3 Zasady Złote
 
 ### 1. **Semantic Colors**
+
 Zawsze używaj semantic names (`md-primary`, nie `blue-500`).
 
 ### 2. **Type Scale**
+
 Zawsze używaj type scale (`text-body-large`, nie `text-base`).
 
 ### 3. **State Layers**
+
 Pozwól `state-layer` obsługiwać hover/focus (nie nadpisuj).
 
 ---
@@ -419,6 +409,7 @@ Pozwól `state-layer` obsługiwać hover/focus (nie nadpisuj).
 ## 💡 Pro Tips
 
 ### Tip 1: Hierarchia przycisków
+
 ```tsx
 // 1 primary action per screen
 <Button>Primary Action</Button>
@@ -433,19 +424,15 @@ Pozwól `state-layer` obsługiwać hover/focus (nie nadpisuj).
 ```
 
 ### Tip 2: Responsive typography
+
 ```tsx
-<h1 className="text-headline-medium sm:text-headline-large lg:text-display-medium">
-  Responsive Heading
-</h1>
+<h1 className="text-headline-medium sm:text-headline-large lg:text-display-medium">Responsive Heading</h1>
 ```
 
 ### Tip 3: Custom focus dla custom elements
+
 ```tsx
-<div
-  tabIndex={0}
-  className="state-layer p-4 shape-md bg-md-surface-container"
-  role="button"
->
+<div tabIndex={0} className="state-layer p-4 shape-md bg-md-surface-container" role="button">
   Custom Interactive Element
 </div>
 ```
@@ -453,4 +440,3 @@ Pozwól `state-layer` obsługiwać hover/focus (nie nadpisuj).
 ---
 
 **Gotowy do tworzenia z Material Design 3! 🎨✨**
-

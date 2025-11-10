@@ -5,6 +5,7 @@
 ## 🎯 Cel transformacji
 
 Implementacja kompletnego systemu tokenów Material Design 3 w projekcie 10xdevs-project, z naciskiem na:
+
 - ✅ Czytelność
 - ✅ Dostępność (WCAG 2.1 AA)
 - ✅ Spójność wizualną
@@ -19,30 +20,35 @@ Implementacja kompletnego systemu tokenów Material Design 3 w projekcie 10xdevs
 #### Palety kolorów (Light + Dark mode):
 
 **Primary (Główny akcent aplikacji)**
+
 - `--md-primary` - Główny kolor marki
 - `--md-on-primary` - Tekst na primary
 - `--md-primary-container` - Subtelniejszy primary (dla mniejszego akcentu)
 - `--md-on-primary-container` - Tekst na primary-container
 
 **Secondary (Drugorzędny akcent)**
+
 - `--md-secondary`
 - `--md-on-secondary`
 - `--md-secondary-container`
 - `--md-on-secondary-container`
 
 **Tertiary (Nowy! - Trzeci akcent dla różnorodności)**
+
 - `--md-tertiary`
 - `--md-on-tertiary`
 - `--md-tertiary-container`
 - `--md-on-tertiary-container`
 
 **Error (Komunikaty błędów)**
+
 - `--md-error`
 - `--md-on-error`
 - `--md-error-container`
 - `--md-on-error-container`
 
 **Surface & Background (Powierzchnie)**
+
 - `--md-surface` - Główna powierzchnia
 - `--md-surface-dim` - Przyciemniona powierzchnia
 - `--md-surface-bright` - Rozjaśniona powierzchnia
@@ -50,6 +56,7 @@ Implementacja kompletnego systemu tokenów Material Design 3 w projekcie 10xdevs
 - `--md-on-surface-variant` - Tekst drugorzędny
 
 **Surface Containers (System elevation - 5 poziomów)**
+
 - `--md-surface-container-lowest` (elevation 0)
 - `--md-surface-container-low` (elevation 1)
 - `--md-surface-container` (elevation 2)
@@ -57,15 +64,18 @@ Implementacja kompletnego systemu tokenów Material Design 3 w projekcie 10xdevs
 - `--md-surface-container-highest` (elevation 4)
 
 **Outline (Obramowania)**
+
 - `--md-outline` - Standardowe obramowania
 - `--md-outline-variant` - Subtelniejsze obramowania
 
 **Inverse (Odwrócone kolory)**
+
 - `--md-inverse-surface`
 - `--md-inverse-on-surface`
 - `--md-inverse-primary`
 
 **Scrim & Shadow**
+
 - `--md-scrim` - Półprzezroczyste nakładki
 - `--md-shadow` - Kolor cieni
 
@@ -80,6 +90,7 @@ Material Design 3 używa **color tints** zamiast tradycyjnych shadows dla lepsze
 ```
 
 **Utility classes:**
+
 ```css
 .elevation-0 /* Surface container lowest */
 .elevation-1 /* Surface container low + subtle shadow */
@@ -90,6 +101,7 @@ Material Design 3 używa **color tints** zamiast tradycyjnych shadows dla lepsze
 ```
 
 **Zalety:**
+
 - Lepsze dla użytkowników z problemami wzrokowymi
 - Wyraźniejsza hierarchia w trybie jasnym i ciemnym
 - Spójność z Material Design 3 guidelines
@@ -101,13 +113,12 @@ Material Design 3 używa **color tints** zamiast tradycyjnych shadows dla lepsze
 Tokeny do obsługi stanów interaktywnych:
 
 ```css
---md-state-hover-opacity: 0.08    /* 8% opacity */
---md-state-focus-opacity: 0.12    /* 12% opacity */
---md-state-pressed-opacity: 0.12  /* 12% opacity */
---md-state-dragged-opacity: 0.16  /* 16% opacity */
+--md-state-hover-opacity: 0.08 /* 8% opacity */ --md-state-focus-opacity: 0.12 /* 12% opacity */
+  --md-state-pressed-opacity: 0.12 /* 12% opacity */ --md-state-dragged-opacity: 0.16 /* 16% opacity */;
 ```
 
 **Utility class:**
+
 ```html
 <button class="state-layer">
   <!-- Automatyczne state layers dla hover, focus, active -->
@@ -115,6 +126,7 @@ Tokeny do obsługi stanów interaktywnych:
 ```
 
 **Implementacja:**
+
 - Używa `::before` pseudo-elementu
 - Animowane przejścia
 - Respektuje `prefers-reduced-motion`
@@ -126,6 +138,7 @@ Tokeny do obsługi stanów interaktywnych:
 Kompletny type scale zgodny z Material Design 3:
 
 #### Display (największe nagłówki)
+
 ```css
 .text-display-large   /* 57px / 64px line height */
 .text-display-medium  /* 45px / 52px line height */
@@ -133,6 +146,7 @@ Kompletny type scale zgodny z Material Design 3:
 ```
 
 #### Headline (nagłówki sekcji)
+
 ```css
 .text-headline-large  /* 32px / 40px line height */
 .text-headline-medium /* 28px / 36px line height */
@@ -140,6 +154,7 @@ Kompletny type scale zgodny z Material Design 3:
 ```
 
 #### Title (tytuły komponentów)
+
 ```css
 .text-title-large     /* 22px / 28px line height, weight: 500 */
 .text-title-medium    /* 16px / 24px line height, weight: 500 */
@@ -147,6 +162,7 @@ Kompletny type scale zgodny z Material Design 3:
 ```
 
 #### Body (tekst treści)
+
 ```css
 .text-body-large      /* 16px / 24px line height */
 .text-body-medium     /* 14px / 20px line height */
@@ -154,6 +170,7 @@ Kompletny type scale zgodny z Material Design 3:
 ```
 
 #### Label (etykiety, przyciski)
+
 ```css
 .text-label-large     /* 14px / 20px line height, weight: 500 */
 .text-label-medium    /* 12px / 16px line height, weight: 500 */
@@ -161,6 +178,7 @@ Kompletny type scale zgodny z Material Design 3:
 ```
 
 **Wszystkie style zawierają:**
+
 - Precyzyjne `font-size`
 - Zoptymalizowane `line-height`
 - Odpowiednie `font-weight`
@@ -173,16 +191,13 @@ Kompletny type scale zgodny z Material Design 3:
 System zaokrągleń MD3:
 
 ```css
---md-shape-none: 0
---md-shape-extra-small: 4px   /* Chips, small buttons */
---md-shape-small: 8px          /* Cards */
---md-shape-medium: 12px        /* Dialogs, podstawowy */
---md-shape-large: 16px         /* Sheets */
---md-shape-extra-large: 28px   /* FABs */
---md-shape-full: 9999px        /* Pełne zaokrąglenie */
+--md-shape-none: 0 --md-shape-extra-small: 4px /* Chips, small buttons */ --md-shape-small: 8px /* Cards */
+  --md-shape-medium: 12px /* Dialogs, podstawowy */ --md-shape-large: 16px /* Sheets */ --md-shape-extra-large: 28px
+  /* FABs */ --md-shape-full: 9999px /* Pełne zaokrąglenie */;
 ```
 
 **Utility classes:**
+
 ```css
 .shape-none, .shape-xs, .shape-sm, .shape-md, .shape-lg, .shape-xl, .shape-full
 ```
@@ -192,31 +207,25 @@ System zaokrągleń MD3:
 ### 6. **Motion & Animation**
 
 #### Duration (czasy trwania)
+
 ```css
---md-motion-duration-short1: 50ms   /* Bardzo szybkie */
---md-motion-duration-short2: 100ms
---md-motion-duration-short3: 150ms
---md-motion-duration-short4: 200ms
---md-motion-duration-medium1: 250ms /* Standardowe */
---md-motion-duration-medium2: 300ms
---md-motion-duration-medium3: 350ms
---md-motion-duration-medium4: 400ms
---md-motion-duration-long1: 450ms   /* Powolne, wyraźne */
---md-motion-duration-long2: 500ms
---md-motion-duration-long3: 550ms
---md-motion-duration-long4: 600ms
+--md-motion-duration-short1: 50ms /* Bardzo szybkie */ --md-motion-duration-short2: 100ms
+  --md-motion-duration-short3: 150ms --md-motion-duration-short4: 200ms --md-motion-duration-medium1: 250ms
+  /* Standardowe */ --md-motion-duration-medium2: 300ms --md-motion-duration-medium3: 350ms
+  --md-motion-duration-medium4: 400ms --md-motion-duration-long1: 450ms /* Powolne, wyraźne */
+  --md-motion-duration-long2: 500ms --md-motion-duration-long3: 550ms --md-motion-duration-long4: 600ms;
 ```
 
 #### Easing (krzywe animacji)
+
 ```css
---md-easing-standard: cubic-bezier(0.2, 0, 0, 1)
---md-easing-emphasized: cubic-bezier(0.2, 0, 0, 1)
---md-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1)
---md-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15)
---md-easing-legacy: cubic-bezier(0.4, 0, 0.2, 1)
+--md-easing-standard: cubic-bezier(0.2, 0, 0, 1) --md-easing-emphasized: cubic-bezier(0.2, 0, 0, 1)
+  --md-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1)
+  --md-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15) --md-easing-legacy: cubic-bezier(0.4, 0, 0.2, 1);
 ```
 
 **Utility classes:**
+
 ```css
 .transition-standard
 .transition-emphasized
@@ -229,28 +238,32 @@ System zaokrągleń MD3:
 ### 7. **Accessibility (dostępność)**
 
 #### Focus indicators (wskaźniki fokusu)
+
 ```css
---md-focus-ring-width: 3px    /* Wyraźny pierścień fokusu */
---md-focus-ring-offset: 2px   /* Odstęp od elementu */
+--md-focus-ring-width: 3px /* Wyraźny pierścień fokusu */ --md-focus-ring-offset: 2px /* Odstęp od elementu */;
 ```
 
 **Implementacja:**
+
 - Wszystkie elementy interaktywne mają wyraźny focus ring
 - Kontrast min 3:1 dla focus indicators
 - Używa `outline` zamiast `border` (nie zmienia layoutu)
 
 #### Touch targets (cele dotykowe)
+
 ```css
---md-touch-target-size: 48px  /* Min 48x48px dla wszystkich interaktywnych elementów */
+--md-touch-target-size: 48px /* Min 48x48px dla wszystkich interaktywnych elementów */;
 ```
 
 **Implementacja:**
+
 - Przyciski, linki, inputy: min-height 48px
 - Zgodne z WCAG 2.1 Level AAA (2.5.5)
 
 #### Media queries dla dostępności
 
 **Reduced motion (zmniejszony ruch)**
+
 ```css
 @media (prefers-reduced-motion: reduce) {
   /* Wyłącza animacje dla użytkowników z wrażliwością na ruch */
@@ -258,6 +271,7 @@ System zaokrągleń MD3:
 ```
 
 **High contrast (wysoki kontrast)**
+
 ```css
 @media (prefers-contrast: high) {
   /* Zwiększa kontrast obramowań dla lepszej widoczności */
@@ -265,6 +279,7 @@ System zaokrągleń MD3:
 ```
 
 **Forced colors (wymuszane kolory)**
+
 ```css
 @media (forced-colors: active) {
   /* Wspiera tryby wysokiego kontrastu w Windows */
@@ -274,6 +289,7 @@ System zaokrągleń MD3:
 #### Kontrast kolorów
 
 **Zapewnione kontrasty:**
+
 - ✅ Tekst regular (body): min **4.5:1** (WCAG AA)
 - ✅ Tekst large (18px+): min **3:1** (WCAG AA)
 - ✅ Elementy UI: min **3:1** (WCAG AA)
@@ -285,23 +301,23 @@ System zaokrągleń MD3:
 
 Dla zachowania wstecznej kompatybilności:
 
-| **Legacy Token**      | **MD3 Token**                    |
-|-----------------------|----------------------------------|
-| `--background`        | `--md-surface`                   |
-| `--foreground`        | `--md-on-surface`                |
-| `--card`              | `--md-surface-container`         |
-| `--card-foreground`   | `--md-on-surface`                |
-| `--popover`           | `--md-surface-container-high`    |
-| `--primary`           | `--md-primary`                   |
-| `--primary-foreground`| `--md-on-primary`                |
-| `--secondary`         | `--md-secondary-container`       |
-| `--muted`             | `--md-surface-container-low`     |
-| `--muted-foreground`  | `--md-on-surface-variant`        |
-| `--accent`            | `--md-tertiary-container`        |
-| `--destructive`       | `--md-error`                     |
-| `--border`            | `--md-outline-variant`           |
-| `--input`             | `--md-surface-container-highest` |
-| `--ring`              | `--md-primary`                   |
+| **Legacy Token**       | **MD3 Token**                    |
+| ---------------------- | -------------------------------- |
+| `--background`         | `--md-surface`                   |
+| `--foreground`         | `--md-on-surface`                |
+| `--card`               | `--md-surface-container`         |
+| `--card-foreground`    | `--md-on-surface`                |
+| `--popover`            | `--md-surface-container-high`    |
+| `--primary`            | `--md-primary`                   |
+| `--primary-foreground` | `--md-on-primary`                |
+| `--secondary`          | `--md-secondary-container`       |
+| `--muted`              | `--md-surface-container-low`     |
+| `--muted-foreground`   | `--md-on-surface-variant`        |
+| `--accent`             | `--md-tertiary-container`        |
+| `--destructive`        | `--md-error`                     |
+| `--border`             | `--md-outline-variant`           |
+| `--input`              | `--md-surface-container-highest` |
+| `--ring`               | `--md-primary`                   |
 
 **Komponenty Shadcn/ui działają bez zmian** dzięki mapowaniu legacy tokens!
 
@@ -335,9 +351,7 @@ Dla zachowania wstecznej kompatybilności:
 
 ```tsx
 // Przycisk z automatycznymi state layers
-<button className="state-layer bg-md-primary text-md-on-primary px-6 py-3 shape-full">
-  Kliknij mnie
-</button>
+<button className="state-layer bg-md-primary text-md-on-primary px-6 py-3 shape-full">Kliknij mnie</button>
 ```
 
 ### 4. Kolory MD3
@@ -378,11 +392,13 @@ Dla zachowania wstecznej kompatybilności:
 ## 📱 Dark Mode
 
 **Automatyczne przełączanie:**
+
 - Wszystkie tokeny MD3 mają warianty dla dark mode
 - System automatycznie adaptuje się przy zmianie `.dark` class
 - Zachowana czytelność i kontrast w obu trybach
 
 **Różnice Dark Mode:**
+
 - Jaśniejsze kolory primary/secondary/tertiary
 - Ciemniejsze surface containers
 - Dostosowane cienie (głębsze)
@@ -393,11 +409,13 @@ Dla zachowania wstecznej kompatybilności:
 ## ✅ Korzyści implementacji
 
 ### Czytelność
+
 - ✅ Precyzyjny type scale dla hierarchii wizualnej
 - ✅ Zoptymalizowane line heights i letter spacing
 - ✅ Kontrast min 4.5:1 dla wszystkich tekstów
 
 ### Dostępność
+
 - ✅ WCAG 2.1 Level AA (cel: AAA dla krytycznych elementów)
 - ✅ Focus indicators 3px, widoczne w każdym kontekście
 - ✅ Touch targets min 48x48px
@@ -407,12 +425,14 @@ Dla zachowania wstecznej kompatybilności:
 - ✅ Semantic color naming (on-surface, on-primary)
 
 ### Spójność
+
 - ✅ Jeden źródłowy system designu (MD3)
 - ✅ Przewidywalne wzorce kolorów i interakcji
 - ✅ Łatwe utrzymanie (tokeny zamiast hardcoded values)
 - ✅ Automatyczna adaptacja dark mode
 
 ### Developer Experience
+
 - ✅ Utility classes dla szybkiego prototypowania
 - ✅ Wsteczna kompatybilność z Shadcn/ui
 - ✅ TypeScript-friendly (CSS variables)
@@ -460,6 +480,7 @@ Dla zachowania wstecznej kompatybilności:
 ## 📝 Changelog
 
 **v1.0.0 - 2025-10-29**
+
 - ✅ Implementacja pełnego systemu kolorów MD3 (light + dark)
 - ✅ Dodanie surface container elevation system
 - ✅ Implementacja type scale MD3
@@ -478,4 +499,3 @@ Dla zachowania wstecznej kompatybilności:
 Implementacja: AI Assistant (Claude Sonnet 4.5)
 Data: 29 października 2025
 Projekt: 10xdevs-project
-

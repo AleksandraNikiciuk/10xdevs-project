@@ -17,6 +17,7 @@ Zintegrowano `OpenRouterService` bezpośrednio z `generation.service.ts`, elimin
 **Główne zmiany:**
 
 #### Dodane importy:
+
 ```typescript
 import { z } from "zod";
 import {
@@ -30,16 +31,19 @@ import {
 ```
 
 #### Usunięte importy:
+
 ```typescript
 import { generateFlashcards, type AIServiceError } from "./ai.service";
 ```
 
 #### Dodane: Konfiguracja modelu AI
+
 ```typescript
 const AI_MODEL = "gpt-4o-mini";
 ```
 
 #### Dodane: Schematy Zod
+
 ```typescript
 const FlashcardProposalSchema = z.object({
   question: z.string().min(1, "Question cannot be empty"),
@@ -55,19 +59,23 @@ const FlashcardsResponseSchema = z.object({
 ```
 
 #### Dodana: Funkcja `generateFlashcardsWithAI()`
+
 Nowa funkcja pomocnicza, która:
+
 - Inicjalizuje `OpenRouterService`
 - Tworzy profesjonalne prompty systemowe dla generowania fiszek
 - Wywołuje API OpenRouter z pełną walidacją schematem Zod
 - Zwraca typowany wynik z flashcardami
 
 **Parametry:**
+
 - `temperature: 0.7` - balans między kreatywnością a spójnością
 - `max_tokens: 3000` - wystarczająco dużo dla 15 fiszek
 
 #### Zaktualizowana: Funkcja `createGeneration()`
 
 **Przed:**
+
 ```typescript
 try {
   aiResponse = await generateFlashcards(sourceText);
@@ -78,6 +86,7 @@ try {
 ```
 
 **Po:**
+
 ```typescript
 try {
   aiResponse = await generateFlashcardsWithAI(sourceText);
@@ -88,15 +97,16 @@ try {
   else if (error instanceof NetworkError) { ... }
   else if (error instanceof InvalidResponseJsonError) { ... }
   else if (error instanceof SchemaValidationError) { ... }
-  
+
   // Log do generation_error_logs
   await supabase.from("generation_error_logs").insert({ ... });
-  
+
   throw createGenerationServiceError("AI_ERROR", errorMessage, statusCode, { code: errorCode });
 }
 ```
 
 **Nowe kody błędów zapisywane do bazy:**
+
 - `AI_CONFIGURATION_ERROR` - brak klucza API
 - `AI_API_ERROR` - błąd API OpenRouter
 - `AI_TIMEOUT` - timeout połączenia
@@ -107,6 +117,7 @@ try {
 ## Architektura Po Zmianach
 
 ### Przed (z ai.service.ts):
+
 ```
 API Route (generations.ts)
     ↓
@@ -120,6 +131,7 @@ OpenRouter API
 ```
 
 ### Po (bezpośrednia integracja):
+
 ```
 API Route (generations.ts)
     ↓
@@ -135,21 +147,25 @@ OpenRouter API (gpt-4o-mini)
 ## Korzyści Ze Zmian
 
 ### 1. **Uproszczona Architektura**
+
 - Eliminacja niepotrzebnej warstwy pośredniej
 - Mniej kodu do utrzymania
 - Łatwiejsze debugowanie
 
 ### 2. **Bezpośrednia Kontrola**
+
 - Pełna kontrola nad promptami w kontekście generowania
 - Bezpośrednie mapowanie błędów na kody specyficzne dla generacji
 - Lepsza obsługa błędów w kontekście biznesowym
 
 ### 3. **Typowanie i Walidacja**
+
 - Pełne typowanie end-to-end
 - Walidacja Zod na poziomie serwisu generacji
 - Jasne schematy dla odpowiedzi AI
 
 ### 4. **Brak Mocków**
+
 - Zawsze używa prawdziwego AI (gpt-4o-mini)
 - Konsystentne zachowanie w dev/prod
 - Prawdziwe testy integracji już w developmencie
@@ -159,20 +175,24 @@ OpenRouter API (gpt-4o-mini)
 ## Parametry Generowania Fiszek
 
 ### Model
+
 - **gpt-4o-mini** - szybki, ekonomiczny model OpenAI
 - Dobry balans między jakością a kosztami
 
 ### Temperatura: 0.7
+
 - Balans między kreatywnością a spójnością
 - Wystarczająco kreatywny dla różnorodnych pytań
 - Wystarczająco deterministyczny dla faktów
 
 ### Max Tokens: 3000
+
 - Wystarczająco dużo dla 15 fiszek
 - Każda fiszka ~150-200 tokenów (pytanie + odpowiedź)
 - Margines bezpieczeństwa dla dłuższych odpowiedzi
 
 ### Zakres Fiszek
+
 - Minimum: 3 fiszki (dla krótkich tekstów)
 - Maksimum: 15 fiszek (dla długich tekstów)
 - Limit schematu: 20 fiszek (bezpieczeństwo)
@@ -182,6 +202,7 @@ OpenRouter API (gpt-4o-mini)
 ## Prompty Systemowe
 
 ### System Prompt
+
 ```
 You are an expert educational content creator specializing in flashcard generation.
 
@@ -204,6 +225,7 @@ Important guidelines:
 ```
 
 ### User Prompt
+
 ```
 Create flashcards from the following text:
 
@@ -216,13 +238,13 @@ Create flashcards from the following text:
 
 ### Typy Błędów OpenRouter → Kody Błędów Generacji
 
-| Błąd OpenRouter | Kod Błędu | Status HTTP | Opis |
-|-----------------|-----------|-------------|------|
-| `ConfigurationError` | `AI_CONFIGURATION_ERROR` | 500 | Brak klucza API |
-| `OpenRouterApiError` | `AI_API_ERROR` | varies | Błąd API (401, 429, 5xx) |
-| `NetworkError` | `AI_TIMEOUT` | 504 | Timeout połączenia |
-| `InvalidResponseJsonError` | `AI_INVALID_RESPONSE` | 422 | Nieparsowalne JSON |
-| `SchemaValidationError` | `AI_INVALID_RESPONSE` | 422 | Niezgodność ze schematem |
+| Błąd OpenRouter            | Kod Błędu                | Status HTTP | Opis                     |
+| -------------------------- | ------------------------ | ----------- | ------------------------ |
+| `ConfigurationError`       | `AI_CONFIGURATION_ERROR` | 500         | Brak klucza API          |
+| `OpenRouterApiError`       | `AI_API_ERROR`           | varies      | Błąd API (401, 429, 5xx) |
+| `NetworkError`             | `AI_TIMEOUT`             | 504         | Timeout połączenia       |
+| `InvalidResponseJsonError` | `AI_INVALID_RESPONSE`    | 422         | Nieparsowalne JSON       |
+| `SchemaValidationError`    | `AI_INVALID_RESPONSE`    | 422         | Niezgodność ze schematem |
 
 ### Logowanie Błędów
 
@@ -231,9 +253,9 @@ Wszystkie błędy AI są automatycznie zapisywane do tabeli `generation_error_lo
 ```typescript
 await supabase.from("generation_error_logs").insert({
   user_id: userId,
-  error_code: errorCode,          // np. "AI_TIMEOUT"
-  error_message: errorMessage,     // Szczegóły błędu
-  model: AI_MODEL,                // "gpt-4o-mini"
+  error_code: errorCode, // np. "AI_TIMEOUT"
+  error_message: errorMessage, // Szczegóły błędu
+  model: AI_MODEL, // "gpt-4o-mini"
   source_text_length: sourceTextLength,
   source_text_hash: sourceTextHash,
 });
@@ -244,9 +266,11 @@ await supabase.from("generation_error_logs").insert({
 ## Testy i Weryfikacja
 
 ### Test Endpoint
+
 Endpoint testowy jest nadal dostępny: `GET /api/test-openrouter`
 
 ### Główny Endpoint Generacji
+
 `POST /api/generations`
 
 ```json
@@ -256,6 +280,7 @@ Endpoint testowy jest nadal dostępny: `GET /api/test-openrouter`
 ```
 
 **Oczekiwana odpowiedź:**
+
 ```json
 {
   "generation": {
@@ -280,6 +305,7 @@ Endpoint testowy jest nadal dostępny: `GET /api/test-openrouter`
 ## Status ai.service.ts
 
 ### Obecny Status
+
 - ✅ Plik pozostaje w projekcie (na razie)
 - ⚠️ **Nie jest już używany** przez generation.service.ts
 - 📝 Może zostać użyty w przyszłości dla innych celów
@@ -296,11 +322,13 @@ Endpoint testowy jest nadal dostępny: `GET /api/test-openrouter`
 ## Wymagania Środowiska
 
 ### .env
+
 ```bash
 OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
 ```
 
 ### Zmienne Muszą Być Ustawione
+
 - Konstruktor `OpenRouterService` rzuci `ConfigurationError` jeśli brak klucza
 - Fail-fast approach - błąd na starcie, nie w runtime
 
@@ -327,6 +355,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
 ## Podsumowanie
 
 ### Zmiany
+
 - ✅ Bezpośrednia integracja OpenRouter z generation.service.ts
 - ✅ Eliminacja warstwy ai.service.ts
 - ✅ Brak mocków - zawsze prawdziwe AI
@@ -336,6 +365,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
 - ✅ Profesjonalne prompty systemowe
 
 ### Rezultat
+
 - 🎯 Prostsza architektura
 - 🔒 Lepsza kontrola i bezpieczeństwo typów
 - 🚀 Prawdziwe AI już w developmencie
@@ -343,6 +373,5 @@ OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
 
 ---
 
-*Wygenerowano: 2025-10-29*
-*Autor: AI Assistant*
-
+_Wygenerowano: 2025-10-29_
+_Autor: AI Assistant_
