@@ -7,7 +7,7 @@ export const GET: APIRoute = async ({ cookies, locals }) => {
   console.log("[SESSION] Checking session, has tokens:", {
     hasAccess: !!accessToken,
     hasRefresh: !!refreshToken,
-    accessLength: accessToken?.length
+    accessLength: accessToken?.length,
   });
 
   if (!accessToken || !refreshToken) {
