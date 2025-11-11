@@ -49,6 +49,15 @@
     <div style="text-align: center;">
       <h2>Verifying your email...</h2>
       <p id="status">Please wait while we log you in.</p>
+      <p style="margin-top: 20px;">
+        <a
+          href="/debug-logs"
+          style="color: #2196f3; text-decoration: underline; font-size: 14px;"
+          target="_blank"
+        >
+          View persistent debug logs (opens in new tab)
+        </a>
+      </p>
     </div>
 
     <div class="container">
@@ -136,10 +145,40 @@
                   // This is the correct security behavior
                   addLog("✓ Cookies set by server (httpOnly - not visible to JS)", "info");
 
-                  setStatus("Success! Redirecting to dashboard...");
-                  setTimeout(function () {
-                    window.location.href = "/generate";
-                  }, 3000); // 3 second delay so user can see the logs
+                  // Verify the session was created by calling session endpoint
+                  addLog("Verifying session...", "info");
+                  setStatus("Verifying session...");
+
+                  fetch("/api/auth/session")
+                    .then(function (sessionResponse) {
+                      return sessionResponse.json();
+                    })
+                    .then(function (sessionData) {
+                      if (sessionData.authenticated) {
+                        addLog("✓ Session verified! User is authenticated: " + sessionData.user.email, "info");
+                        setStatus("Success! You are now logged in. Redirecting...");
+                        setTimeout(function () {
+                          window.location.href = "/generate";
+                        }, 2000);
+                      } else {
+                        addLog("✗ Session NOT verified! Cookies may not be set properly.", "error");
+                        addLog("Session response: " + JSON.stringify(sessionData), "error");
+                        setStatus("Authentication failed - cookies not set");
+                        alert(
+                          "Authentication failed. Cookies were not set properly. Please try logging in manually."
+                        );
+                        setTimeout(function () {
+                          window.location.href = "/login";
+                        }, 2000);
+                      }
+                    })
+                    .catch(function (error) {
+                      addLog("✗ Error verifying session: " + error.message, "error");
+                      setStatus("Error verifying session");
+                      setTimeout(function () {
+                        window.location.href = "/login";
+                      }, 2000);
+                    });
                 });
               } else {
                 return response.json().then(function (data) {

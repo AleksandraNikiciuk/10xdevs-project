@@ -76,12 +76,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
 
     // Build Set-Cookie headers manually as a backup
     const buildCookieString = (name: string, value: string, maxAge: number) => {
-      const parts = [
-        `${name}=${value}`,
-        `Path=/`,
-        `Max-Age=${maxAge}`,
-        `SameSite=Lax`,
-      ];
+      const parts = [`${name}=${value}`, `Path=/`, `Max-Age=${maxAge}`, `SameSite=Lax`];
       if (isProduction) {
         parts.push("Secure");
       }
@@ -93,10 +88,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       "Content-Type": "application/json",
       "Set-Cookie": buildCookieString("sb-access-token", access_token, 60 * 60 * 24 * 7),
     });
-    headers.append(
-      "Set-Cookie",
-      buildCookieString("sb-refresh-token", refresh_token, 60 * 60 * 24 * 30)
-    );
+    headers.append("Set-Cookie", buildCookieString("sb-refresh-token", refresh_token, 60 * 60 * 24 * 30));
 
     return new Response(
       JSON.stringify({
