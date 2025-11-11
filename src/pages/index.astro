@@ -2,7 +2,6 @@
 import Layout from "../layouts/Layout.astro";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Zap, Layers, PenSquare, Sparkles, BookOpen, Target } from "lucide-react";
-import { ThemeToggle } from "../components/ui/theme-toggle";
 
 const navItems = [
   {
@@ -46,19 +45,13 @@ const tipItems = [
 
 <Layout title="Dashboard">
   <main class="container mx-auto px-4 py-8">
-    <header class="flex justify-between items-center mb-12">
-      <div class="flex-1"></div>
-      <div class="flex-1 text-center">
-        <h1
-          class="text-4xl font-bold tracking-tight bg-gradient-to-r from-md-primary via-md-tertiary to-md-primary bg-clip-text text-transparent"
-        >
-          Flashcard Dashboard
-        </h1>
-        <p class="text-lg text-muted-foreground mt-2">Choose an option to get started</p>
-      </div>
-      <div class="flex-1 flex justify-end">
-        <ThemeToggle client:load />
-      </div>
+    <header class="text-center mb-12">
+      <h1
+        class="text-4xl font-bold tracking-tight bg-gradient-to-r from-md-primary via-md-tertiary to-md-primary bg-clip-text text-transparent"
+      >
+        Flashcard Dashboard
+      </h1>
+      <p class="text-lg text-muted-foreground mt-2">Choose an option to get started</p>
     </header>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {

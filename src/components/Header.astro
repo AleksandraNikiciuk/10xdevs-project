@@ -1,5 +1,6 @@
 ---
 import { Sparkles } from "lucide-react";
+import { ThemeToggle } from "./ui/theme-toggle";
 const { user } = Astro.locals;
 ---
 
@@ -16,37 +17,44 @@ const { user } = Astro.locals;
         <span>Flashcards AI</span>
       </a>
     </div>
-    <div class="flex items-center space-x-4">
-      {
-        user ? (
-          <>
-            <span class="text-sm text-white/90 dark:text-muted-foreground">{user.email}</span>
-            <form action="/api/auth/logout" method="post">
-              <button
-                type="submit"
-                class="text-sm font-medium text-white dark:text-foreground hover:text-white/80 dark:hover:underline transition-colors"
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-4">
+        {
+          user ? (
+            <>
+              <span class="text-sm text-white/90 dark:text-muted-foreground flex items-center h-10">{user.email}</span>
+              <form action="/api/auth/logout" method="post" class="flex items-center h-10">
+                <button
+                  type="submit"
+                  class="text-sm font-medium text-white dark:text-foreground hover:text-white/80 dark:hover:underline transition-colors"
+                >
+                  Logout
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <a
+                href="/login"
+                class="text-sm font-medium text-white dark:text-foreground hover:text-white/80 dark:hover:underline transition-colors flex items-center h-10"
               >
-                Logout
-              </button>
-            </form>
-          </>
-        ) : (
-          <>
-            <a
-              href="/login"
-              class="text-sm font-medium text-white dark:text-foreground hover:text-white/80 dark:hover:underline transition-colors"
-            >
-              Login
-            </a>
-            <a
-              href="/register"
-              class="text-sm font-medium text-white dark:text-foreground hover:text-white/80 dark:hover:underline transition-colors"
-            >
-              Register
-            </a>
-          </>
-        )
-      }
+                Login
+              </a>
+              <a
+                href="/register"
+                class="text-sm font-medium text-white dark:text-foreground hover:text-white/80 dark:hover:underline transition-colors flex items-center h-10"
+              >
+                Register
+              </a>
+            </>
+          )
+        }
+      </div>
+      <div
+        class="[&_button]:border-white/20 [&_button]:text-white [&_button]:hover:bg-white/10 dark:[&_button]:bg-md-primary/50 dark:[&_button]:border-md-primary dark:[&_button]:text-white dark:[&_button]:hover:bg-md-primary/60"
+      >
+        <ThemeToggle client:load />
+      </div>
     </div>
   </nav>
 </header>

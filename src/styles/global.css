@@ -324,7 +324,7 @@
   --destructive: var(--md-error);
   --destructive-foreground: var(--md-on-error);
   --border: var(--md-outline-variant);
-  --input: var(--md-surface-container-highest);
+  --input: var(--md-surface-container-low);
   --ring: var(--md-primary);
 
   /* Charts - keeping existing colors */
@@ -558,6 +558,16 @@
     * {
       forced-color-adjust: auto;
     }
+  }
+
+  /* === FIX: Browser Autocomplete Styling === */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px var(--input) inset !important;
+    -webkit-text-fill-color: var(--foreground) !important;
+    transition: background-color 5000s ease-in-out 0s;
   }
 }
 
