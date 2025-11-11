@@ -5,6 +5,8 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     const body = await request.json();
     const { access_token, refresh_token } = body;
 
+    console.log("[CALLBACK] Received tokens, access_token length:", access_token?.length);
+
     if (!access_token || !refresh_token) {
       return new Response(
         JSON.stringify({
@@ -24,6 +26,8 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       error,
     } = await locals.supabase.auth.getUser(access_token);
 
+    console.log("[CALLBACK] User verification result:", { hasUser: !!user, hasError: !!error });
+
     if (error || !user) {
       return new Response(
         JSON.stringify({
@@ -39,6 +43,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     }
 
     const isProduction = request.url.startsWith("https://");
+    console.log("[CALLBACK] Is production:", isProduction);
 
     const cookieOptions = {
       path: "/",
@@ -48,11 +53,13 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       maxAge: 60 * 60 * 24 * 7, // 7 days
     };
 
+    console.log("[CALLBACK] Setting cookies with options:", cookieOptions);
     cookies.set("sb-access-token", access_token, cookieOptions);
     cookies.set("sb-refresh-token", refresh_token, {
       ...cookieOptions,
       maxAge: 60 * 60 * 24 * 30, // 30 days
     });
+    console.log("[CALLBACK] Cookies set successfully");
 
     // Set cookies via headers as backup
     const buildCookieString = (name: string, value: string, maxAge: number) => {

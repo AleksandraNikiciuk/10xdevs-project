@@ -4,6 +4,12 @@ export const GET: APIRoute = async ({ cookies, locals }) => {
   const accessToken = cookies.get("sb-access-token")?.value;
   const refreshToken = cookies.get("sb-refresh-token")?.value;
 
+  console.log("[SESSION] Checking session, has tokens:", {
+    hasAccess: !!accessToken,
+    hasRefresh: !!refreshToken,
+    accessLength: accessToken?.length
+  });
+
   if (!accessToken || !refreshToken) {
     return new Response(
       JSON.stringify({
@@ -24,6 +30,8 @@ export const GET: APIRoute = async ({ cookies, locals }) => {
     error,
   } = await locals.supabase.auth.getUser(accessToken);
 
+  console.log("[SESSION] User check result:", { hasUser: !!user, hasError: !!error });
+
   if (error || !user) {
     return new Response(
       JSON.stringify({
@@ -38,6 +46,8 @@ export const GET: APIRoute = async ({ cookies, locals }) => {
       }
     );
   }
+
+  console.log("[SESSION] User authenticated:", user.email);
 
   return new Response(
     JSON.stringify({
