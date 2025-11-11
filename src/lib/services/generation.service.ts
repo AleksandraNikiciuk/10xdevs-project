@@ -71,6 +71,7 @@ interface CreateGenerationParams {
   supabase: SupabaseClient;
   openrouterApiKey?: string;
   userId?: string; // Optional: if provided, use this instead of DEFAULT_USER_ID
+  siteUrl?: string; // Optional: site URL for OpenRouter HTTP-Referer header
 }
 
 // ============================================================================
@@ -114,10 +115,11 @@ function calculateDuration(startTime: number): number {
  */
 async function generateFlashcardsWithAI(
   sourceText: string,
-  openrouterApiKey?: string
+  openrouterApiKey?: string,
+  siteUrl?: string
 ): Promise<{ flashcards: { question: string; answer: string }[]; model: string }> {
   // Initialize OpenRouter service
-  const openRouter = new OpenRouterService(openrouterApiKey);
+  const openRouter = new OpenRouterService(openrouterApiKey, siteUrl);
 
   // Create system prompt for flashcard generation
   const systemPrompt = `You are an expert educational content creator specializing in flashcard generation.
@@ -190,7 +192,7 @@ ${sourceText}`;
  * });
  */
 export async function createGeneration(params: CreateGenerationParams): Promise<CreateGenerationResultDTO> {
-  const { sourceText, supabase, openrouterApiKey, userId: providedUserId } = params;
+  const { sourceText, supabase, openrouterApiKey, userId: providedUserId, siteUrl } = params;
   // Use provided userId if available, otherwise fall back to DEFAULT_USER_ID for anonymous users
   const userId = providedUserId || DEFAULT_USER_ID;
 
@@ -214,7 +216,7 @@ export async function createGeneration(params: CreateGenerationParams): Promise<
     let aiResponse;
     try {
       console.log("[generation.service] Calling OpenRouter AI...");
-      aiResponse = await generateFlashcardsWithAI(sourceText, openrouterApiKey);
+      aiResponse = await generateFlashcardsWithAI(sourceText, openrouterApiKey, siteUrl);
       console.log("[generation.service] AI generation successful ✓");
       console.log("- Flashcards generated:", aiResponse.flashcards.length);
     } catch (error) {

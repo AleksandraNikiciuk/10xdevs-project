@@ -105,13 +105,17 @@ interface OpenRouterApiResponse {
 export class OpenRouterService {
   private readonly apiKey: string;
   private readonly baseUrl: string = "https://openrouter.ai/api/v1/chat/completions";
+  private readonly siteUrl: string;
+  private readonly siteName: string;
 
   /**
    * Creates a new OpenRouterService instance.
    * @param apiKey - OpenRouter API key (optional, will try to read from env if not provided)
+   * @param siteUrl - Site URL for HTTP-Referer header (optional, defaults to appropriate value)
+   * @param siteName - Site name for X-Title header (optional, defaults to "10xdevs-project")
    * @throws {ConfigurationError} If OPENROUTER_API_KEY is not provided and not set in environment variables
    */
-  constructor(apiKey?: string) {
+  constructor(apiKey?: string, siteUrl?: string, siteName?: string) {
     const key =
       apiKey ||
       (typeof import.meta !== "undefined" ? import.meta.env.OPENROUTER_API_KEY : undefined) ||
@@ -122,6 +126,8 @@ export class OpenRouterService {
     }
 
     this.apiKey = key;
+    this.siteUrl = siteUrl || "https://10xdevs-project-7p0.pages.dev";
+    this.siteName = siteName || "10xdevs-project";
   }
 
   /**
@@ -219,8 +225,8 @@ export class OpenRouterService {
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:4321",
-          "X-Title": "10xdevs-project",
+          "HTTP-Referer": this.siteUrl,
+          "X-Title": this.siteName,
         },
         body: JSON.stringify(payload),
       });

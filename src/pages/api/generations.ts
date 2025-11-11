@@ -99,6 +99,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     console.log("[API /api/generations] OpenRouter API key available:", !!openrouterApiKey);
     console.log("[API /api/generations] API key starts with:", openrouterApiKey?.substring(0, 15) + "...");
 
+    // Step 4.5: Get site URL from request headers for OpenRouter HTTP-Referer
+    const origin = request.headers.get("origin") || request.headers.get("referer")?.split("/").slice(0, 3).join("/");
+    const siteUrl = origin || "https://10xdevs-project-7p0.pages.dev";
+    console.log("[API /api/generations] Site URL for OpenRouter:", siteUrl);
+
     // Step 5: Create generation
     console.log("[API /api/generations] Calling createGeneration service...");
     const result: CreateGenerationResultDTO = await createGeneration({
@@ -106,6 +111,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       supabase,
       openrouterApiKey,
       userId: isAuthenticated ? locals.user?.id : undefined, // Pass user ID if authenticated
+      siteUrl, // Pass site URL for OpenRouter HTTP-Referer header
     });
     console.log("[API /api/generations] Generation service completed successfully ✓");
 
