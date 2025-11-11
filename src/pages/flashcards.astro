@@ -17,26 +17,22 @@ const supabase = createSupabaseAdmin({
 });
 
 // Use authenticated user's ID or DEFAULT_USER_ID
-const userId = isAuthenticated ? user?.id : DEFAULT_USER_ID;
+const userId = isAuthenticated ? user.id : DEFAULT_USER_ID;
 
 let flashcards: FlashcardDTO[] = [];
 let error: string | null = null;
-
-console.log("[flashcards.astro] Loading flashcards for user:", userId);
 
 let totalFlashcards = 0;
 
 try {
   const result = await listFlashcards({
     query: { page: 1, limit: 20 },
-    userId: userId!,
+    userId,
     supabase,
   });
   flashcards = result.data;
   totalFlashcards = result.pagination.total;
-  console.log("[flashcards.astro] Loaded flashcards:", flashcards.length, "Total:", totalFlashcards);
 } catch (e) {
-  console.error("[flashcards.astro] Error loading flashcards:", e);
   error = "Failed to load flashcards.";
 }
 ---

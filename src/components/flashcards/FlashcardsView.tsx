@@ -104,9 +104,7 @@ const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             </div>
           )}
           {!hasMore && flashcards.length > 0 && (
-            <div className="text-center py-8 text-md-on-surface-variant">
-              All flashcards loaded
-            </div>
+            <div className="text-center py-8 text-md-on-surface-variant">All flashcards loaded</div>
           )}
         </>
       )}

@@ -152,10 +152,7 @@ export async function deleteFlashcard(flashcardId: number): Promise<void> {
   }
 }
 
-export async function listFlashcards(params: {
-  page: number;
-  limit: number;
-}): Promise<ListFlashcardsResultDTO> {
+export async function listFlashcards(params: { page: number; limit: number }): Promise<ListFlashcardsResultDTO> {
   try {
     const headers = await getOptionalAuthHeaders();
 
