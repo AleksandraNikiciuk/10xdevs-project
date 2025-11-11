@@ -128,10 +128,18 @@
               if (response.ok) {
                 return response.json().then(function (data) {
                   addLog("✓ Success! User: " + (data.user ? data.user.email : "unknown"), "info");
+                  if (data.debug) {
+                    addLog("Debug info: " + JSON.stringify(data.debug), "info");
+                  }
+
+                  // Note: Cookies are httpOnly, so they won't be visible to JavaScript
+                  // This is the correct security behavior
+                  addLog("✓ Cookies set by server (httpOnly - not visible to JS)", "info");
+
                   setStatus("Success! Redirecting to dashboard...");
                   setTimeout(function () {
                     window.location.href = "/generate";
-                  }, 2000); // 2 second delay so user can see the logs
+                  }, 3000); // 3 second delay so user can see the logs
                 });
               } else {
                 return response.json().then(function (data) {
