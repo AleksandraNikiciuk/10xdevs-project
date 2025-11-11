@@ -1,29 +1,47 @@
 ---
+import { Sparkles } from "lucide-react";
 const { user } = Astro.locals;
 ---
 
-<header class="bg-background border-b sticky top-0 z-50">
+<header
+  class="bg-gradient-to-r from-md-primary via-md-tertiary to-md-primary dark:bg-none dark:bg-background border-b border-transparent dark:border-border sticky top-0 z-50 shadow-md dark:shadow-none"
+>
   <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
     <div class="flex-shrink-0">
-      <a href="/" class="text-xl font-bold">Flashcards AI</a>
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm dark:bg-transparent dark:px-0 dark:py-0 dark:rounded-none text-white dark:text-foreground text-lg font-bold hover:bg-white/20 dark:hover:bg-transparent hover:scale-105 dark:hover:scale-100 transition-all duration-200"
+      >
+        <Sparkles className="w-5 h-5 dark:hidden" />
+        <span>Flashcards AI</span>
+      </a>
     </div>
     <div class="flex items-center space-x-4">
       {
         user ? (
           <>
-            <span class="text-sm text-muted-foreground">{user.email}</span>
+            <span class="text-sm text-white/90 dark:text-muted-foreground">{user.email}</span>
             <form action="/api/auth/logout" method="post">
-              <button type="submit" class="text-sm font-medium hover:underline">
+              <button
+                type="submit"
+                class="text-sm font-medium text-white dark:text-foreground hover:text-white/80 dark:hover:underline transition-colors"
+              >
                 Logout
               </button>
             </form>
           </>
         ) : (
           <>
-            <a href="/login" class="text-sm font-medium hover:underline">
+            <a
+              href="/login"
+              class="text-sm font-medium text-white dark:text-foreground hover:text-white/80 dark:hover:underline transition-colors"
+            >
               Login
             </a>
-            <a href="/register" class="text-sm font-medium hover:underline">
+            <a
+              href="/register"
+              class="text-sm font-medium text-white dark:text-foreground hover:text-white/80 dark:hover:underline transition-colors"
+            >
               Register
             </a>
           </>
