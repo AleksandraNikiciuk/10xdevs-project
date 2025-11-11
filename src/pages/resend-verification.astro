@@ -107,7 +107,15 @@ import Layout from "../layouts/Layout.astro";
             messageDiv.className = "success";
             form.reset();
           } else {
-            messageDiv.textContent = "Error: " + data.error;
+            var errorMessage = "Error: " + data.error;
+            if (data.hint) {
+              errorMessage += " " + data.hint;
+            }
+            if (data.isRateLimit) {
+              errorMessage +=
+                " TIP: Use a different email address (e.g., yourname+test@gmail.com) for testing.";
+            }
+            messageDiv.textContent = errorMessage;
             messageDiv.className = "error";
           }
         } catch (err) {

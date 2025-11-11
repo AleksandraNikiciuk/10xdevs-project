@@ -78,6 +78,26 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
           },
         });
       }
+      // Check for rate limit
+      const isRateLimit =
+        error.message.includes("rate limit") ||
+        error.message.includes("Email rate limit exceeded") ||
+        error.message.includes("too many requests");
+
+      if (isRateLimit) {
+        return new Response(
+          JSON.stringify({
+            error:
+              "Email rate limit reached. Please wait an hour or use a different email address (e.g., yourname+test@gmail.com).",
+          }),
+          {
+            status: 429,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
         headers: {

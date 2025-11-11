@@ -29,12 +29,22 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
 
     if (error) {
+      // Check if it's a rate limit error
+      const isRateLimit =
+        error.message.includes("rate limit") ||
+        error.message.includes("Email rate limit exceeded") ||
+        error.message.includes("too many requests");
+
       return new Response(
         JSON.stringify({
           error: error.message,
+          isRateLimit,
+          hint: isRateLimit
+            ? "Please wait an hour before requesting another verification email. Check your spam folder in case the email was already sent."
+            : undefined,
         }),
         {
-          status: 400,
+          status: isRateLimit ? 429 : 400,
           headers: {
             "Content-Type": "application/json",
           },
