@@ -94,6 +94,7 @@ export async function generateFlashcards(command: CreateGenerationCommand): Prom
     }
 
     const data: CreateGenerationResultDTO = await response.json();
+    // eslint-disable-next-line no-console
     console.log("[generations.api] Success response:", data);
     return data;
   } catch (error) {

@@ -59,7 +59,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // 1. For authenticated users: we need to write to their user_id
     // 2. For anonymous users: we need to write to DEFAULT_USER_ID
     // Both cases require bypassing RLS since the request doesn't have Supabase auth context
-    
+
     // Get env vars from context.locals.runtime.env (Cloudflare) or import.meta.env (dev)
     const env = locals.runtime?.env || {
       SUPABASE_URL: import.meta.env.SUPABASE_URL,

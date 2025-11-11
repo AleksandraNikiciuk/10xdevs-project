@@ -111,6 +111,7 @@ async function validateGenerationOwnership(
       .single();
 
     if (error) {
+      // eslint-disable-next-line no-console
       console.error("[FlashcardService] Database error when validating generation:", {
         generationId,
         error: error.message,
