@@ -113,15 +113,19 @@ if (accessToken && refreshToken) {
           message.className = "error";
         }
 
-        // Extract tokens from hash or query params BEFORE clearing URL
+        // Extract tokens OR errors from hash or query params BEFORE clearing URL
         var accessToken = null;
         var refreshToken = null;
+        var error = null;
+        var errorDescription = null;
 
         var hash = window.location.hash.substring(1);
         if (hash) {
           var hashParams = new URLSearchParams(hash);
           accessToken = hashParams.get("access_token");
           refreshToken = hashParams.get("refresh_token");
+          error = hashParams.get("error");
+          errorDescription = hashParams.get("error_description");
         }
 
         if (!accessToken || !refreshToken) {
@@ -130,12 +134,39 @@ if (accessToken && refreshToken) {
             var searchParams = new URLSearchParams(search);
             accessToken = searchParams.get("access_token");
             refreshToken = searchParams.get("refresh_token");
+            if (!error) {
+              error = searchParams.get("error");
+              errorDescription = searchParams.get("error_description");
+            }
           }
         }
 
-        // NOW clear the URL to hide tokens
+        // Log what we received for debugging
+        console.log("[CALLBACK CLIENT] Received:", {
+          hasAccessToken: !!accessToken,
+          hasRefreshToken: !!refreshToken,
+          hasError: !!error,
+          error: error,
+          errorDescription: errorDescription
+        });
+
+        // NOW clear the URL to hide tokens/errors
         if (window.location.hash || window.location.search) {
           window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // Check for Supabase errors first
+        if (error) {
+          var errorMsg = errorDescription ? decodeURIComponent(errorDescription.replace(/\+/g, " ")) : error;
+          if (error === "access_denied" && errorMsg.includes("expired")) {
+            showError("Verification link has expired. Please request a new one.");
+          } else {
+            showError(errorMsg);
+          }
+          setTimeout(function () {
+            window.location.href = "/resend-verification";
+          }, 3000);
+          return;
         }
 
         if (!accessToken || !refreshToken) {
