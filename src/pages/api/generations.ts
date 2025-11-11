@@ -67,6 +67,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
       SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
     };
 
+    // Debug logging for Supabase credentials
+    console.log("[API /api/generations] Supabase env check:");
+    console.log("- SUPABASE_URL:", !!env.SUPABASE_URL, env.SUPABASE_URL?.substring(0, 30));
+    console.log("- SUPABASE_KEY:", !!env.SUPABASE_KEY, env.SUPABASE_KEY?.substring(0, 20));
+    console.log(
+      "- SUPABASE_SERVICE_ROLE_KEY:",
+      !!env.SUPABASE_SERVICE_ROLE_KEY,
+      env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 20)
+    );
+
     const supabase = createSupabaseAdmin({
       SUPABASE_URL: env.SUPABASE_URL,
       SUPABASE_KEY: env.SUPABASE_KEY,
