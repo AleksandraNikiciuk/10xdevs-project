@@ -102,6 +102,7 @@ if (accessToken && refreshToken) {
         fetch("/api/auth/callback", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include", // Important: allow cookies to be set
           body: JSON.stringify({
             access_token: accessToken,
             refresh_token: refreshToken,
@@ -110,17 +111,18 @@ if (accessToken && refreshToken) {
           .then(function (response) {
             if (response.ok) {
               status.textContent = "Success! Redirecting...";
-              // Small delay to ensure cookies are set
+              // Wait longer to ensure cookies are set
               setTimeout(function () {
                 window.location.href = "/generate";
-              }, 300);
+              }, 1500);
             } else {
               status.textContent = "Verification failed";
               return response.json().then(function (data) {
                 console.error("Callback error:", data);
+                status.textContent = "Error: " + (data.error || "Unknown error");
                 setTimeout(function () {
                   window.location.href = "/login?error=verification_failed";
-                }, 1000);
+                }, 3000);
               });
             }
           })
