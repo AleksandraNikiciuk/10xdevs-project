@@ -3,75 +3,58 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Resend Verification Email">
-  <div class="container">
-    <h1>Resend Verification Email</h1>
-    <p>Didn't receive the verification email? Enter your email to resend it.</p>
-
-    <form id="resendForm" style="max-width: 400px; margin-top: 20px;">
-      <div style="margin-bottom: 15px;">
-        <label for="email" style="display: block; margin-bottom: 5px; font-weight: 500;">
-          Email Address
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          required
-          style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;"
-          placeholder="your.email@example.com"
-        />
+  <main class="flex-grow flex items-center justify-center p-8">
+    <div class="w-full max-w-md">
+      <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div class="flex flex-col space-y-1.5 p-6">
+          <h3 class="text-2xl font-semibold leading-none tracking-tight">Resend Verification Email</h3>
+          <p class="text-sm text-muted-foreground">
+            Didn&apos;t receive the verification email? Enter your email to resend it.
+          </p>
+        </div>
+        <form id="resendForm">
+          <div class="p-6 pt-0 grid gap-4">
+            <div class="grid gap-2">
+              <label for="email" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="your.email@example.com"
+              />
+            </div>
+            <div id="message" class="hidden"></div>
+          </div>
+          <div class="flex items-center p-6 pt-0">
+            <button
+              type="submit"
+              id="submitBtn"
+              class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
+            >
+              Resend Verification Email
+            </button>
+          </div>
+        </form>
+        <div class="p-6 pt-0">
+          <div class="text-center text-sm">
+            <a href="/login" class="underline">Back to Login</a>
+          </div>
+        </div>
       </div>
-
-      <button
-        type="submit"
-        style="width: 100%; padding: 12px; background: #4caf50; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;"
-      >
-        Resend Verification Email
-      </button>
-
-      <div id="message" style="margin-top: 15px;"></div>
-    </form>
-
-    <div style="margin-top: 30px;">
-      <a href="/login" style="color: #2196f3;">Back to Login</a>
     </div>
-  </div>
+  </main>
 
   <style>
-    .container {
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-    }
-
-    h1 {
-      color: #333;
-      margin-bottom: 10px;
-    }
-
-    p {
-      color: #666;
-      line-height: 1.6;
-    }
-
-    #message {
-      padding: 12px;
-      border-radius: 4px;
-      display: none;
-    }
-
     #message.success {
-      background: #e8f5e9;
-      color: #2e7d32;
-      border: 1px solid #4caf50;
-      display: block;
+      @apply block rounded-md border border-green-500 bg-green-50 p-3 text-sm text-green-700;
     }
 
     #message.error {
-      background: #ffebee;
-      color: #c62828;
-      border: 1px solid #f44336;
-      display: block;
+      @apply block rounded-md border border-red-500 bg-red-50 p-3 text-sm text-red-700;
     }
   </style>
 
@@ -80,6 +63,7 @@ import Layout from "../layouts/Layout.astro";
     (function () {
       const form = document.getElementById("resendForm");
       const messageDiv = document.getElementById("message");
+      const submitBtn = document.getElementById("submitBtn");
 
       form.addEventListener("submit", async function (e) {
         e.preventDefault();
@@ -87,9 +71,12 @@ import Layout from "../layouts/Layout.astro";
         const formData = new FormData(form);
         const email = formData.get("email");
 
-        messageDiv.textContent = "Sending...";
-        messageDiv.className = "";
-        messageDiv.style.display = "block";
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML =
+          '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Sending...';
+        messageDiv.textContent = "";
+        messageDiv.className = "hidden";
 
         try {
           const response = await fetch("/api/auth/resend-verification", {
@@ -121,6 +108,9 @@ import Layout from "../layouts/Layout.astro";
         } catch (err) {
           messageDiv.textContent = "Failed to send email. Please try again.";
           messageDiv.className = "error";
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = "Resend Verification Email";
         }
       });
     })();

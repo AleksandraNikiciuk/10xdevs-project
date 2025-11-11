@@ -1,6 +1,5 @@
 ---
-// This page handles the OAuth callback after email verification
-// It extracts tokens from URL hash and sets them as cookies
+// OAuth callback handler - extracts tokens and authenticates user
 ---
 
 <!doctype html>
@@ -15,198 +14,140 @@
           system-ui,
           -apple-system,
           sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
         background: #f5f5f5;
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 20px;
       }
-      .log-entry {
-        padding: 8px;
-        margin: 4px 0;
-        background: white;
-        border-left: 3px solid #4caf50;
-        font-family: monospace;
-        font-size: 12px;
+      .loader {
+        text-align: center;
       }
-      .log-entry.error {
-        border-left-color: #f44336;
-        background: #ffebee;
+      .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
       }
-      .log-entry.info {
-        border-left-color: #2196f3;
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
       h2 {
-        margin-top: 0;
+        color: #333;
+        margin: 0 0 10px 0;
+      }
+      p {
+        color: #666;
+        margin: 0;
+      }
+      .error {
+        color: #d32f2f;
       }
     </style>
   </head>
   <body>
-    <div style="text-align: center;">
-      <h2>Verifying your email...</h2>
-      <p id="status">Please wait while we log you in.</p>
-      <p style="margin-top: 20px;">
-        <a
-          href="/debug-logs"
-          style="color: #2196f3; text-decoration: underline; font-size: 14px;"
-          target="_blank"
-        >
-          View persistent debug logs (opens in new tab)
-        </a>
-      </p>
-    </div>
-
-    <div class="container">
-      <h3>Debug Logs:</h3>
-      <div id="logs"></div>
+    <div class="loader">
+      <div class="spinner"></div>
+      <h2 id="title">Verifying your email...</h2>
+      <p id="message">Please wait</p>
     </div>
 
     <script is:inline>
       /* eslint-disable */
       (function () {
-        const logsDiv = document.getElementById("logs");
-        const statusP = document.getElementById("status");
-
-        function addLog(message, type) {
-          type = type || "info";
-          const entry = document.createElement("div");
-          entry.className = "log-entry " + type;
-          entry.textContent = new Date().toISOString().split("T")[1].split(".")[0] + " - " + message;
-          logsDiv.appendChild(entry);
-          console.log("[CALLBACK PAGE]", message);
-
-          // Save to localStorage
-          const logs = JSON.parse(localStorage.getItem("auth_debug_logs") || "[]");
-          logs.push({ time: new Date().toISOString(), message: message, type: type });
-          localStorage.setItem("auth_debug_logs", JSON.stringify(logs.slice(-50))); // Keep last 50
+        // Immediately replace URL to hide tokens
+        if (window.location.hash || window.location.search) {
+          window.history.replaceState({}, document.title, window.location.pathname);
         }
 
-        function setStatus(message) {
-          statusP.textContent = message;
+        var title = document.getElementById("title");
+        var message = document.getElementById("message");
+
+        function showError(msg) {
+          title.textContent = "Verification Failed";
+          title.className = "error";
+          message.textContent = msg;
+          message.className = "error";
         }
 
-        addLog("Full URL: " + window.location.href);
-        addLog("Hash: " + window.location.hash);
-        addLog("Search: " + window.location.search);
+        // Extract tokens from hash or query params
+        var accessToken = null;
+        var refreshToken = null;
 
-        // Try to get tokens from hash first (e.g., #access_token=...)
-        let accessToken = null;
-        let refreshToken = null;
-
-        const hash = window.location.hash.substring(1);
+        var hash = window.location.hash.substring(1);
         if (hash) {
-          addLog("Parsing hash parameters...");
-          const hashParams = new URLSearchParams(hash);
+          var hashParams = new URLSearchParams(hash);
           accessToken = hashParams.get("access_token");
           refreshToken = hashParams.get("refresh_token");
-          addLog("Tokens from hash - access: " + !!accessToken + ", refresh: " + !!refreshToken);
-          if (accessToken) addLog("Access token length: " + accessToken.length);
-          if (refreshToken) addLog("Refresh token length: " + refreshToken.length);
         }
 
-        // If not in hash, try query params (e.g., ?access_token=...)
         if (!accessToken || !refreshToken) {
-          const search = window.location.search.substring(1);
+          var search = window.location.search.substring(1);
           if (search) {
-            addLog("Parsing query parameters...");
-            const searchParams = new URLSearchParams(search);
+            var searchParams = new URLSearchParams(search);
             accessToken = searchParams.get("access_token");
             refreshToken = searchParams.get("refresh_token");
-            addLog("Tokens from query - access: " + !!accessToken + ", refresh: " + !!refreshToken);
           }
         }
 
-        if (accessToken && refreshToken) {
-          addLog("✓ Both tokens found! Sending to API...");
-          setStatus("Verifying tokens with server...");
-
-          fetch("/api/auth/callback", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            }),
-          })
-            .then(function (response) {
-              addLog("API response status: " + response.status);
-              if (response.ok) {
-                return response.json().then(function (data) {
-                  addLog("✓ Success! User: " + (data.user ? data.user.email : "unknown"), "info");
-                  if (data.debug) {
-                    addLog("Debug info: " + JSON.stringify(data.debug), "info");
-                  }
-
-                  // Note: Cookies are httpOnly, so they won't be visible to JavaScript
-                  // This is the correct security behavior
-                  addLog("✓ Cookies set by server (httpOnly - not visible to JS)", "info");
-
-                  // Verify the session was created by calling session endpoint
-                  addLog("Verifying session...", "info");
-                  setStatus("Verifying session...");
-
-                  fetch("/api/auth/session")
-                    .then(function (sessionResponse) {
-                      return sessionResponse.json();
-                    })
-                    .then(function (sessionData) {
-                      if (sessionData.authenticated) {
-                        addLog("✓ Session verified! User is authenticated: " + sessionData.user.email, "info");
-                        setStatus("Success! You are now logged in. Redirecting...");
-                        setTimeout(function () {
-                          window.location.href = "/generate";
-                        }, 2000);
-                      } else {
-                        addLog("✗ Session NOT verified! Cookies may not be set properly.", "error");
-                        addLog("Session response: " + JSON.stringify(sessionData), "error");
-                        setStatus("Authentication failed - cookies not set");
-                        alert(
-                          "Authentication failed. Cookies were not set properly. Please try logging in manually."
-                        );
-                        setTimeout(function () {
-                          window.location.href = "/login";
-                        }, 2000);
-                      }
-                    })
-                    .catch(function (error) {
-                      addLog("✗ Error verifying session: " + error.message, "error");
-                      setStatus("Error verifying session");
-                      setTimeout(function () {
-                        window.location.href = "/login";
-                      }, 2000);
-                    });
-                });
-              } else {
-                return response.json().then(function (data) {
-                  addLog("✗ API error: " + JSON.stringify(data), "error");
-                  setStatus("Verification failed!");
-                  alert("Failed to verify email: " + (data.error || "Unknown error"));
-                  setTimeout(function () {
-                    window.location.href = "/login";
-                  }, 1000);
-                });
-              }
-            })
-            .catch(function (error) {
-              addLog("✗ Fetch error: " + error.message, "error");
-              setStatus("Connection error!");
-              alert("Failed to verify email. Please try logging in manually.");
-              setTimeout(function () {
-                window.location.href = "/login";
-              }, 1000);
-            });
-        } else {
-          addLog("✗ Missing tokens! access: " + !!accessToken + ", refresh: " + !!refreshToken, "error");
-          setStatus("Invalid verification link!");
-          alert("Invalid verification link. Please try again.");
+        if (!accessToken || !refreshToken) {
+          showError("Invalid verification link. Please try again.");
           setTimeout(function () {
             window.location.href = "/login";
-          }, 1000);
+          }, 3000);
+          return;
         }
+
+        // Send tokens to API
+        fetch("/api/auth/callback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          }),
+        })
+          .then(function (response) {
+            if (!response.ok) {
+              return response.json().then(function (data) {
+                throw new Error(data.error || "Verification failed");
+              });
+            }
+            return response.json();
+          })
+          .then(function (data) {
+            message.textContent = "Verifying session...";
+
+            // Verify session was created
+            return fetch("/api/auth/session").then(function (sessionResponse) {
+              return sessionResponse.json().then(function (sessionData) {
+                if (sessionData.authenticated) {
+                  title.textContent = "Success!";
+                  message.textContent = "Redirecting to dashboard...";
+                  setTimeout(function () {
+                    window.location.href = "/generate";
+                  }, 1000);
+                } else {
+                  throw new Error("Session not created. Please log in manually.");
+                }
+              });
+            });
+          })
+          .catch(function (error) {
+            showError(error.message);
+            setTimeout(function () {
+              window.location.href = "/login";
+            }, 3000);
+          });
       })();
       /* eslint-enable */
     </script>

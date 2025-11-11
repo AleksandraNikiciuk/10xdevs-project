@@ -2,13 +2,8 @@ import type { APIRoute } from "astro";
 
 export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
-    console.log("[CALLBACK] Starting callback process");
-
     const body = await request.json();
     const { access_token, refresh_token } = body;
-
-    console.log("[CALLBACK] Has access_token:", !!access_token);
-    console.log("[CALLBACK] Has refresh_token:", !!refresh_token);
 
     if (!access_token || !refresh_token) {
       return new Response(
@@ -24,16 +19,12 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       );
     }
 
-    // Verify the token with Supabase
     const {
       data: { user },
       error,
     } = await locals.supabase.auth.getUser(access_token);
 
-    console.log("[CALLBACK] User verification result:", { hasUser: !!user, hasError: !!error });
-
     if (error || !user) {
-      console.error("[CALLBACK] Error verifying user:", error?.message);
       return new Response(
         JSON.stringify({
           error: "Invalid token",
@@ -47,12 +38,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       );
     }
 
-    // Set cookies with environment-aware configuration
-    console.log("[CALLBACK] Setting cookies for user:", user.id);
-
-    // Detect if we're in production (HTTPS)
     const isProduction = request.url.startsWith("https://");
-    console.log("[CALLBACK] Is production:", isProduction);
 
     const cookieOptions = {
       path: "/",
@@ -62,19 +48,13 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       maxAge: 60 * 60 * 24 * 7, // 7 days
     };
 
-    // Set cookies using Astro's cookie API
     cookies.set("sb-access-token", access_token, cookieOptions);
     cookies.set("sb-refresh-token", refresh_token, {
       ...cookieOptions,
-      maxAge: 60 * 60 * 24 * 30, // 30 days for refresh token
+      maxAge: 60 * 60 * 24 * 30, // 30 days
     });
 
-    console.log("[CALLBACK] Cookies set successfully");
-    console.log("[CALLBACK] Cookie options used:", cookieOptions);
-    console.log("[CALLBACK] Request URL:", request.url);
-    console.log("[CALLBACK] Request origin:", new URL(request.url).origin);
-
-    // Build Set-Cookie headers manually as a backup
+    // Set cookies via headers as backup
     const buildCookieString = (name: string, value: string, maxAge: number) => {
       const parts = [`${name}=${value}`, `Path=/`, `Max-Age=${maxAge}`, `SameSite=Lax`];
       if (isProduction) {
@@ -97,11 +77,6 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
           id: user.id,
           email: user.email,
         },
-        debug: {
-          isProduction,
-          cookieSecure: cookieOptions.secure,
-          origin: new URL(request.url).origin,
-        },
       }),
       {
         status: 200,
@@ -109,7 +84,6 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       }
     );
   } catch (error) {
-    console.error("[CALLBACK] Unexpected error:", error);
     return new Response(
       JSON.stringify({
         error: "Internal server error",
