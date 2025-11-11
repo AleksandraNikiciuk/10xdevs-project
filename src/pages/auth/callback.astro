@@ -19,22 +19,29 @@ if (accessToken && refreshToken) {
     if (!error && user) {
       const isProduction = url.protocol === "https:";
 
-      const cookieOptions = {
-        path: "/",
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: "lax" as const,
-        maxAge: 60 * 60 * 24 * 7,
+      // Build cookie strings manually
+      const buildCookieString = (name: string, value: string, maxAge: number) => {
+        const parts = [`${name}=${value}`, `Path=/`, `Max-Age=${maxAge}`, `SameSite=Lax`];
+        if (isProduction) {
+          parts.push("Secure");
+        }
+        parts.push("HttpOnly");
+        return parts.join("; ");
       };
 
-      Astro.cookies.set("sb-access-token", accessToken, cookieOptions);
-      Astro.cookies.set("sb-refresh-token", refreshToken, {
-        ...cookieOptions,
-        maxAge: 60 * 60 * 24 * 30,
-      });
+      const accessCookie = buildCookieString("sb-access-token", accessToken, 60 * 60 * 24 * 7);
+      const refreshCookie = buildCookieString("sb-refresh-token", refreshToken, 60 * 60 * 24 * 30);
 
-      // Redirect to dashboard
-      return Astro.redirect("/generate");
+      // Build headers with multiple Set-Cookie
+      const headers = new Headers();
+      headers.append("Location", "/generate");
+      headers.append("Set-Cookie", accessCookie);
+      headers.append("Set-Cookie", refreshCookie);
+
+      return new Response(null, {
+        status: 302,
+        headers,
+      });
     }
   } catch (e) {
     console.error("Callback error:", e);
