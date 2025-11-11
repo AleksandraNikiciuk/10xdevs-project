@@ -59,10 +59,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // 1. For authenticated users: we need to write to their user_id
     // 2. For anonymous users: we need to write to DEFAULT_USER_ID
     // Both cases require bypassing RLS since the request doesn't have Supabase auth context
-    const supabase = createSupabaseAdmin({
+    
+    // Get env vars from context.locals.runtime.env (Cloudflare) or import.meta.env (dev)
+    const env = locals.runtime?.env || {
       SUPABASE_URL: import.meta.env.SUPABASE_URL,
       SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
       SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+    };
+
+    const supabase = createSupabaseAdmin({
+      SUPABASE_URL: env.SUPABASE_URL,
+      SUPABASE_KEY: env.SUPABASE_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: env.SUPABASE_SERVICE_ROLE_KEY,
     });
 
     if (!supabase) {
@@ -94,8 +102,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       throw error;
     }
 
-    // Step 4: Get OpenRouter API key from import.meta.env (works in both dev and production with Astro 5)
-    const openrouterApiKey = import.meta.env.OPENROUTER_API_KEY;
+    // Step 4: Get OpenRouter API key from env (context.locals.runtime.env on Cloudflare or import.meta.env in dev)
+    const openrouterApiKey = env.OPENROUTER_API_KEY || import.meta.env.OPENROUTER_API_KEY;
     console.log("[API /api/generations] OpenRouter API key available:", !!openrouterApiKey);
     console.log("[API /api/generations] API key starts with:", openrouterApiKey?.substring(0, 15) + "...");
 
