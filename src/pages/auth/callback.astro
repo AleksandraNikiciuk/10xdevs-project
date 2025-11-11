@@ -64,11 +64,6 @@
     <script is:inline>
       /* eslint-disable */
       (function () {
-        // Immediately replace URL to hide tokens
-        if (window.location.hash || window.location.search) {
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
         var title = document.getElementById("title");
         var message = document.getElementById("message");
 
@@ -79,7 +74,7 @@
           message.className = "error";
         }
 
-        // Extract tokens from hash or query params
+        // Extract tokens from hash or query params FIRST
         var accessToken = null;
         var refreshToken = null;
 
@@ -97,6 +92,11 @@
             accessToken = searchParams.get("access_token");
             refreshToken = searchParams.get("refresh_token");
           }
+        }
+
+        // Now replace URL to hide tokens
+        if (window.location.hash || window.location.search) {
+          window.history.replaceState({}, document.title, window.location.pathname);
         }
 
         if (!accessToken || !refreshToken) {
