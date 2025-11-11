@@ -145,7 +145,7 @@ export function RegisterForm() {
                 {successMessage}
               </p>
               <p className="text-sm text-gray-600">
-                Didn't receive the email?{" "}
+                Didn&apos;t receive the email?{" "}
                 <a href="/resend-verification" className="underline text-blue-600">
                   Resend verification email
                 </a>

@@ -75,43 +75,47 @@ import Layout from "../layouts/Layout.astro";
     }
   </style>
 
-  <script>
-    const form = document.getElementById("resendForm") as HTMLFormElement;
-    const messageDiv = document.getElementById("message") as HTMLDivElement;
+  <script is:inline>
+    /* eslint-disable */
+    (function () {
+      const form = document.getElementById("resendForm");
+      const messageDiv = document.getElementById("message");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-      const formData = new FormData(form);
-      const email = formData.get("email");
+        const formData = new FormData(form);
+        const email = formData.get("email");
 
-      messageDiv.textContent = "Sending...";
-      messageDiv.className = "";
-      messageDiv.style.display = "block";
+        messageDiv.textContent = "Sending...";
+        messageDiv.className = "";
+        messageDiv.style.display = "block";
 
-      try {
-        const response = await fetch("/api/auth/resend-verification", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
+        try {
+          const response = await fetch("/api/auth/resend-verification", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: email }),
+          });
 
-        const data = await response.json();
+          const data = await response.json();
 
-        if (response.ok) {
-          messageDiv.textContent = "Verification email sent! Please check your inbox.";
-          messageDiv.className = "success";
-          form.reset();
-        } else {
-          messageDiv.textContent = `Error: ${data.error}`;
+          if (response.ok) {
+            messageDiv.textContent = "Verification email sent! Please check your inbox.";
+            messageDiv.className = "success";
+            form.reset();
+          } else {
+            messageDiv.textContent = "Error: " + data.error;
+            messageDiv.className = "error";
+          }
+        } catch (err) {
+          messageDiv.textContent = "Failed to send email. Please try again.";
           messageDiv.className = "error";
         }
-      } catch (error) {
-        messageDiv.textContent = "Failed to send email. Please try again.";
-        messageDiv.className = "error";
-      }
-    });
+      });
+    })();
+    /* eslint-enable */
   </script>
 </Layout>
