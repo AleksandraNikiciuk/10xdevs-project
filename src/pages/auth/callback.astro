@@ -11,7 +11,10 @@ const refreshToken = url.searchParams.get("refresh_token");
 if (accessToken && refreshToken) {
   // Tokens in query params - handle server-side
   try {
-    const { data: { user }, error } = await Astro.locals.supabase.auth.getUser(accessToken);
+    const {
+      data: { user },
+      error,
+    } = await Astro.locals.supabase.auth.getUser(accessToken);
 
     if (!error && user) {
       const isProduction = url.protocol === "https:";
@@ -48,15 +51,38 @@ if (accessToken && refreshToken) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verifying...</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      #status {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+      }
+    </style>
   </head>
   <body>
+    <div id="status">Verifying...</div>
+
     <script is:inline>
       /* eslint-disable */
       (function () {
+        var status = document.getElementById("status");
+
         // Extract tokens from hash
         var hash = window.location.hash.substring(1);
         if (!hash) {
-          window.location.href = "/login?error=invalid_link";
+          status.textContent = "Invalid link";
+          setTimeout(function () {
+            window.location.href = "/login?error=invalid_link";
+          }, 1000);
           return;
         }
 
@@ -65,7 +91,10 @@ if (accessToken && refreshToken) {
         var refreshToken = params.get("refresh_token");
 
         if (!accessToken || !refreshToken) {
-          window.location.href = "/login?error=invalid_link";
+          status.textContent = "Invalid tokens";
+          setTimeout(function () {
+            window.location.href = "/login?error=invalid_link";
+          }, 1000);
           return;
         }
 
@@ -80,14 +109,27 @@ if (accessToken && refreshToken) {
         })
           .then(function (response) {
             if (response.ok) {
-              // Redirect immediately
-              window.location.href = "/generate";
+              status.textContent = "Success! Redirecting...";
+              // Small delay to ensure cookies are set
+              setTimeout(function () {
+                window.location.href = "/generate";
+              }, 300);
             } else {
-              window.location.href = "/login?error=verification_failed";
+              status.textContent = "Verification failed";
+              return response.json().then(function (data) {
+                console.error("Callback error:", data);
+                setTimeout(function () {
+                  window.location.href = "/login?error=verification_failed";
+                }, 1000);
+              });
             }
           })
-          .catch(function () {
-            window.location.href = "/login?error=connection_failed";
+          .catch(function (error) {
+            status.textContent = "Connection error";
+            console.error("Fetch error:", error);
+            setTimeout(function () {
+              window.location.href = "/login?error=connection_failed";
+            }, 1000);
           });
       })();
       /* eslint-enable */
