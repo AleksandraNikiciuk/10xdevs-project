@@ -66,7 +66,7 @@ const navItems = [
       // IMMEDIATE execution check
       var hasHash = window.location.hash.indexOf("access_token") > -1;
       var hasQuery = window.location.search.indexOf("access_token") > -1;
-      
+
       console.log("[INDEX] Script executing! Hash has token:", hasHash, "Query has token:", hasQuery);
       console.log("[INDEX] Full URL:", window.location.href);
       console.log("[INDEX] Hash:", window.location.hash);
@@ -89,7 +89,7 @@ const navItems = [
           return; // Stop execution
         }
       }
-      
+
       // Check query params
       var search = window.location.search.substring(1);
       if (search && search.indexOf("access_token") > -1) {

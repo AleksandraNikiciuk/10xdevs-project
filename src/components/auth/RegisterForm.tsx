@@ -140,9 +140,17 @@ export function RegisterForm() {
             </p>
           )}
           {successMessage && (
-            <p className="mt-2 text-sm text-green-600" data-test-id="register-success-message">
-              {successMessage}
-            </p>
+            <div className="mt-2 space-y-2">
+              <p className="text-sm text-green-600" data-test-id="register-success-message">
+                {successMessage}
+              </p>
+              <p className="text-sm text-gray-600">
+                Didn't receive the email?{" "}
+                <a href="/resend-verification" className="underline text-blue-600">
+                  Resend verification email
+                </a>
+              </p>
+            </div>
           )}
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
