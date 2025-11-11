@@ -2,7 +2,7 @@ import type { APIContext } from "astro";
 import { ZodError } from "zod";
 import { CreateFlashcardsSchema, ListFlashcardsQuerySchema } from "../../lib/schemas/flashcard.schema";
 import { createFlashcards, listFlashcards, type FlashcardServiceError } from "../../lib/services/flashcard.service";
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
+import { DEFAULT_USER_ID, createSupabaseAdmin } from "../../db/supabase.client";
 
 export const prerender = false;
 
@@ -35,11 +35,22 @@ export const prerender = false;
  */
 export async function GET(context: APIContext) {
   try {
-    const supabase = context.locals.supabase;
-    const userId = DEFAULT_USER_ID;
+    // Check if user is authenticated
+    const isAuthenticated = !!context.locals.user;
+    console.log("[FlashcardsAPI GET] User authenticated:", isAuthenticated);
 
-    if (!supabase) {
-      console.error("[FlashcardsAPI] Supabase client not available in context");
+    // Use admin client with appropriate user ID (same as POST endpoint)
+    const supabase = createSupabaseAdmin({
+      SUPABASE_URL: import.meta.env.SUPABASE_URL,
+      SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+    });
+
+    // Determine user ID: authenticated user's ID or DEFAULT_USER_ID
+    const userId = isAuthenticated ? context.locals.user?.id : DEFAULT_USER_ID;
+
+    if (!supabase || !userId) {
+      console.error("[FlashcardsAPI GET] Supabase client or user ID not available");
       return new Response(
         JSON.stringify({
           error: "Internal Server Error",
@@ -51,6 +62,8 @@ export async function GET(context: APIContext) {
         }
       );
     }
+
+    console.log("[FlashcardsAPI GET] Using user ID:", userId);
 
     // Parse query parameters
     const url = new URL(context.request.url);
@@ -158,12 +171,35 @@ export async function GET(context: APIContext) {
  */
 export async function POST(context: APIContext) {
   try {
-    // Step 1: Get dependencies from context
-    const supabase = context.locals.supabase;
-    const userId = DEFAULT_USER_ID; // MVP: using default user ID
+    // Step 1: Check authentication - saving flashcards requires login
+    const isAuthenticated = !!context.locals.user;
+    console.log("[FlashcardsAPI] User authenticated:", isAuthenticated);
 
-    if (!supabase) {
-      console.error("[FlashcardsAPI] Supabase client not available in context");
+    if (!isAuthenticated) {
+      console.warn("[FlashcardsAPI] Unauthenticated user attempted to save flashcards");
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+          message: "You must be logged in to save flashcards",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Use admin client with authenticated user's ID to bypass RLS
+    // (same approach as generations endpoint)
+    const supabase = createSupabaseAdmin({
+      SUPABASE_URL: import.meta.env.SUPABASE_URL,
+      SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+    });
+    const userId = context.locals.user?.id;
+
+    if (!supabase || !userId) {
+      console.error("[FlashcardsAPI] Supabase client or user ID not available");
       return new Response(
         JSON.stringify({
           error: "Internal Server Error",
@@ -175,6 +211,7 @@ export async function POST(context: APIContext) {
         }
       );
     }
+    console.log("[FlashcardsAPI] Using user ID:", userId);
 
     // Step 2: Parse request body
     let body: unknown;

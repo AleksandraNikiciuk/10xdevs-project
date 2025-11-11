@@ -53,13 +53,24 @@ export function useGenerateFlashcards(): UseGenerateFlashcardsReturn {
     setError(null);
 
     try {
+      console.log("[useGenerateFlashcards] Starting generation...");
+      console.log("- Text length:", sourceText.length);
+      console.log("- Trimmed length:", sourceText.trim().length);
+
       const result = await generateFlashcards({ source_text: sourceText });
+      console.log("[useGenerateFlashcards] Generation successful:", result);
+
       const proposalViewModels = transformToProposalViewModels(result);
 
       setProposals(proposalViewModels);
       setGenerationId(result.generation.id);
       setViewState("reviewing");
     } catch (err) {
+      console.error("[useGenerateFlashcards] Generation failed:");
+      console.error("- Error object:", err);
+      console.error("- Error type:", typeof err);
+      console.error("- Error keys:", err && typeof err === "object" ? Object.keys(err) : "N/A");
+
       const errorState = err as ErrorState;
       setError(errorState);
       setViewState("error");

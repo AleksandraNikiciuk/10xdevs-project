@@ -70,6 +70,7 @@ interface CreateGenerationParams {
   sourceText: string;
   supabase: SupabaseClient;
   openrouterApiKey?: string;
+  userId?: string; // Optional: if provided, use this instead of DEFAULT_USER_ID
 }
 
 // ============================================================================
@@ -189,8 +190,15 @@ ${sourceText}`;
  * });
  */
 export async function createGeneration(params: CreateGenerationParams): Promise<CreateGenerationResultDTO> {
-  const { sourceText, supabase, openrouterApiKey } = params;
-  const userId = DEFAULT_USER_ID;
+  const { sourceText, supabase, openrouterApiKey, userId: providedUserId } = params;
+  // Use provided userId if available, otherwise fall back to DEFAULT_USER_ID for anonymous users
+  const userId = providedUserId || DEFAULT_USER_ID;
+
+  console.log("[generation.service] createGeneration called");
+  console.log("- Source text length:", sourceText.length);
+  console.log("- User ID:", userId);
+  console.log("- Using default user:", !providedUserId);
+  console.log("- OpenRouter API key available:", !!openrouterApiKey);
 
   // Start timer for generation duration
   const startTime = Date.now();
@@ -199,12 +207,21 @@ export async function createGeneration(params: CreateGenerationParams): Promise<
     // Step 1: Calculate source text metadata
     const sourceTextLength = sourceText.length;
     const sourceTextHash = calculateHash(sourceText);
+    console.log("[generation.service] Metadata calculated");
+    console.log("- Hash:", sourceTextHash);
 
     // Step 2: Generate flashcards using OpenRouter AI
     let aiResponse;
     try {
+      console.log("[generation.service] Calling OpenRouter AI...");
       aiResponse = await generateFlashcardsWithAI(sourceText, openrouterApiKey);
+      console.log("[generation.service] AI generation successful ✓");
+      console.log("- Flashcards generated:", aiResponse.flashcards.length);
     } catch (error) {
+      console.error("[generation.service] AI generation failed:");
+      console.error("- Error:", error);
+      console.error("- Error type:", error?.constructor?.name);
+
       // Map OpenRouter errors to GenerationServiceError
       let errorCode = "AI_SERVICE_ERROR";
       let errorMessage = "Failed to generate flashcards";
@@ -234,15 +251,26 @@ export async function createGeneration(params: CreateGenerationParams): Promise<
         errorMessage = error.message;
       }
 
+      console.error("[generation.service] Mapped error:");
+      console.error("- Error code:", errorCode);
+      console.error("- Error message:", errorMessage);
+      console.error("- Status code:", statusCode);
+
       // Log AI errors to generation_error_logs
-      await supabase.from("generation_error_logs").insert({
-        user_id: userId,
-        error_code: errorCode,
-        error_message: errorMessage,
-        model: AI_MODEL,
-        source_text_length: sourceTextLength,
-        source_text_hash: sourceTextHash,
-      });
+      try {
+        console.log("[generation.service] Logging error to database...");
+        await supabase.from("generation_error_logs").insert({
+          user_id: userId,
+          error_code: errorCode,
+          error_message: errorMessage,
+          model: AI_MODEL,
+          source_text_length: sourceTextLength,
+          source_text_hash: sourceTextHash,
+        });
+        console.log("[generation.service] Error logged to database ✓");
+      } catch (logError) {
+        console.error("[generation.service] Failed to log error to database:", logError);
+      }
 
       throw createGenerationServiceError("AI_ERROR", errorMessage, statusCode, { code: errorCode });
     }

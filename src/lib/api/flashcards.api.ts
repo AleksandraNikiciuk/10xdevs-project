@@ -1,4 +1,4 @@
-import type { CreateFlashcardsCommand, CreateFlashcardsResultDTO } from "@/types";
+import type { CreateFlashcardsCommand, CreateFlashcardsResultDTO, ListFlashcardsResultDTO } from "@/types";
 import type { ErrorState } from "@/components/generate/types";
 
 function getCookie(name: string): string | null {
@@ -27,6 +27,26 @@ async function getAuthHeaders(): Promise<HeadersInit> {
     Authorization: `Bearer ${accessToken}`,
     "Content-Type": "application/json",
   };
+}
+
+async function getOptionalAuthHeaders(): Promise<HeadersInit> {
+  if (import.meta.env.PUBLIC_MOCK_AUTH === "true") {
+    return {
+      Authorization: "Bearer mock-token-for-testing",
+      "Content-Type": "application/json",
+    };
+  }
+
+  const accessToken = getCookie("sb-access-token");
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  return headers;
 }
 
 function mapErrorToState(status: number, message?: string): ErrorState {
@@ -125,6 +145,37 @@ export async function deleteFlashcard(flashcardId: number): Promise<void> {
     return;
   } catch (error) {
     console.error("Error deleting flashcard:", error);
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("An unexpected error occurred.");
+  }
+}
+
+export async function listFlashcards(params: {
+  page: number;
+  limit: number;
+}): Promise<ListFlashcardsResultDTO> {
+  try {
+    const headers = await getOptionalAuthHeaders();
+
+    const url = new URL("/api/flashcards", window.location.origin);
+    url.searchParams.set("page", params.page.toString());
+    url.searchParams.set("limit", params.limit.toString());
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to load flashcards. Please try again.");
+    }
+
+    const data: ListFlashcardsResultDTO = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error listing flashcards:", error);
     if (error instanceof Error) {
       throw error;
     }

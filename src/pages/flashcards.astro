@@ -1,31 +1,48 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { listFlashcards } from "../lib/services/flashcard.service";
-import { DEFAULT_USER_ID } from "../db/supabase.client";
+import { DEFAULT_USER_ID, createSupabaseAdmin } from "../db/supabase.client";
 import FlashcardsView from "../components/flashcards/FlashcardsView";
 import type { FlashcardDTO } from "../types";
 
-// Use Supabase client from locals (set by middleware with runtime.env)
-const supabase = Astro.locals.supabase;
+// Get user from middleware
+const user = Astro.locals.user;
+const isAuthenticated = !!user;
+
+// Use admin client to bypass RLS (same as API endpoints)
+const supabase = createSupabaseAdmin({
+  SUPABASE_URL: import.meta.env.SUPABASE_URL,
+  SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
+  SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+});
+
+// Use authenticated user's ID or DEFAULT_USER_ID
+const userId = isAuthenticated ? user?.id : DEFAULT_USER_ID;
 
 let flashcards: FlashcardDTO[] = [];
 let error: string | null = null;
 
+console.log("[flashcards.astro] Loading flashcards for user:", userId);
+
+let totalFlashcards = 0;
+
 try {
   const result = await listFlashcards({
-    query: { page: 1, limit: 100 },
-    userId: DEFAULT_USER_ID,
+    query: { page: 1, limit: 20 },
+    userId: userId!,
     supabase,
   });
   flashcards = result.data;
+  totalFlashcards = result.pagination.total;
+  console.log("[flashcards.astro] Loaded flashcards:", flashcards.length, "Total:", totalFlashcards);
 } catch (e) {
-  console.error(e);
+  console.error("[flashcards.astro] Error loading flashcards:", e);
   error = "Failed to load flashcards.";
 }
 ---
 
 <Layout title="Your Flashcards">
   <main class="container mx-auto px-2 py-8">
-    <FlashcardsView client:load flashcards={flashcards} error={error} />
+    <FlashcardsView client:load flashcards={flashcards} error={error} totalCount={totalFlashcards} />
   </main>
 </Layout>

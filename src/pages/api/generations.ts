@@ -9,6 +9,7 @@
 import type { APIRoute } from "astro";
 import { createGenerationSchema } from "../../lib/schemas/generation.schema";
 import { createGeneration, type GenerationServiceError } from "../../lib/services/generation.service";
+import { createSupabaseAdmin } from "../../db/supabase.client";
 import { ZodError } from "zod";
 import type { CreateGenerationCommand, CreateGenerationResultDTO } from "../../types";
 
@@ -44,18 +45,39 @@ function createErrorResponse(status: number, error: string, message: string, det
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // Step 1: Get Supabase client from locals (set by middleware)
-    const supabase = locals.supabase;
+    console.log("[API /api/generations] POST request received");
+
+    // Step 1: Determine if user is authenticated and choose appropriate Supabase client
+    // Per PRD: Generation works for both logged-in and anonymous users
+    const isAuthenticated = !!locals.user;
+    console.log("[API /api/generations] User authenticated:", isAuthenticated);
+    console.log("[API /api/generations] User object:", locals.user);
+    console.log("[API /api/generations] User ID:", locals.user?.id);
+
+    // Always use admin client to bypass RLS, but with appropriate user ID
+    // This is necessary because:
+    // 1. For authenticated users: we need to write to their user_id
+    // 2. For anonymous users: we need to write to DEFAULT_USER_ID
+    // Both cases require bypassing RLS since the request doesn't have Supabase auth context
+    const supabase = createSupabaseAdmin({
+      SUPABASE_URL: import.meta.env.SUPABASE_URL,
+      SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+    });
 
     if (!supabase) {
+      console.error("[API /api/generations] Supabase admin client not available");
       return createErrorResponse(500, "Internal server error", "Database client not available");
     }
+    console.log("[API /api/generations] Supabase admin client ready ✓");
 
     // Step 2: Parse and validate request body
     let body: CreateGenerationCommand;
     try {
       body = await request.json();
+      console.log("[API /api/generations] Request body parsed, source_text length:", body.source_text?.length);
     } catch {
+      console.error("[API /api/generations] Failed to parse JSON");
       return createErrorResponse(400, "Invalid JSON", "Request body must be valid JSON");
     }
 
@@ -63,8 +85,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     let validatedData;
     try {
       validatedData = createGenerationSchema.parse(body);
+      console.log("[API /api/generations] Validation passed ✓");
     } catch (error) {
       if (error instanceof ZodError) {
+        console.error("[API /api/generations] Validation failed:", error.errors);
         return createErrorResponse(400, "Validation failed", "Invalid request data", error.errors);
       }
       throw error;
@@ -72,13 +96,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Step 4: Get OpenRouter API key from import.meta.env (works in both dev and production with Astro 5)
     const openrouterApiKey = import.meta.env.OPENROUTER_API_KEY;
+    console.log("[API /api/generations] OpenRouter API key available:", !!openrouterApiKey);
+    console.log("[API /api/generations] API key starts with:", openrouterApiKey?.substring(0, 15) + "...");
 
     // Step 5: Create generation
+    console.log("[API /api/generations] Calling createGeneration service...");
     const result: CreateGenerationResultDTO = await createGeneration({
       sourceText: validatedData.source_text,
       supabase,
       openrouterApiKey,
+      userId: isAuthenticated ? locals.user?.id : undefined, // Pass user ID if authenticated
     });
+    console.log("[API /api/generations] Generation service completed successfully ✓");
 
     // Step 6: Return success response (201 Created)
     return new Response(JSON.stringify(result), {

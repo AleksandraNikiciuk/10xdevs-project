@@ -9,7 +9,7 @@ function getCookie(name: string): string | null {
   return null;
 }
 
-async function getAuthHeaders(): Promise<HeadersInit> {
+async function getOptionalAuthHeaders(): Promise<HeadersInit> {
   if (import.meta.env.PUBLIC_MOCK_AUTH === "true") {
     return {
       Authorization: "Bearer mock-token-for-testing",
@@ -19,14 +19,16 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 
   const accessToken = getCookie("sb-access-token");
 
-  if (!accessToken) {
-    throw new Error("Unauthorized");
-  }
-
-  return {
-    Authorization: `Bearer ${accessToken}`,
+  // Optional: include token if available, but don't throw error if not
+  const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
+
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  return headers;
 }
 
 function mapErrorToState(status: number, message?: string): ErrorState {
@@ -68,7 +70,11 @@ function mapErrorToState(status: number, message?: string): ErrorState {
 
 export async function generateFlashcards(command: CreateGenerationCommand): Promise<CreateGenerationResultDTO> {
   try {
-    const headers = await getAuthHeaders();
+    console.log("[generations.api] Starting fetch to /api/generations");
+    console.log("- Command:", command);
+
+    const headers = await getOptionalAuthHeaders();
+    console.log("- Headers:", headers);
 
     const response = await fetch("/api/generations", {
       method: "POST",
@@ -76,13 +82,19 @@ export async function generateFlashcards(command: CreateGenerationCommand): Prom
       body: JSON.stringify(command),
     });
 
+    console.log("[generations.api] Response received:");
+    console.log("- Status:", response.status);
+    console.log("- OK:", response.ok);
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error("[generations.api] Error response:", errorData);
       const errorState = mapErrorToState(response.status, errorData.message);
       throw errorState;
     }
 
     const data: CreateGenerationResultDTO = await response.json();
+    console.log("[generations.api] Success response:", data);
     return data;
   } catch (error) {
     if (error && typeof error === "object" && "message" in error && "canRetry" in error) {
@@ -93,15 +105,6 @@ export async function generateFlashcards(command: CreateGenerationCommand): Prom
       throw {
         message: "Network error. Please check your connection and try again.",
         canRetry: true,
-      } as ErrorState;
-    }
-
-    if (error instanceof Error && error.message === "Unauthorized") {
-      throw {
-        message: "Your session has expired. Please log in again.",
-        canRetry: false,
-        shouldRedirect: true,
-        redirectUrl: "/login",
       } as ErrorState;
     }
 

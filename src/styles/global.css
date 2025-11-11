@@ -824,11 +824,13 @@
 }
 
 .flashcard-question-bg {
-  background-color: #f3f4f6; /* Light Gray */
-  color: #111827; /* Dark Gray Text */
+  background-color: var(--md-surface-container-low);
+  color: var(--md-on-surface);
+  border: 1px solid var(--md-outline-variant);
 }
 
 .flashcard-answer-bg {
-  background-color: #dbeafe; /* Light Blue */
-  color: #1e3a8a; /* Dark Blue Text */
+  background-color: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+  border: 1px solid var(--md-outline-variant);
 }
