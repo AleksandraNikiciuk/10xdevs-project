@@ -53,11 +53,15 @@ export function useGenerateFlashcards(): UseGenerateFlashcardsReturn {
     setError(null);
 
     try {
+      // eslint-disable-next-line no-console
       console.log("[useGenerateFlashcards] Starting generation...");
+      // eslint-disable-next-line no-console
       console.log("- Text length:", sourceText.length);
+      // eslint-disable-next-line no-console
       console.log("- Trimmed length:", sourceText.trim().length);
 
       const result = await generateFlashcards({ source_text: sourceText });
+      // eslint-disable-next-line no-console
       console.log("[useGenerateFlashcards] Generation successful:", result);
 
       const proposalViewModels = transformToProposalViewModels(result);
@@ -66,9 +70,13 @@ export function useGenerateFlashcards(): UseGenerateFlashcardsReturn {
       setGenerationId(result.generation.id);
       setViewState("reviewing");
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error("[useGenerateFlashcards] Generation failed:");
+      // eslint-disable-next-line no-console
       console.error("- Error object:", err);
+      // eslint-disable-next-line no-console
       console.error("- Error type:", typeof err);
+      // eslint-disable-next-line no-console
       console.error("- Error keys:", err && typeof err === "object" ? Object.keys(err) : "N/A");
 
       const errorState = err as ErrorState;

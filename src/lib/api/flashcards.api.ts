@@ -144,6 +144,7 @@ export async function deleteFlashcard(flashcardId: number): Promise<void> {
     // DELETE should not have a body, so we don't expect JSON
     return;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error deleting flashcard:", error);
     if (error instanceof Error) {
       throw error;
@@ -172,6 +173,7 @@ export async function listFlashcards(params: { page: number; limit: number }): P
     const data: ListFlashcardsResultDTO = await response.json();
     return data;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error listing flashcards:", error);
     if (error instanceof Error) {
       throw error;
