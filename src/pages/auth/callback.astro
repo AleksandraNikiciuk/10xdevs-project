@@ -125,22 +125,13 @@
             return response.json();
           })
           .then(function (data) {
-            message.textContent = "Verifying session...";
+            title.textContent = "Success!";
+            message.textContent = "Email verified! Redirecting to dashboard...";
 
-            // Verify session was created
-            return fetch("/api/auth/session").then(function (sessionResponse) {
-              return sessionResponse.json().then(function (sessionData) {
-                if (sessionData.authenticated) {
-                  title.textContent = "Success!";
-                  message.textContent = "Redirecting to dashboard...";
-                  setTimeout(function () {
-                    window.location.href = "/generate";
-                  }, 1000);
-                } else {
-                  throw new Error("Session not created. Please log in manually.");
-                }
-              });
-            });
+            // Redirect immediately - middleware will verify session
+            setTimeout(function () {
+              window.location.href = "/generate";
+            }, 1000);
           })
           .catch(function (error) {
             showError(error.message);
