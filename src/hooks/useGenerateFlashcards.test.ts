@@ -29,7 +29,10 @@ const toastSuccessMock = vi.mocked(toast.success);
 const toastErrorMock = vi.mocked(toast.error);
 
 function createGenerationResult(
-  overrides: Partial<CreateGenerationResultDTO["generation"]> = {}
+  overrides: Partial<NonNullable<CreateGenerationResultDTO["generation"]>> & {
+    flashcardsProposals?: CreateGenerationResultDTO["flashcardsProposals"];
+    saved?: boolean;
+  } = {}
 ): CreateGenerationResultDTO {
   const flashcardsProposals = overrides.flashcardsProposals ?? [
     {
@@ -54,6 +57,8 @@ function createGenerationResult(
       created_at: overrides.created_at ?? "2024-01-01T00:00:00.000Z",
       flashcardsProposals,
     },
+    flashcardsProposals, // Top-level array for both authenticated and anonymous users
+    saved: overrides.saved ?? true, // Default to true (authenticated user scenario)
   };
 }
 
