@@ -34,27 +34,26 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const refreshToken = context.cookies.get("sb-refresh-token")?.value;
 
   if (accessToken && refreshToken) {
-    const {
-      data: { user },
-    } = await context.locals.supabase.auth.getUser(accessToken);
+    // Set the session on the supabase client so all DB operations use the user's credentials
+    const { data: sessionData, error: sessionError } = await context.locals.supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
 
-    if (user) {
-      context.locals.user = user;
-    } else {
-      const { data } = await context.locals.supabase.auth.refreshSession({
-        refresh_token: refreshToken,
-      });
-      if (data.user) {
-        context.locals.user = data.user;
-        // Update cookies if needed
-        if (data.session) {
-          const { access_token, refresh_token } = data.session;
-          context.cookies.set("sb-access-token", access_token, { path: "/" });
-          context.cookies.set("sb-refresh-token", refresh_token, { path: "/" });
-        }
-      } else {
-        context.locals.user = null;
+    if (sessionError) {
+      console.error("Failed to set session:", sessionError);
+      context.locals.user = null;
+    } else if (sessionData.user) {
+      context.locals.user = sessionData.user;
+
+      // Update cookies with latest tokens if session was refreshed
+      if (sessionData.session) {
+        const { access_token, refresh_token } = sessionData.session;
+        context.cookies.set("sb-access-token", access_token, { path: "/" });
+        context.cookies.set("sb-refresh-token", refresh_token, { path: "/" });
       }
+    } else {
+      context.locals.user = null;
     }
   } else {
     context.locals.user = null;
