@@ -15,7 +15,10 @@ import Layout from "../layouts/Layout.astro";
         <form id="resendForm">
           <div class="p-6 pt-0 grid gap-4">
             <div class="grid gap-2">
-              <label for="email" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              <label
+                for="email"
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
                 Email Address
               </label>
               <input
@@ -115,8 +118,7 @@ import Layout from "../layouts/Layout.astro";
               errorMessage += " " + data.hint;
             }
             if (data.isRateLimit) {
-              errorMessage +=
-                " TIP: Use a different email address (e.g., yourname+test@gmail.com) for testing.";
+              errorMessage += " TIP: Use a different email address (e.g., yourname+test@gmail.com) for testing.";
             }
             messageDiv.textContent = errorMessage;
             messageDiv.className = "error";

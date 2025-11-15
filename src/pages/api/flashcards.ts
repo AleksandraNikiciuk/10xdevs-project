@@ -2,7 +2,7 @@ import type { APIContext } from "astro";
 import { ZodError } from "zod";
 import { CreateFlashcardsSchema, ListFlashcardsQuerySchema } from "../../lib/schemas/flashcard.schema";
 import { createFlashcards, listFlashcards, type FlashcardServiceError } from "../../lib/services/flashcard.service";
-import { DEFAULT_USER_ID, createSupabaseAdmin } from "../../db/supabase.client";
+import { DEFAULT_USER_ID } from "../../db/supabase.client";
 
 export const prerender = false;
 
@@ -39,12 +39,8 @@ export async function GET(context: APIContext) {
     const isAuthenticated = !!context.locals.user;
     console.log("[FlashcardsAPI GET] User authenticated:", isAuthenticated);
 
-    // Use admin client with appropriate user ID (same as POST endpoint)
-    const supabase = createSupabaseAdmin({
-      SUPABASE_URL: import.meta.env.SUPABASE_URL,
-      SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
-      SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
-    });
+    // Use supabase client from middleware (has user session if authenticated)
+    const supabase = context.locals.supabase;
 
     // Determine user ID: authenticated user's ID or DEFAULT_USER_ID
     const userId = isAuthenticated ? context.locals.user?.id : DEFAULT_USER_ID;
@@ -189,13 +185,8 @@ export async function POST(context: APIContext) {
       );
     }
 
-    // Use admin client with authenticated user's ID to bypass RLS
-    // (same approach as generations endpoint)
-    const supabase = createSupabaseAdmin({
-      SUPABASE_URL: import.meta.env.SUPABASE_URL,
-      SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
-      SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
-    });
+    // Use supabase client from middleware (has user session)
+    const supabase = context.locals.supabase;
     const userId = context.locals.user?.id;
 
     if (!supabase || !userId) {

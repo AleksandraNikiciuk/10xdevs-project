@@ -52,7 +52,10 @@ if (accessToken && refreshToken) {
     <title>Verifying...</title>
     <style>
       body {
-        font-family: system-ui, -apple-system, sans-serif;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -147,7 +150,7 @@ if (accessToken && refreshToken) {
           hasRefreshToken: !!refreshToken,
           hasError: !!error,
           error: error,
-          errorDescription: errorDescription
+          errorDescription: errorDescription,
         });
 
         // NOW clear the URL to hide tokens/errors

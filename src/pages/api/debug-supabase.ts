@@ -15,7 +15,7 @@ export const GET: APIRoute = async ({ locals }) => {
     SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
   };
 
-  const debug: any = {
+  const debug: Record<string, unknown> = {
     step1_env_check: {
       SUPABASE_URL_available: !!env.SUPABASE_URL,
       SUPABASE_URL_starts: env.SUPABASE_URL?.substring(0, 30),
@@ -75,10 +75,10 @@ export const GET: APIRoute = async ({ locals }) => {
       await supabase.from("generations").delete().eq("id", insertData.id);
       debug.step5_test_cleanup = "deleted";
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     debug.error = {
-      message: error.message,
-      stack: error.stack?.split("\n").slice(0, 5),
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack?.split("\n").slice(0, 5) : undefined,
     };
   }
 

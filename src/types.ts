@@ -57,19 +57,37 @@ export interface CreateGenerationCommand {
 }
 
 export interface CreateGenerationResultDTO {
-  generation: Pick<
-    GenerationRow,
-    | "id"
-    | "user_id"
-    | "model"
-    | "source_text_length"
-    | "source_text_hash"
-    | "generated_count"
-    | "generation_duration"
-    | "created_at"
-  > & {
-    flashcardsProposals: Pick<FlashcardRow, "id" | "question" | "answer" | "source" | "generation_id" | "created_at">[];
-  };
+  // For authenticated users: full generation metadata with saved flashcards
+  // For anonymous users: null (flashcards only returned in flashcardsProposals)
+  generation:
+    | (Pick<
+        GenerationRow,
+        | "id"
+        | "user_id"
+        | "model"
+        | "source_text_length"
+        | "source_text_hash"
+        | "generated_count"
+        | "generation_duration"
+        | "created_at"
+      > & {
+        flashcardsProposals: Pick<
+          FlashcardRow,
+          "id" | "question" | "answer" | "source" | "generation_id" | "created_at"
+        >[];
+      })
+    | null;
+  // Flashcard proposals (always present, with or without IDs)
+  flashcardsProposals: {
+    id?: number; // Present only for authenticated users
+    question: string;
+    answer: string;
+    source: FlashcardSource;
+    generation_id?: number | null; // Present only for authenticated users
+    created_at?: string; // Present only for authenticated users
+  }[];
+  // Indicates if the flashcards were saved to database
+  saved: boolean;
 }
 
 // ============================================================================

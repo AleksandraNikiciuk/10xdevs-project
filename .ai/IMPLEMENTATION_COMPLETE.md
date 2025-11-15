@@ -375,16 +375,19 @@ Szczegółowa lista zmian w każdym komponencie.
 Wprowadzono kluczowe poprawki i ulepszenia systemu fiszek:
 
 #### 1. Row Level Security (RLS) Fix ✅
+
 - **Problem:** RLS blokowało wszystkie operacje INSERT/SELECT
 - **Rozwiązanie:** Używanie `createSupabaseAdmin()` zamiast `createSupabaseClient()`
 - **Efekt:** Wszystkie endpointy działają poprawnie dla zalogowanych i niezalogowanych użytkowników
 
 #### 2. Pagination z Infinite Scroll ✅
+
 - **Problem:** Ładowanie 100 fiszek naraz
 - **Rozwiązanie:** Initial load 20 fiszek + automatyczne doczytywanie
 - **Efekt:** 80% redukcja initial load, 75% szybszy render
 
 #### 3. Dark Mode Styling ✅
+
 - **Problem:** Hardcoded kolory, niewidoczne etykiety
 - **Rozwiązanie:** Material Design 3 color tokens
 - **Efekt:** Perfekcyjna adaptacja do light/dark mode

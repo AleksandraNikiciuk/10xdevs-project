@@ -17,7 +17,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const env = context.locals.runtime?.env || {
     SUPABASE_URL: import.meta.env.SUPABASE_URL,
     SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
-    SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
   };
 
   console.log("SUPABASE_URL available:", !!env.SUPABASE_URL);
@@ -29,7 +28,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.supabase = createSupabaseClient({
     SUPABASE_URL: env.SUPABASE_URL,
     SUPABASE_KEY: env.SUPABASE_KEY,
-    SUPABASE_SERVICE_ROLE_KEY: env.SUPABASE_SERVICE_ROLE_KEY,
   });
 
   const accessToken = context.cookies.get("sb-access-token")?.value;

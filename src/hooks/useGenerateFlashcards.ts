@@ -22,9 +22,10 @@ interface UseGenerateFlashcardsReturn {
 }
 
 function transformToProposalViewModels(result: CreateGenerationResultDTO): ProposalViewModel[] {
-  return result.generation.flashcardsProposals.map((proposal) => {
+  // Use flashcardsProposals array directly (present for both authenticated and anonymous users)
+  return result.flashcardsProposals.map((proposal, index) => {
     return {
-      id: proposal.id,
+      id: proposal.id || index, // Use database ID if available, otherwise use index
       question: proposal.question,
       answer: proposal.answer,
       source: proposal.source as FlashcardSource,
@@ -63,11 +64,13 @@ export function useGenerateFlashcards(): UseGenerateFlashcardsReturn {
       const result = await generateFlashcards({ source_text: sourceText });
       // eslint-disable-next-line no-console
       console.log("[useGenerateFlashcards] Generation successful:", result);
+      // eslint-disable-next-line no-console
+      console.log("[useGenerateFlashcards] Flashcards saved:", result.saved);
 
       const proposalViewModels = transformToProposalViewModels(result);
 
       setProposals(proposalViewModels);
-      setGenerationId(result.generation.id);
+      setGenerationId(result.generation?.id || null);
       setViewState("reviewing");
     } catch (err) {
       // eslint-disable-next-line no-console

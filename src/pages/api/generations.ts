@@ -9,7 +9,6 @@
 import type { APIRoute } from "astro";
 import { createGenerationSchema } from "../../lib/schemas/generation.schema";
 import { createGeneration, type GenerationServiceError } from "../../lib/services/generation.service";
-import { createSupabaseAdmin } from "../../db/supabase.client";
 import { ZodError } from "zod";
 import type { CreateGenerationCommand, CreateGenerationResultDTO } from "../../types";
 
@@ -47,47 +46,25 @@ export const POST: APIRoute = async ({ request, locals }) => {
   try {
     console.log("[API /api/generations] POST request received");
 
-    // Step 1: Determine if user is authenticated and choose appropriate Supabase client
+    // Step 1: Check if user is authenticated
     // Per PRD: Generation works for both logged-in and anonymous users
     const isAuthenticated = !!locals.user;
     console.log("[API /api/generations] User authenticated:", isAuthenticated);
-    console.log("[API /api/generations] User object:", locals.user);
     console.log("[API /api/generations] User ID:", locals.user?.id);
 
-    // Always use admin client to bypass RLS, but with appropriate user ID
-    // This is necessary because:
-    // 1. For authenticated users: we need to write to their user_id
-    // 2. For anonymous users: we need to write to DEFAULT_USER_ID
-    // Both cases require bypassing RLS since the request doesn't have Supabase auth context
-
-    // Get env vars from context.locals.runtime.env (Cloudflare) or import.meta.env (dev)
-    const env = locals.runtime?.env || {
-      SUPABASE_URL: import.meta.env.SUPABASE_URL,
-      SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
-      SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
-    };
-
-    // Debug logging for Supabase credentials
-    console.log("[API /api/generations] Supabase env check:");
-    console.log("- SUPABASE_URL:", !!env.SUPABASE_URL, env.SUPABASE_URL?.substring(0, 30));
-    console.log("- SUPABASE_KEY:", !!env.SUPABASE_KEY, env.SUPABASE_KEY?.substring(0, 20));
-    console.log(
-      "- SUPABASE_SERVICE_ROLE_KEY:",
-      !!env.SUPABASE_SERVICE_ROLE_KEY,
-      env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 20)
-    );
-
-    const supabase = createSupabaseAdmin({
-      SUPABASE_URL: env.SUPABASE_URL,
-      SUPABASE_KEY: env.SUPABASE_KEY,
-      SUPABASE_SERVICE_ROLE_KEY: env.SUPABASE_SERVICE_ROLE_KEY,
-    });
+    // Use existing supabase client from middleware (has user session if authenticated)
+    const supabase = locals.supabase;
 
     if (!supabase) {
-      console.error("[API /api/generations] Supabase admin client not available");
+      console.error("[API /api/generations] Supabase client not available");
       return createErrorResponse(500, "Internal server error", "Database client not available");
     }
-    console.log("[API /api/generations] Supabase admin client ready ✓");
+    console.log("[API /api/generations] Supabase client ready ✓");
+
+    // Get env vars for OpenRouter API key
+    const env = locals.runtime?.env || {
+      OPENROUTER_API_KEY: import.meta.env.OPENROUTER_API_KEY,
+    };
 
     // Step 2: Parse and validate request body
     let body: CreateGenerationCommand;

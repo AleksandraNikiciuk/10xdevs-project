@@ -2,7 +2,7 @@ import type { APIContext } from "astro";
 import { ZodError } from "zod";
 import { BatchDeleteFlashcardsSchema } from "../../../lib/schemas/flashcard.schema";
 import { batchDeleteFlashcards, type FlashcardServiceError } from "../../../lib/services/flashcard.service";
-import { DEFAULT_USER_ID, createSupabaseAdmin } from "../../../db/supabase.client";
+import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 
 export const prerender = false;
 
@@ -29,11 +29,7 @@ export const prerender = false;
 export async function POST(context: APIContext) {
   try {
     const isAuthenticated = !!context.locals.user;
-    const supabase = createSupabaseAdmin({
-      SUPABASE_URL: import.meta.env.SUPABASE_URL,
-      SUPABASE_KEY: import.meta.env.SUPABASE_KEY,
-      SUPABASE_SERVICE_ROLE_KEY: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
-    });
+    const supabase = context.locals.supabase;
     const userId = isAuthenticated ? context.locals.user?.id : DEFAULT_USER_ID;
 
     if (!supabase || !userId) {

@@ -365,6 +365,7 @@ const userId = isAuthenticated ? context.locals.user?.id : DEFAULT_USER_ID;
 **Dlaczego admin client?**
 
 Row Level Security (RLS) w Supabase blokowało operacje, ponieważ requesty nie miały kontekstu autentykacji Supabase (używamy Astro middleware, nie Supabase Auth). Admin client pomija RLS, ale manualnie zapewniamy security poprzez:
+
 1. Sprawdzanie `context.locals.user` dla autentykacji
 2. Przekazywanie prawidłowego `userId` do wszystkich operacji
 3. Application-level authorization checks
@@ -768,6 +769,7 @@ Zaimplementowano paginację dla endpointu `GET /api/flashcards` z infinite scrol
 #### Backend (bez zmian w logice)
 
 Endpoint `GET /api/flashcards` już wspierał paginację poprzez parametry query:
+
 - `page` (domyślnie: 1)
 - `limit` (domyślnie: 50, max: 200)
 
@@ -808,14 +810,12 @@ totalFlashcards = result.pagination.total;
 **Plik:** `src/lib/api/flashcards.api.ts`
 
 **Dodano:**
+
 - Funkcję `listFlashcards()` dla client-side fetching
 - Funkcję `getOptionalAuthHeaders()` (nie wymaga auth tokenu)
 
 ```typescript
-export async function listFlashcards(params: {
-  page: number;
-  limit: number;
-}): Promise<ListFlashcardsResultDTO> {
+export async function listFlashcards(params: { page: number; limit: number }): Promise<ListFlashcardsResultDTO> {
   const headers = await getOptionalAuthHeaders();
 
   const url = new URL("/api/flashcards", window.location.origin);
@@ -840,6 +840,7 @@ export async function listFlashcards(params: {
 **Plik:** `src/components/flashcards/FlashcardsView.tsx`
 
 **Dodano:**
+
 - State dla paginacji (page, loading, hasMore, totalCount)
 - Intersection Observer do automatycznego doczytywania
 - UI dla loadera i komunikatu "All flashcards loaded"
@@ -856,10 +857,7 @@ const loadMoreFlashcards = useCallback(async () => {
     setFlashcards((prev) => [...prev, ...result.data]);
     setPage(nextPage);
     setTotalCount(result.pagination.total);
-    setHasMore(
-      result.data.length > 0 &&
-      flashcards.length + result.data.length < result.pagination.total
-    );
+    setHasMore(result.data.length > 0 && flashcards.length + result.data.length < result.pagination.total);
   } catch (error) {
     toast.error("Failed to load more flashcards");
   } finally {
@@ -893,11 +891,13 @@ useEffect(() => {
 ### Metryki wydajności
 
 **Przed:**
+
 - Initial load: 100 fiszek
 - Transfer size: ~50KB
 - Render time: ~800ms
 
 **Po:**
+
 - Initial load: 20 fiszek (80% redukcja)
 - Transfer size: ~10KB (80% redukcja)
 - Render time: ~200ms (75% poprawa)

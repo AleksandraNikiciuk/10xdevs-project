@@ -193,13 +193,15 @@ ${sourceText}`;
  */
 export async function createGeneration(params: CreateGenerationParams): Promise<CreateGenerationResultDTO> {
   const { sourceText, supabase, openrouterApiKey, userId: providedUserId, siteUrl } = params;
-  // Use provided userId if available, otherwise fall back to DEFAULT_USER_ID for anonymous users
+  // If userId is provided, user is authenticated and we'll save to database
+  // If not provided, user is anonymous - we'll only generate flashcards without saving
+  const isAuthenticated = !!providedUserId;
   const userId = providedUserId || DEFAULT_USER_ID;
 
   console.log("[generation.service] createGeneration called");
   console.log("- Source text length:", sourceText.length);
-  console.log("- User ID:", userId);
-  console.log("- Using default user:", !providedUserId);
+  console.log("- User authenticated:", isAuthenticated);
+  console.log("- User ID:", isAuthenticated ? userId : "anonymous");
   console.log("- OpenRouter API key available:", !!openrouterApiKey);
 
   // Start timer for generation duration
@@ -279,61 +281,101 @@ export async function createGeneration(params: CreateGenerationParams): Promise<
 
     const generationDuration = calculateDuration(startTime);
 
-    // Step 3: Save to database in a transaction
-    // Insert generation metadata
-    const { data: generationData, error: generationError } = await supabase
-      .from("generations")
-      .insert({
+    // Step 3: Save to database if user is authenticated
+    if (isAuthenticated) {
+      console.log("[generation.service] User authenticated - saving to database");
+
+      // Insert generation metadata
+      const { data: generationData, error: generationError } = await supabase
+        .from("generations")
+        .insert({
+          user_id: userId,
+          model: aiResponse.model,
+          source_text_length: sourceTextLength,
+          source_text_hash: sourceTextHash,
+          generated_count: aiResponse.flashcards.length,
+          generation_duration: generationDuration,
+        })
+        .select()
+        .single();
+
+      if (generationError || !generationData) {
+        console.error("Database error (generations):", generationError);
+        throw createGenerationServiceError(
+          "DATABASE_ERROR",
+          "Failed to save generation metadata",
+          500,
+          generationError
+        );
+      }
+
+      // Insert flashcard proposals
+      const flashcardsToInsert = aiResponse.flashcards.map((flashcard) => ({
         user_id: userId,
-        model: aiResponse.model,
-        source_text_length: sourceTextLength,
-        source_text_hash: sourceTextHash,
-        generated_count: aiResponse.flashcards.length,
-        generation_duration: generationDuration,
-      })
-      .select()
-      .single();
+        generation_id: generationData.id,
+        question: flashcard.question,
+        answer: flashcard.answer,
+        source: "ai-full" as const,
+      }));
 
-    if (generationError || !generationData) {
-      console.error("Database error (generations):", generationError);
-      throw createGenerationServiceError("DATABASE_ERROR", "Failed to save generation metadata", 500, generationError);
+      const { data: flashcardsData, error: flashcardsError } = await supabase
+        .from("flashcards")
+        .insert(flashcardsToInsert)
+        .select("id, question, answer, source, generation_id, created_at");
+
+      if (flashcardsError || !flashcardsData) {
+        console.error("Database error (flashcards):", flashcardsError);
+        throw createGenerationServiceError(
+          "DATABASE_ERROR",
+          "Failed to save flashcard proposals",
+          500,
+          flashcardsError
+        );
+      }
+
+      console.log("[generation.service] Saved to database successfully ✓");
+
+      // Step 4: Build and return response DTO for authenticated user
+      const result: CreateGenerationResultDTO = {
+        generation: {
+          id: generationData.id,
+          user_id: generationData.user_id,
+          model: generationData.model,
+          source_text_length: generationData.source_text_length,
+          source_text_hash: generationData.source_text_hash,
+          generated_count: generationData.generated_count,
+          generation_duration: generationData.generation_duration,
+          created_at: generationData.created_at,
+          flashcardsProposals: flashcardsData,
+        },
+        flashcardsProposals: flashcardsData.map((fc) => ({
+          id: fc.id,
+          question: fc.question,
+          answer: fc.answer,
+          source: fc.source as "ai-full" | "ai-edited" | "manual",
+          generation_id: fc.generation_id,
+          created_at: fc.created_at,
+        })),
+        saved: true,
+      };
+
+      return result;
+    } else {
+      // Anonymous user - return flashcards without saving to database
+      console.log("[generation.service] Anonymous user - returning flashcards without saving");
+
+      const result: CreateGenerationResultDTO = {
+        generation: null,
+        flashcardsProposals: aiResponse.flashcards.map((fc) => ({
+          question: fc.question,
+          answer: fc.answer,
+          source: "ai-full" as const,
+        })),
+        saved: false,
+      };
+
+      return result;
     }
-
-    // Insert flashcard proposals
-    const flashcardsToInsert = aiResponse.flashcards.map((flashcard) => ({
-      user_id: userId,
-      generation_id: generationData.id,
-      question: flashcard.question,
-      answer: flashcard.answer,
-      source: "ai-full" as const,
-    }));
-
-    const { data: flashcardsData, error: flashcardsError } = await supabase
-      .from("flashcards")
-      .insert(flashcardsToInsert)
-      .select("id, question, answer, source, generation_id, created_at");
-
-    if (flashcardsError || !flashcardsData) {
-      console.error("Database error (flashcards):", flashcardsError);
-      throw createGenerationServiceError("DATABASE_ERROR", "Failed to save flashcard proposals", 500, flashcardsError);
-    }
-
-    // Step 4: Build and return response DTO
-    const result: CreateGenerationResultDTO = {
-      generation: {
-        id: generationData.id,
-        user_id: generationData.user_id,
-        model: generationData.model,
-        source_text_length: generationData.source_text_length,
-        source_text_hash: generationData.source_text_hash,
-        generated_count: generationData.generated_count,
-        generation_duration: generationData.generation_duration,
-        created_at: generationData.created_at,
-        flashcardsProposals: flashcardsData,
-      },
-    };
-
-    return result;
   } catch (error) {
     // Re-throw GenerationServiceError as-is
     if ((error as GenerationServiceError).code) {

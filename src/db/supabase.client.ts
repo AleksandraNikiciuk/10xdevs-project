@@ -9,7 +9,7 @@ import type { Database } from "../db/database.types.ts";
 export interface SupabaseEnv {
   SUPABASE_URL: string;
   SUPABASE_KEY: string;
-  SUPABASE_SERVICE_ROLE_KEY: string;
+  SUPABASE_SERVICE_ROLE_KEY?: string;
 }
 
 /**
