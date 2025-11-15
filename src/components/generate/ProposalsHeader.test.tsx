@@ -24,6 +24,17 @@ vi.mock("@/components/ui/dialog", () => {
   };
 });
 
+vi.mock("@/components/ui/tooltip", () => {
+  const Wrapper = ({ children }: { children: React.ReactNode }) => wrap(children);
+
+  return {
+    Tooltip: Wrapper,
+    TooltipTrigger: Wrapper,
+    TooltipContent: Wrapper,
+    TooltipProvider: Wrapper,
+  };
+});
+
 describe("ProposalsHeader", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -40,6 +51,7 @@ describe("ProposalsHeader", () => {
         onCancel={vi.fn()}
         isSaving={false}
         isSaveDisabled={false}
+        isUserLoggedIn={true}
       />
     );
 
@@ -61,6 +73,7 @@ describe("ProposalsHeader", () => {
         onCancel={vi.fn()}
         isSaving={true}
         isSaveDisabled={false}
+        isUserLoggedIn={true}
       />
     );
 
@@ -79,6 +92,7 @@ describe("ProposalsHeader", () => {
         onCancel={vi.fn()}
         isSaving={false}
         isSaveDisabled={true}
+        isUserLoggedIn={true}
       />
     );
 
@@ -100,6 +114,7 @@ describe("ProposalsHeader", () => {
         onCancel={handleCancel}
         isSaving={false}
         isSaveDisabled={false}
+        isUserLoggedIn={true}
       />
     );
 
@@ -120,6 +135,7 @@ describe("ProposalsHeader", () => {
         onCancel={handleCancel}
         isSaving={false}
         isSaveDisabled={false}
+        isUserLoggedIn={true}
       />
     );
 
@@ -133,5 +149,27 @@ describe("ProposalsHeader", () => {
     expect(handleCancel).toHaveBeenCalledTimes(1);
 
     expect(screen.queryByText(/Cancel Generation/)).not.toBeInTheDocument();
+  });
+
+  it("disables save button for non-logged-in users", () => {
+    const handleSave = vi.fn();
+
+    render(
+      <ProposalsHeader
+        totalCount={5}
+        selectedCount={2}
+        onSave={handleSave}
+        onCancel={vi.fn()}
+        isSaving={false}
+        isSaveDisabled={false}
+        isUserLoggedIn={false}
+      />
+    );
+
+    const saveButton = screen.getByRole("button", { name: "Save Selected (2)" });
+    expect(saveButton).toBeDisabled();
+
+    fireEvent.click(saveButton);
+    expect(handleSave).not.toHaveBeenCalled();
   });
 });

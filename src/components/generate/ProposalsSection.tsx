@@ -21,9 +21,8 @@ export function ProposalsSection({
   onSave,
   onCancel,
   isSaving,
-  isUserLoggedIn: _isUserLoggedIn, // Reserved for future use (e.g., showing different options for logged-in users)
+  isUserLoggedIn,
 }: ProposalsSectionProps) {
-  void _isUserLoggedIn; // Mark as intentionally unused
   return (
     <div data-test-id="proposals-section-content">
       <ProposalsHeader
@@ -33,6 +32,7 @@ export function ProposalsSection({
         onCancel={onCancel}
         isSaving={isSaving}
         isSaveDisabled={selectedCount === 0}
+        isUserLoggedIn={isUserLoggedIn}
       />
       <div className="mt-8" data-test-id="proposals-list-wrapper">
         <ProposalsList proposals={proposals} onToggle={onToggle} onEdit={onEdit} />

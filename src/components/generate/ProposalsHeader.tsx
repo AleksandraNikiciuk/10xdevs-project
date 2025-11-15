@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ProposalsHeaderProps {
   totalCount: number;
@@ -16,6 +17,7 @@ interface ProposalsHeaderProps {
   onCancel: () => void;
   isSaving: boolean;
   isSaveDisabled: boolean;
+  isUserLoggedIn: boolean;
 }
 
 export function ProposalsHeader({
@@ -25,6 +27,7 @@ export function ProposalsHeader({
   onCancel,
   isSaving,
   isSaveDisabled,
+  isUserLoggedIn,
 }: ProposalsHeaderProps) {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
@@ -40,6 +43,15 @@ export function ProposalsHeader({
     setShowCancelDialog(false);
     onCancel();
   };
+
+  // Disable save button if user is not logged in OR if no flashcards are selected
+  const isSaveButtonDisabled = !isUserLoggedIn || isSaveDisabled || isSaving;
+
+  const saveButton = (
+    <Button onClick={onSave} disabled={isSaveButtonDisabled} data-test-id="save-selected-button">
+      {isSaving ? "Saving..." : `Save Selected (${selectedCount})`}
+    </Button>
+  );
 
   return (
     <div data-test-id="proposals-header">
@@ -60,9 +72,16 @@ export function ProposalsHeader({
           >
             Cancel
           </Button>
-          <Button onClick={onSave} disabled={isSaveDisabled || isSaving} data-test-id="save-selected-button">
-            {isSaving ? "Saving..." : `Save Selected (${selectedCount})`}
-          </Button>
+          {!isUserLoggedIn ? (
+            <Tooltip>
+              <TooltipTrigger asChild>{saveButton}</TooltipTrigger>
+              <TooltipContent>
+                <p>Please log in to save flashcards</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            saveButton
+          )}
         </div>
       </div>
 
