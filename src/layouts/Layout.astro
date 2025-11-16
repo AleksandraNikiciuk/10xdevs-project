@@ -20,6 +20,7 @@ const { title = "Generate Flashcards" } = Astro.props;
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <slot name="head" />
     <script is:inline>
       // Zapobieganie FOUC (Flash of Unstyled Content)
       const getThemePreference = () => {
@@ -39,11 +40,11 @@ const { title = "Generate Flashcards" } = Astro.props;
   <body class="flex flex-col min-h-screen">
     <ThemeProvider client:load>
       <Header />
-      <main class="flex-1">
+      <main class="flex-1 pb-20">
         <slot />
       </main>
       <slot name="before-footer" />
-      <footer class="bg-md-surface border-t border-md-outline-variant">
+      <footer class="fixed bottom-0 left-0 right-0 bg-md-surface border-t border-md-outline-variant z-10">
         <div class="container mx-auto px-4 py-6 text-center text-body-medium text-md-on-surface-variant">
           <p>Made with 💜 by 10xDevs • AI-Powered Learning</p>
         </div>

@@ -74,9 +74,11 @@ export function ProposalsHeader({
           </Button>
           {!isUserLoggedIn ? (
             <Tooltip>
-              <TooltipTrigger asChild>{saveButton}</TooltipTrigger>
+              <TooltipTrigger asChild>
+                <span className="inline-block">{saveButton}</span>
+              </TooltipTrigger>
               <TooltipContent>
-                <p>Please log in to save flashcards</p>
+                <p>Please register to save flashcards</p>
               </TooltipContent>
             </Tooltip>
           ) : (

@@ -5,6 +5,8 @@ const url = new URL(Astro.request.url);
 // Try to handle server-side if tokens are in query params
 const accessToken = url.searchParams.get("access_token");
 const refreshToken = url.searchParams.get("refresh_token");
+const next = url.searchParams.get("next");
+const type = url.searchParams.get("type");
 
 if (accessToken && refreshToken) {
   try {
@@ -28,8 +30,16 @@ if (accessToken && refreshToken) {
       const accessCookie = buildCookieString("sb-access-token", accessToken, 60 * 60 * 24 * 7);
       const refreshCookie = buildCookieString("sb-refresh-token", refreshToken, 60 * 60 * 24 * 30);
 
+      // Determine redirect location based on 'next' parameter or 'type'
+      let redirectLocation = "/generate";
+      if (next) {
+        redirectLocation = next;
+      } else if (type === "recovery") {
+        redirectLocation = "/reset-password";
+      }
+
       const headers = new Headers();
-      headers.append("Location", "/generate");
+      headers.append("Location", redirectLocation);
       headers.append("Set-Cookie", accessCookie);
       headers.append("Set-Cookie", refreshCookie);
 
@@ -121,6 +131,8 @@ if (accessToken && refreshToken) {
         var refreshToken = null;
         var error = null;
         var errorDescription = null;
+        var next = null;
+        var type = null;
 
         var hash = window.location.hash.substring(1);
         if (hash) {
@@ -129,6 +141,8 @@ if (accessToken && refreshToken) {
           refreshToken = hashParams.get("refresh_token");
           error = hashParams.get("error");
           errorDescription = hashParams.get("error_description");
+          next = hashParams.get("next");
+          type = hashParams.get("type");
         }
 
         if (!accessToken || !refreshToken) {
@@ -141,7 +155,21 @@ if (accessToken && refreshToken) {
               error = searchParams.get("error");
               errorDescription = searchParams.get("error_description");
             }
+            if (!next) {
+              next = searchParams.get("next");
+            }
+            if (!type) {
+              type = searchParams.get("type");
+            }
           }
+        }
+
+        // Determine redirect location based on 'next' or 'type'
+        var redirectLocation = "/generate";
+        if (next) {
+          redirectLocation = next;
+        } else if (type === "recovery") {
+          redirectLocation = "/reset-password";
         }
 
         // Log what we received for debugging
@@ -151,6 +179,9 @@ if (accessToken && refreshToken) {
           hasError: !!error,
           error: error,
           errorDescription: errorDescription,
+          next: next,
+          type: type,
+          redirectLocation: redirectLocation,
         });
 
         // NOW clear the URL to hide tokens/errors
@@ -178,6 +209,11 @@ if (accessToken && refreshToken) {
             window.location.href = "/login";
           }, 3000);
           return;
+        }
+
+        // Update title based on type
+        if (type === "recovery") {
+          title.textContent = "Verifying password reset...";
         }
 
         // Send tokens to API
@@ -208,9 +244,13 @@ if (accessToken && refreshToken) {
               return sessionResponse.json().then(function (sessionData) {
                 if (sessionData.authenticated) {
                   title.textContent = "Success!";
-                  message.textContent = "Redirecting to dashboard...";
+                  if (type === "recovery") {
+                    message.textContent = "Redirecting to password reset...";
+                  } else {
+                    message.textContent = "Redirecting to dashboard...";
+                  }
                   setTimeout(function () {
-                    window.location.href = "/generate";
+                    window.location.href = redirectLocation;
                   }, 1000);
                 } else {
                   throw new Error("Session not created. Please log in manually.");

@@ -824,13 +824,21 @@
 }
 
 .flashcard-question-bg {
-  background-color: var(--md-surface-container-low);
+  background-color: var(--md-surface-container-lowest); /* Light mode - white */
   color: var(--md-on-surface);
   border: 1px solid var(--md-outline-variant);
 }
 
+.dark .flashcard-question-bg {
+  background-color: var(--md-surface-container-low); /* Dark mode - keep original */
+}
+
 .flashcard-answer-bg {
-  background-color: var(--md-surface-container-high);
+  background-color: var(--md-surface-container-highest); /* Light mode - darker */
   color: var(--md-on-surface);
   border: 1px solid var(--md-outline-variant);
+}
+
+.dark .flashcard-answer-bg {
+  background-color: var(--md-surface-container-high); /* Dark mode - keep original */
 }

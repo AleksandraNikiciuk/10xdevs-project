@@ -5,15 +5,10 @@ import { Button } from "./button";
 export function ThemeToggle() {
   const { effectiveTheme, toggleTheme, mounted } = useTheme();
 
-  if (!mounted) {
-    return (
-      <Button variant="outline" size="icon" aria-label="Toggle theme" disabled>
-        <Sun className="h-5 w-5" />
-      </Button>
-    );
-  }
-
-  const isDark = effectiveTheme === "dark";
+  // During SSR/initial render, check the actual DOM state to prevent icon flash
+  const isDark = mounted
+    ? effectiveTheme === "dark"
+    : typeof document !== "undefined" && document.documentElement.classList.contains("dark");
 
   return (
     <Button
@@ -22,6 +17,7 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       className="border-md-primary dark:border-md-outline-variant dark:bg-md-tertiary"
+      disabled={!mounted}
     >
       {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
     </Button>

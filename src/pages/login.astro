@@ -6,17 +6,38 @@ import { LoginForm } from "@/components/auth/LoginForm";
 <Layout title="Login">
   <main class="flex-grow flex items-center justify-center p-8">
     <div class="w-full max-w-md">
+      <div id="success-message" class="hidden mb-4 p-4 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 rounded-md"></div>
       <LoginForm client:load />
     </div>
   </main>
 
-  <!-- Fallback handler for email verification tokens -->
+  <!-- Fallback handler for email verification tokens and success messages -->
   <script is:inline>
     /* eslint-disable */
     (function () {
       console.log("[LOGIN] Checking for auth tokens...");
       const hash = window.location.hash.substring(1);
       const search = window.location.search.substring(1);
+
+      // Check for success message in query params
+      if (search) {
+        const params = new URLSearchParams(search);
+        const message = params.get("message");
+
+        if (message) {
+          const messageDiv = document.getElementById("success-message");
+          if (messageDiv) {
+            messageDiv.textContent = decodeURIComponent(message);
+            messageDiv.classList.remove("hidden");
+
+            // Remove message from URL
+            params.delete("message");
+            const newSearch = params.toString();
+            const newUrl = window.location.pathname + (newSearch ? "?" + newSearch : "");
+            window.history.replaceState({}, document.title, newUrl);
+          }
+        }
+      }
 
       if (hash) {
         const params = new URLSearchParams(hash);
