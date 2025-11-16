@@ -43,7 +43,7 @@ export function ResetPasswordForm() {
         } else {
           setApiError("Invalid or expired reset link. Please request a new password reset.");
         }
-      } catch (error) {
+      } catch {
         setApiError("Failed to verify session. Please try again.");
       } finally {
         setIsCheckingSession(false);
